@@ -1,0 +1,3 @@
+import type { DemoState, Report, ReportSubmission } from '../types';
+import { createLog, uid } from './storage';
+export const reportService = { addSubmission(report: Report, submission: Omit<ReportSubmission, 'id'>, operator: string) { report.submissions.unshift({ ...submission, id: uid('sub') }); report.latestReportDate = submission.reportDate; report.latestSubmitDate = submission.submitDate; report.status = '已报送'; report.logs.push(createLog('报送', `新增报送记录 ${submission.serial}`, operator)); }, reset(state: DemoState) { state.reports.forEach(x => x.logs.push(createLog('恢复数据', '恢复演示报表数据'))); } };
