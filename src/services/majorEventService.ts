@@ -1,5 +1,6 @@
-import type { DemoState, MajorEvent } from '../types';
+import type { DemoState, MajorEvent, Role } from '../types';
 import { createLog, uid } from './storage';
+import { majorEventWorkflow, workflowService } from './workflowService';
 
 type CreateMode = 'draft' | 'submit';
 type ManagementAction = 'verify' | 'approve' | 'return' | 'remind' | 'track' | 'review' | 'close';
@@ -17,7 +18,7 @@ const nextCode = (state: DemoState) => {
 
 export const majorEventService = {
   nextCode,
-  create(state: DemoState, value: Partial<MajorEvent>, operator: string, mode: CreateMode = 'draft') {
+  create(state: DemoState, value: Partial<MajorEvent>, operator: Role, mode: CreateMode = 'draft') {
     const submitted = mode === 'submit';
     const item: MajorEvent = {
       id: uid('event'),
@@ -48,11 +49,14 @@ export const majorEventService = {
         submitted ? '首报及处置方案已提交金融机构管理部门核实' : '创建重大风险事件首报草稿',
         operator,
       )],
+      workflow: { currentNodeId: submitted ? 'verify-report' : 'event-create', records: [] },
     };
+    workflowService.append(item.workflow!, majorEventWorkflow[0], { role: operator, action: submitted ? '完成事件填报' : '保存事件草稿', result: submitted ? '已完成' : '草稿已保存', formData: { 事件名称: item.name, 事件基本情况: item.basic, 初步分析研判: item.analysis, 已采取措施: item.measures }, attachments: item.attachments });
+    if (submitted) workflowService.append(item.workflow!, majorEventWorkflow[1], { role: operator, action: '提交首报', result: '已提交', formData: { 处置目标: item.target, 处置措施: item.plan, 责任部门: item.responsibleDept, 责任人: item.responsible, 计划完成时间: item.deadline }, attachments: item.attachments });
     state.majorEvents.unshift(item);
     return item;
   },
-  update(item: MajorEvent, value: Partial<MajorEvent>, operator: string, mode: CreateMode = 'draft') {
+  update(item: MajorEvent, value: Partial<MajorEvent>, operator: Role, mode: CreateMode = 'draft') {
     const submitted = mode === 'submit';
     Object.assign(item, {
       name: value.name ?? item.name,
@@ -81,6 +85,9 @@ export const majorEventService = {
         operator,
       )],
     });
+    item.workflow ||= { currentNodeId: submitted ? 'verify-report' : 'event-create', records: [] };
+    workflowService.append(item.workflow, majorEventWorkflow[submitted ? 1 : 0], { role: operator, action: submitted ? '重新提交首报' : '保存事件草稿', result: submitted ? '已提交' : '草稿已保存', formData: submitted ? { 处置目标: item.target, 处置措施: item.plan, 责任部门: item.responsibleDept, 责任人: item.responsible, 计划完成时间: item.deadline } : { 事件名称: item.name, 事件基本情况: item.basic, 初步分析研判: item.analysis, 已采取措施: item.measures }, attachments: item.attachments });
+    item.workflow.currentNodeId = submitted ? 'verify-report' : 'event-create';
     return item;
   },
   removeDraft(state: DemoState, id: string) {
@@ -89,7 +96,7 @@ export const majorEventService = {
     state.majorEvents = state.majorEvents.filter(event => event.id !== id);
     return true;
   },
-  applyManagementAction(item: MajorEvent, action: ManagementAction, operator: string) {
+  applyManagementAction(item: MajorEvent, action: ManagementAction, operator: Role) {
     const transitions: Record<ManagementAction, { status?: MajorEvent['status']; stage?: string; label: string; content: string }> = {
       verify: { stage: '金融机构管理部门核实并组织汇报', label: '核实', content: '重大风险事件首报已完成核实' },
       approve: { status: '处理中', stage: '金融机构执行处置并跟踪', label: '审核通过', content: '重大风险事件首报审核通过，进入执行处置阶段' },
@@ -103,6 +110,14 @@ export const majorEventService = {
     if (transition.status) item.status = transition.status;
     if (transition.stage) item.currentStage = transition.stage;
     item.logs.push(createLog(transition.label, transition.content, operator));
+    item.workflow ||= { currentNodeId: 'verify-report', records: [] };
+    const nodeId = action === 'verify' || action === 'return' ? 'verify-report' : action === 'review' ? 'management-review' : action === 'approve' ? 'management-review' : action === 'close' ? 'final-archive' : item.workflow.currentNodeId;
+    const node = majorEventWorkflow.find(candidate => candidate.id === nodeId);
+    if (node && !['remind', 'track'].includes(action)) {
+      workflowService.append(item.workflow, node, { role: operator, action: transition.label, result: action === 'return' ? '退回修改' : transition.label, formData: { 处理意见: transition.content }, opinion: transition.content, returnReason: action === 'return' ? transition.content : undefined, status: action === 'return' ? '已退回' : action === 'close' ? '已关闭' : undefined });
+      if (action === 'return') workflowService.returnTo(item.workflow, 'event-create');
+      else workflowService.moveNext(item.workflow, majorEventWorkflow, node.id);
+    }
     return item;
   },
 };
