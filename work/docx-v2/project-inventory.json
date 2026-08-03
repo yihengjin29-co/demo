@@ -1,0 +1,3644 @@
+{
+  "menus": [
+    {
+      "label": "并表驾驶舱",
+      "path": null,
+      "icon": "▦",
+      "children": []
+    },
+    {
+      "label": "工作台",
+      "path": null,
+      "icon": "⌂",
+      "children": []
+    },
+    {
+      "label": "预警管理",
+      "path": null,
+      "icon": "★",
+      "children": [
+        {
+          "label": "风险偏好及目标",
+          "path": "/warning/risk-preference",
+          "roles": [
+            "集团",
+            "金控公司"
+          ]
+        },
+        {
+          "label": "风险预警规则管理",
+          "path": "/warning/rules",
+          "roles": []
+        },
+        {
+          "label": "预警提示与处置",
+          "path": "/warning/disposal",
+          "roles": []
+        }
+      ]
+    },
+    {
+      "label": "指标管理",
+      "path": null,
+      "icon": "▤",
+      "children": [
+        {
+          "label": "指标新增与维护",
+          "path": "/indicators/maintenance",
+          "roles": []
+        },
+        {
+          "label": "指标版本管理",
+          "path": "/indicators/versions",
+          "roles": []
+        },
+        {
+          "label": "最新期指标状态",
+          "path": "/indicators/latest-status",
+          "roles": []
+        }
+      ]
+    },
+    {
+      "label": "重大风险事件管理",
+      "path": null,
+      "icon": "▧",
+      "children": [
+        {
+          "label": "重大风险事件列表",
+          "path": "/major-events",
+          "roles": []
+        },
+        {
+          "label": "重大风险事件定义管理",
+          "path": "/major-events/definitions",
+          "roles": []
+        }
+      ]
+    },
+    {
+      "label": "报表中心",
+      "path": null,
+      "icon": "▨",
+      "children": []
+    },
+    {
+      "label": "定期报告",
+      "path": null,
+      "icon": "▤",
+      "children": []
+    },
+    {
+      "label": "专项风险管理",
+      "path": null,
+      "icon": "⚑",
+      "children": [
+        {
+          "label": "新建专项风险提示",
+          "path": "/special-risks/drafts",
+          "roles": []
+        },
+        {
+          "label": "专项风险提示与管理",
+          "path": "/special-risks/manage",
+          "roles": []
+        },
+        {
+          "label": "专项风险查看与反馈",
+          "path": "/special-risks/feedback",
+          "roles": []
+        }
+      ]
+    },
+    {
+      "label": "资本规划与预算",
+      "path": null,
+      "icon": "◫",
+      "children": []
+    },
+    {
+      "label": "会计并表管理",
+      "path": null,
+      "icon": "▧",
+      "children": []
+    },
+    {
+      "label": "关联交易管理",
+      "path": null,
+      "icon": "♧",
+      "children": []
+    },
+    {
+      "label": "知识库管理",
+      "path": null,
+      "icon": "▣",
+      "children": []
+    },
+    {
+      "label": "系统管理",
+      "path": null,
+      "icon": "⚙",
+      "children": []
+    }
+  ],
+  "routes": [
+    {
+      "route_test": "/dashboard",
+      "component": "DashboardNew"
+    },
+    {
+      "route_test": "/workbench",
+      "component": "Workbench"
+    },
+    {
+      "route_test": "/institutions",
+      "component": "InstitutionList"
+    },
+    {
+      "route_test": "/warning/risk-preference",
+      "component": "RiskPreferenceList"
+    },
+    {
+      "route_test": "/warning/rules",
+      "component": "WarningRules"
+    },
+    {
+      "route_test": "/warning/disposal",
+      "component": "WarningDisposalList"
+    },
+    {
+      "route_test": "/indicators/maintenance",
+      "component": "IndicatorList"
+    },
+    {
+      "route_test": "/indicators/versions",
+      "component": "IndicatorVersions"
+    },
+    {
+      "route_test": "/indicators/latest-status",
+      "component": "LatestIndicatorStatus"
+    },
+    {
+      "route_test": "/major-events/definitions",
+      "component": "MajorEventDefinitions"
+    },
+    {
+      "route_test": "/major-events",
+      "component": "MajorEventList"
+    },
+    {
+      "route_test": "/reports",
+      "component": "Reports"
+    },
+    {
+      "route_test": "/reports/upload",
+      "component": "ReportUpload"
+    },
+    {
+      "route_test": "/periodic-reports",
+      "component": "PeriodicReports"
+    },
+    {
+      "route_test": "/special-risks/drafts",
+      "component": "SpecialRiskDrafts"
+    },
+    {
+      "route_test": "/special-risks/new",
+      "component": "SpecialRiskEditor"
+    },
+    {
+      "route_test": "/special-risks/manage",
+      "component": "SpecialRiskManage"
+    },
+    {
+      "route_test": "/special-risks/feedback",
+      "component": "SpecialRiskFeedbackList"
+    },
+    {
+      "route_test": "/institutions/",
+      "component": "InstitutionDetail"
+    },
+    {
+      "route_test": "/warning/risk-preference/",
+      "component": "RiskPreferenceDetail"
+    },
+    {
+      "route_test": "/warning/disposal/",
+      "component": "WarningDisposalDetail"
+    },
+    {
+      "route_test": "/indicators/maintenance/",
+      "component": "IndicatorEditor"
+    },
+    {
+      "route_test": "/major-events/definitions/",
+      "component": "MajorEventDefinitionDetail"
+    },
+    {
+      "route_test": "/major-events/",
+      "component": "MajorEventDetail"
+    },
+    {
+      "route_test": "/reports/indicator/",
+      "component": "IndicatorHistoryDetail"
+    },
+    {
+      "route_test": "/special-risks/manage/",
+      "component": "SpecialRiskView"
+    },
+    {
+      "route_test": "/special-risks/feedback/",
+      "component": "SpecialRiskFeedback"
+    }
+  ],
+  "components": {
+    "DashboardNew": {
+      "page_titles": [
+        "并表管理驾驶舱"
+      ],
+      "sections": [
+        "预警灯号概览",
+        "重点指标监测",
+        "重大风险事件概览",
+        "专项风险提示概览"
+      ],
+      "fields": [
+        "按指标类型筛选",
+        "已选择"
+      ],
+      "columns": [],
+      "buttons": [
+        "恢复默认",
+        "保存"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "...new Set(latest.map(record => record.indicatorType))"
+      ],
+      "navigate_paths": [
+        "/workbench",
+        "/warning/disposal",
+        "/warning/rules",
+        "/reports/indicator/${record.id}",
+        "/major-events",
+        "/special-risks/manage",
+        "/special-risks/feedback"
+      ],
+      "status_literals": [
+        "红灯",
+        "黄灯",
+        "已纳入",
+        "处理中",
+        "已归档",
+        "待反馈",
+        "已解除"
+      ]
+    },
+    "useAppState": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "useRouter": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Icon": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Button": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "StatusTag": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "SearchPanel": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [
+        "⌕ 检索",
+        "重置"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Field": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Input": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Select": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Textarea": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Section": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Tabs": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Pagination": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "WorkflowSteps": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "OperationHistory": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "InteractiveWorkflow": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": [
+        "已完成",
+        "已关闭",
+        "已跳过",
+        "已退回"
+      ]
+    },
+    "WorkflowFeedbackOverview": {
+      "page_titles": [],
+      "sections": [
+        "处理反馈总览"
+      ],
+      "fields": [],
+      "columns": [],
+      "buttons": [
+        "返回当前节点"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "FileUploader": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "EmptyModulePage": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Page": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Table": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Modal": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "LoginPage": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Header": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [
+        "退出登录"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Sidebar": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "readDemoSession": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "canAccessRouteForRole": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "App": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/login",
+        "/warning/risk-preference"
+      ],
+      "status_literals": []
+    },
+    "Dashboard": {
+      "page_titles": [
+        "并表管理驾驶舱"
+      ],
+      "sections": [
+        "资本充足率",
+        "机构资本充足率对比",
+        "预警灯号概览",
+        "风险类别分布",
+        "重大风险事件概览",
+        "专项风险提示概览",
+        "报表报送概览",
+        "关键指标监测"
+      ],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/workbench",
+        "/warning/disposal",
+        "/institutions",
+        "/major-events",
+        "/special-risks/manage",
+        "/reports",
+        "/warning/risk-preference",
+        "/warning/rules",
+        "/special-risks/feedback",
+        "/periodic-reports",
+        "/reports/upload",
+        "/indicators/maintenance"
+      ],
+      "status_literals": [
+        "红灯",
+        "黄灯",
+        "已纳入",
+        "处理中",
+        "已归档",
+        "待反馈",
+        "评估中",
+        "已解除"
+      ]
+    },
+    "InstitutionList": {
+      "page_titles": [
+        "纳入机构信息"
+      ],
+      "sections": [],
+      "fields": [
+        "机构名称",
+        "机构类型",
+        "纳入状态",
+        "纳入时间"
+      ],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "...new Set(state.institutions.map(item => item.type))",
+        "'已纳入', '暂缓纳入'"
+      ],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "InstitutionDetail": {
+      "page_titles": [
+        "机构详情"
+      ],
+      "sections": [
+        "机构基本信息",
+        "机构概览",
+        "基础指标",
+        "监管及外部评价",
+        "集中度信息",
+        "关联方信息"
+      ],
+      "fields": [],
+      "columns": [
+        "指标名称",
+        "指标单位",
+        "本期值",
+        "上年同期",
+        "同比",
+        "上期值",
+        "环比",
+        "当前灯号",
+        "关联方名称",
+        "关联关系",
+        "持股比例",
+        "表内风险敞口",
+        "表外风险敞口",
+        "占净资产比例"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/institutions"
+      ],
+      "status_literals": []
+    },
+    "Workbench": {
+      "page_titles": [
+        "工作台"
+      ],
+      "sections": [
+        "统一待办",
+        "消息提醒",
+        "运行清单",
+        "任务处理进度",
+        "近期操作",
+        "快捷入口"
+      ],
+      "fields": [],
+      "columns": [
+        "任务事项",
+        "所属机构",
+        "截止时间",
+        "状态",
+        "操作",
+        "运行对象",
+        "业务类型",
+        "数量",
+        "完成进度",
+        "入口"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/dashboard",
+        "/warning/disposal",
+        "/indicators/maintenance",
+        "/major-events",
+        "/reports",
+        "/warning/risk-preference",
+        "/warning/rules",
+        "/special-risks/manage"
+      ],
+      "status_literals": [
+        "运行中",
+        "生效",
+        "持续跟踪",
+        "持续更新",
+        "闭环跟踪"
+      ]
+    },
+    "RiskPreferenceList": {
+      "page_titles": [
+        "风险偏好及目标"
+      ],
+      "sections": [],
+      "fields": [
+        "方案名称",
+        "覆盖机构",
+        "方案状态",
+        "生效起止时间",
+        "指标名称"
+      ],
+      "columns": [
+        "序号",
+        "方案编号",
+        "方案名称",
+        "覆盖机构范围",
+        "生效时间",
+        "失效时间",
+        "方案状态",
+        "操作",
+        "方案流程"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'待提交', '待审核', '已生效', '已失效'"
+      ],
+      "navigate_paths": [
+        "/warning/risk-preference/new",
+        "/warning/risk-preference/${item.id}/edit",
+        "/warning/risk-preference/${item.id}"
+      ],
+      "status_literals": [
+        "已生效"
+      ]
+    },
+    "RiskPreferenceEditor": {
+      "page_titles": [],
+      "sections": [
+        "基本信息",
+        "定性风险偏好陈述",
+        "风险偏好指标配置",
+        "方案附件"
+      ],
+      "fields": [
+        "方案编号",
+        "方案状态",
+        "方案名称",
+        "覆盖机构范围",
+        "生效时间",
+        "失效时间",
+        "编制部门",
+        "编制摘要",
+        "定性风险偏好陈述"
+      ],
+      "columns": [
+        "序号",
+        "风险类别",
+        "指标名称",
+        "指标定义",
+        "单位",
+        "适用机构",
+        "控制频率",
+        "预警值",
+        "容忍值",
+        "操作"
+      ],
+      "buttons": [
+        "＋ 新增指标"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'日度', '月度', '季度', '年度'"
+      ],
+      "navigate_paths": [
+        "/warning/risk-preference"
+      ],
+      "status_literals": [
+        "待审核"
+      ]
+    },
+    "RiskPreferenceDetail": {
+      "page_titles": [
+        "风险偏好及目标 - 方案详情"
+      ],
+      "sections": [
+        "基本信息",
+        "方案概览",
+        "风险偏好指标明细",
+        "方案附件",
+        "操作记录"
+      ],
+      "fields": [],
+      "columns": [
+        "序号",
+        "风险类别",
+        "指标名称",
+        "指标定义",
+        "单位",
+        "适用机构",
+        "监测频率",
+        "预警值",
+        "容忍值",
+        "生效时间"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/warning/risk-preference"
+      ],
+      "status_literals": []
+    },
+    "WarningRules": {
+      "page_titles": [
+        "风险预警规则管理"
+      ],
+      "sections": [],
+      "fields": [
+        "生效起止时间",
+        "指标风险类型",
+        "适用机构",
+        "规则状态",
+        "规则编号",
+        "指标名称"
+      ],
+      "columns": [
+        "序号",
+        "指标名称",
+        "指标风险类型",
+        "适用机构",
+        "监测频率",
+        "规则编号",
+        "规则类型",
+        "提示函下发方式",
+        "黄灯规则",
+        "红灯规则",
+        "生效时间",
+        "规则状态",
+        "操作",
+        "操作记录",
+        "规则配置"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'草稿', '未生效', '待审核', '状态变更待审核', '规则配置变更待审核', '提示函方式变更待审核', '被退回', '生效', '暂停预警', '停用', '作废'"
+      ],
+      "navigate_paths": [
+        "/warning/rules/new/config"
+      ],
+      "status_literals": [
+        "生效"
+      ]
+    },
+    "RuleMaintenanceModal": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [
+        "关闭"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "LetterDeliveryModeModal": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [
+        "变更后方式",
+        "计划生效日期",
+        "变更原因"
+      ],
+      "columns": [],
+      "buttons": [
+        "取消",
+        "提交审核"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "StatusModal": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [
+        "目标状态",
+        "生效时间",
+        "状态变更原因",
+        "状态变更附件"
+      ],
+      "columns": [],
+      "buttons": [
+        "取消",
+        "确认提交"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": [
+        "生效",
+        "暂停预警",
+        "停用"
+      ]
+    },
+    "RuleOperationModal": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [
+        "操作类型",
+        "操作前状态",
+        "操作后状态",
+        "操作人 / 角色",
+        "操作时间",
+        "操作原因",
+        "审批意见",
+        "附件",
+        "版本号"
+      ],
+      "buttons": [
+        "关闭"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "RuleConfig": {
+      "page_titles": [
+        "预警规则配置编辑"
+      ],
+      "sections": [
+        "提示函下发方式",
+        "基本信息",
+        "预警值分段节点",
+        "区间及节点赋灯",
+        "推送及提交"
+      ],
+      "fields": [
+        "提示函下发方式",
+        "规则适用机构",
+        "指标名称",
+        "指标风险类型",
+        "监测频率",
+        "规则类型",
+        "生效时间",
+        "推送方式",
+        "提交人",
+        "配置变更原因"
+      ],
+      "columns": [
+        "节点",
+        "阈值（%）",
+        "节点赋灯",
+        "操作",
+        "区间",
+        "区间范围",
+        "区间预警灯",
+        "节点赋灯说明"
+      ],
+      "buttons": [
+        "提交审核",
+        "生成分段区间"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'日度', '月度', '季度', '年度'",
+        "'指标绝对值', '同比增幅', '同比绝对值', '环比增幅', '环比绝对值'",
+        "'红灯', '黄灯', '绿灯（不预警）'"
+      ],
+      "navigate_paths": [
+        "/warning/rules"
+      ],
+      "status_literals": []
+    },
+    "RuleConfigView": {
+      "page_titles": [
+        "规则配置查看",
+        "预警规则配置 - 查看"
+      ],
+      "sections": [
+        "基本信息",
+        "历史趋势或历史阈值",
+        "分段节点、区间及赋灯",
+        "推送及提交信息",
+        "操作记录"
+      ],
+      "fields": [],
+      "columns": [
+        "版本号",
+        "生效日期",
+        "黄灯规则",
+        "红灯规则",
+        "状态",
+        "变更原因",
+        "节点",
+        "阈值",
+        "区间",
+        "区间赋灯",
+        "节点赋灯"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/warning/rules"
+      ],
+      "status_literals": []
+    },
+    "RuleApprove": {
+      "page_titles": [
+        "预警规则审核"
+      ],
+      "sections": [
+        "提示函下发方式变更",
+        "规则基本信息",
+        "当前提交配置（只读）",
+        "历史规则",
+        "提交信息",
+        "审批意见"
+      ],
+      "fields": [
+        "审批意见"
+      ],
+      "columns": [
+        "节点",
+        "阈值",
+        "区间",
+        "区间预警灯",
+        "节点赋灯",
+        "版本",
+        "生效日期",
+        "黄灯规则",
+        "红灯规则",
+        "状态",
+        "原因"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/warning/rules"
+      ],
+      "status_literals": []
+    },
+    "WarningDisposalList": {
+      "page_titles": [
+        "预警提示与处置"
+      ],
+      "sections": [],
+      "fields": [
+        "预警等级",
+        "所属机构",
+        "风险类型",
+        "指标名称",
+        "处理状态",
+        "预警时间"
+      ],
+      "columns": [
+        "序号",
+        "预警等级",
+        "所属机构",
+        "风险类型",
+        "指标名称",
+        "关联规则",
+        "规则版本",
+        "提示函方式",
+        "提示函号",
+        "函件状态",
+        "处理状态",
+        "预警时间",
+        "操作"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'黄灯', '红灯'",
+        "'待填写原因分析答复', '待提交应对处置方案', '待审阅处置方案', '持续跟踪执行情况', '待评估反馈'"
+      ],
+      "navigate_paths": [
+        "/warning/disposal/${item.id}"
+      ],
+      "status_literals": []
+    },
+    "WarningDisposalDetail": {
+      "page_titles": [
+        "预警处置工单"
+      ],
+      "sections": [
+        "工单基本信息",
+        "预警基本信息",
+        "完整操作记录"
+      ],
+      "fields": [
+        "本节点附件"
+      ],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/warning/disposal"
+      ],
+      "status_literals": [
+        "红灯"
+      ]
+    },
+    "IndicatorList": {
+      "page_titles": [
+        "指标新增与维护"
+      ],
+      "sections": [],
+      "fields": [
+        "指标编码",
+        "指标名称",
+        "指标状态",
+        "适用机构"
+      ],
+      "columns": [
+        "序号",
+        "指标编码",
+        "指标名称",
+        "指标状态",
+        "指标定义",
+        "指标类型",
+        "指标子类",
+        "适用机构",
+        "操作"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'草稿', '未生效', '生效', '停用', '作废'"
+      ],
+      "navigate_paths": [
+        "/indicators/maintenance/new",
+        "/indicators/maintenance/${item.id}"
+      ],
+      "status_literals": [
+        "草稿",
+        "生效"
+      ]
+    },
+    "IndicatorEditor": {
+      "page_titles": [
+        "查看指标定义",
+        "指标维护"
+      ],
+      "sections": [
+        "指标基本信息",
+        "操作记录",
+        "基本信息",
+        "运行设置",
+        "数据来源"
+      ],
+      "fields": [
+        "指标编码",
+        "指标名称",
+        "适用机构",
+        "指标类型",
+        "指标子类",
+        "指标管理类型",
+        "指标定义",
+        "生效起始日期",
+        "监测频率"
+      ],
+      "columns": [],
+      "buttons": [
+        "保存"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'财务类', '资本类', '风险类'",
+        "'风险限额指标', '监测指标', '会计校验指标'",
+        "'日度', '月度', '季度', '年度', '发生即报'"
+      ],
+      "navigate_paths": [
+        "/indicators/maintenance"
+      ],
+      "status_literals": []
+    },
+    "IndicatorVersions": {
+      "page_titles": [
+        "指标版本管理"
+      ],
+      "sections": [],
+      "fields": [
+        "指标编码",
+        "指标名称",
+        "版本号"
+      ],
+      "columns": [
+        "序号",
+        "指标编码",
+        "指标名称",
+        "指标状态",
+        "指标定义",
+        "监测频率",
+        "当前版本号",
+        "操作",
+        "版本号",
+        "维护操作",
+        "生效起始日期",
+        "适用机构",
+        "指标类型",
+        "源头表",
+        "停用日期"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "IndicatorLightHistoryModal": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [
+        "序号",
+        "指标期次",
+        "监测频率",
+        "指标值",
+        "黄灯规则",
+        "红灯规则",
+        "当期亮灯情况"
+      ],
+      "buttons": [
+        "关闭"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "IndicatorPeriodTable": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [
+        "序号",
+        "指标编码",
+        "指标名称",
+        "监测频率",
+        "指标值",
+        "当期亮灯情况",
+        "累计亮灯情况",
+        "指标定义",
+        "指标类型",
+        "指标子类",
+        "适用机构",
+        "预测范围",
+        "黄灯规则",
+        "红灯规则",
+        "指标期次"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "LatestIndicatorStatus": {
+      "page_titles": [
+        "最新期指标状态"
+      ],
+      "sections": [],
+      "fields": [
+        "指标编码",
+        "指标名称",
+        "指标类型",
+        "指标子类",
+        "适用机构",
+        "监测频率",
+        "当期亮灯",
+        "指标期次"
+      ],
+      "columns": [],
+      "buttons": [
+        "⇩ 导出"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'财务类', '资本类', '风险类'",
+        "'日', '周', '月', '季', '半年', '年', '不定期'",
+        "'绿灯', '黄灯', '红灯'"
+      ],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "MajorEventDefinitions": {
+      "page_titles": [
+        "重大风险事件定义管理"
+      ],
+      "sections": [],
+      "fields": [
+        "事件类型名称",
+        "定义状态",
+        "参考依据",
+        "更新时间"
+      ],
+      "columns": [
+        "序号",
+        "事件类型编码",
+        "事件类型名称",
+        "事件定义摘要",
+        "参考依据",
+        "定义状态",
+        "版本号",
+        "更新时间",
+        "操作",
+        "操作记录"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'生效', '停用', '草稿'"
+      ],
+      "navigate_paths": [
+        "/major-events/definitions/new",
+        "/major-events/definitions/${item.id}",
+        "/major-events/definitions/${item.id}/edit"
+      ],
+      "status_literals": [
+        "生效"
+      ]
+    },
+    "MajorEventDefinitionDetail": {
+      "page_titles": [
+        "重大风险事件定义",
+        "重大风险事件定义查看"
+      ],
+      "sections": [
+        "风险事件类型",
+        "风险事件定义",
+        "参考依据",
+        "操作记录"
+      ],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/major-events/definitions"
+      ],
+      "status_literals": []
+    },
+    "MajorEventDefinitionEditor": {
+      "page_titles": [
+        "重大风险事件定义管理"
+      ],
+      "sections": [
+        "基本信息",
+        "事件定义判断标准"
+      ],
+      "fields": [
+        "事件类型编码",
+        "事件类型名称",
+        "定义状态",
+        "版本号",
+        "参考依据",
+        "备注"
+      ],
+      "columns": [],
+      "buttons": [
+        "保存"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'生效', '停用', '草稿'"
+      ],
+      "navigate_paths": [
+        "/major-events/definitions"
+      ],
+      "status_literals": [
+        "草稿"
+      ]
+    },
+    "MajorEventList": {
+      "page_titles": [
+        "重大风险事件管理"
+      ],
+      "sections": [],
+      "fields": [
+        "事件名称",
+        "所属机构",
+        "风险事件类型",
+        "事件状态",
+        "发生时间"
+      ],
+      "columns": [
+        "序号",
+        "事件编号",
+        "事件名称",
+        "所属机构",
+        "风险事件类型",
+        "发生时间",
+        "最新报送类型",
+        "当前环节",
+        "事件状态",
+        "操作",
+        "事件流程"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'草稿', '待审核', '处理中', '常态跟踪', '已归档'"
+      ],
+      "navigate_paths": [
+        "/major-events/${item.id}",
+        "/major-events/${item.id}/edit",
+        "/major-events/${item.id}/follow-up",
+        "/major-events/${item.id}/final-report",
+        "/major-events/new"
+      ],
+      "status_literals": []
+    },
+    "MajorEventEditor": {
+      "page_titles": [],
+      "sections": [
+        "事件基本信息",
+        "首报信息",
+        "处置方案",
+        "附件上传",
+        "审阅及处理记录"
+      ],
+      "fields": [
+        "事件编号",
+        "事件名称",
+        "风险事件类型",
+        "所属机构",
+        "发生时间",
+        "最新报送类型",
+        "当前环节",
+        "事件状态",
+        "影响范围",
+        "联系人",
+        "事件基本情况",
+        "初步分析研判",
+        "已采取措施",
+        "发展趋势",
+        "处置目标",
+        "责任部门",
+        "责任人",
+        "计划完成时间",
+        "处置措施"
+      ],
+      "columns": [],
+      "buttons": [
+        "返回"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/major-events"
+      ],
+      "status_literals": [
+        "生效"
+      ]
+    },
+    "MajorEventDetail": {
+      "page_titles": [
+        "重大风险事件详情"
+      ],
+      "sections": [
+        "事件基本信息",
+        "首报信息",
+        "处置方案",
+        "续报记录",
+        "终报记录",
+        "审阅及处理记录"
+      ],
+      "fields": [
+        "处理意见",
+        "本节点附件"
+      ],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/major-events",
+        "/major-events/${item.id}/edit",
+        "/major-events/${item.id}/follow-up",
+        "/major-events/${item.id}/final-report"
+      ],
+      "status_literals": [
+        "草稿"
+      ]
+    },
+    "EventFollowUp": {
+      "page_titles": [
+        "重大风险事件 - 续报"
+      ],
+      "sections": [
+        "当前事件",
+        "续报信息",
+        "附件"
+      ],
+      "fields": [
+        "最新进展",
+        "风险变化",
+        "措施执行情况",
+        "下一步安排"
+      ],
+      "columns": [],
+      "buttons": [
+        "提交续报"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/major-events",
+        "/major-events/${item.id}"
+      ],
+      "status_literals": [
+        "持续跟踪",
+        "处理中"
+      ]
+    },
+    "EventFinalReport": {
+      "page_titles": [
+        "重大风险事件 - 终报"
+      ],
+      "sections": [
+        "终报信息",
+        "附件"
+      ],
+      "fields": [
+        "最终处置结果",
+        "实际影响",
+        "风险解除情况",
+        "后续管理安排"
+      ],
+      "columns": [],
+      "buttons": [
+        "提交终报"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/major-events",
+        "/major-events/${item.id}"
+      ],
+      "status_literals": [
+        "已归档"
+      ]
+    },
+    "periodInputOrder": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "Reports": {
+      "page_titles": [
+        "报表中心"
+      ],
+      "sections": [],
+      "fields": [
+        "指标编码",
+        "指标名称",
+        "指标类型",
+        "指标子类",
+        "适用机构",
+        "监测频率",
+        "当期亮灯",
+        "指标期次"
+      ],
+      "columns": [],
+      "buttons": [
+        "⇩ 导出"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'财务类', '资本类', '风险类'",
+        "'日', '周', '月', '季', '半年', '年', '不定期'",
+        "'绿灯', '黄灯', '红灯'"
+      ],
+      "navigate_paths": [],
+      "status_literals": []
+    },
+    "IndicatorHistoryDetail": {
+      "page_titles": [
+        "历史指标趋势"
+      ],
+      "sections": [
+        "指标基本信息",
+        "历史趋势"
+      ],
+      "fields": [],
+      "columns": [
+        "指标期次",
+        "监测频率",
+        "指标值",
+        "黄灯规则",
+        "红灯规则",
+        "当期亮灯情况"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/reports"
+      ],
+      "status_literals": []
+    },
+    "ReportSubmissions": {
+      "page_titles": [
+        "报送明细"
+      ],
+      "sections": [
+        "报表基本信息",
+        "历次报送记录"
+      ],
+      "fields": [],
+      "columns": [
+        "序号",
+        "报送文件流水号",
+        "报表日期",
+        "报送日期",
+        "报送时间",
+        "报送人",
+        "报送说明",
+        "操作"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/reports"
+      ],
+      "status_literals": []
+    },
+    "ReportUpload": {
+      "page_titles": [
+        "报表上传"
+      ],
+      "sections": [
+        "报表基本信息",
+        "附件上传",
+        "报送说明"
+      ],
+      "fields": [
+        "报表编号",
+        "报表名称",
+        "报表类型",
+        "报表日期",
+        "报送说明"
+      ],
+      "columns": [],
+      "buttons": [
+        "提交"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'财务报表', '风险监测报表', '监管报表'"
+      ],
+      "navigate_paths": [
+        "/reports"
+      ],
+      "status_literals": []
+    },
+    "PeriodicReports": {
+      "page_titles": [
+        "定期风险报告管理"
+      ],
+      "sections": [],
+      "fields": [
+        "报告名称",
+        "报送日期起止",
+        "报送机构",
+        "报告类型",
+        "周期性"
+      ],
+      "columns": [
+        "报送日期",
+        "报告日期",
+        "定期风险报告名称",
+        "报送机构",
+        "报告类型",
+        "周期性",
+        "报告概述",
+        "附件",
+        "操作"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'全面风险管理报告', '风险监测报告'",
+        "'周', '月度', '季度', '年度'"
+      ],
+      "navigate_paths": [
+        "/periodic-reports/upload",
+        "/periodic-reports/${item.id}/edit"
+      ],
+      "status_literals": []
+    },
+    "PeriodicReportEditor": {
+      "page_titles": [],
+      "sections": [
+        "当前报告信息",
+        "报告基本信息",
+        "附件上传",
+        "推送设置"
+      ],
+      "fields": [
+        "报告名称",
+        "报送机构",
+        "报告类型",
+        "报告日期",
+        "周期性",
+        "报告概述",
+        "推送方式"
+      ],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'全面风险管理报告', '风险监测报告'",
+        "\"邮件\", \"平台通知\", \"OA系统内\""
+      ],
+      "navigate_paths": [
+        "/periodic-reports"
+      ],
+      "status_literals": [
+        "已提交"
+      ]
+    },
+    "SpecialRiskDrafts": {
+      "page_titles": [
+        "新建专项风险提示"
+      ],
+      "sections": [],
+      "fields": [
+        "创建起止时间",
+        "专项风险类型",
+        "下发对象"
+      ],
+      "columns": [
+        "展开",
+        "创建时间",
+        "上次更新时间",
+        "下发对象",
+        "专项风险类型",
+        "专项风险提示名称",
+        "状态",
+        "操作"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/special-risks/new",
+        "/special-risks/manage/${item.id}"
+      ],
+      "status_literals": []
+    },
+    "SpecialRiskEditor": {
+      "page_titles": [
+        "专项风险提示 - 新建提示"
+      ],
+      "sections": [
+        "基本信息",
+        "下发机构",
+        "提示内容",
+        "附件上传"
+      ],
+      "fields": [
+        "专项风险提示名称",
+        "专项风险提示类型",
+        "提示背景与目的",
+        "专项风险提示措施与建议",
+        "机构自检与反馈要求"
+      ],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/special-risks/drafts"
+      ],
+      "status_literals": []
+    },
+    "SpecialRiskManage": {
+      "page_titles": [
+        "专项风险提示与管理"
+      ],
+      "sections": [],
+      "fields": [
+        "下发起止时间",
+        "专项风险类型",
+        "状态",
+        "下发对象"
+      ],
+      "columns": [
+        "展开",
+        "工单编号",
+        "下发日期",
+        "下发对象",
+        "专项风险类型",
+        "提示名称",
+        "状态",
+        "解除日期",
+        "操作"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'待反馈', '已反馈', '评估中', '部分解除', '已解除', '待跟踪反馈'"
+      ],
+      "navigate_paths": [
+        "/special-risks/manage/${item.id}?order=${order.id}",
+        "/special-risks/feedback/${item.id}/evaluate?order=${order.id}",
+        "/special-risks/manage/${item.id}"
+      ],
+      "status_literals": [
+        "解除",
+        "已下发",
+        "待反馈"
+      ]
+    },
+    "SpecialRiskView": {
+      "page_titles": [
+        "专项风险提示详情",
+        "专项风险提示与工单详情"
+      ],
+      "sections": [
+        "提示基本信息",
+        "当前节点操作",
+        "全部机构工单"
+      ],
+      "fields": [],
+      "columns": [
+        "机构",
+        "工单编号",
+        "反馈时间",
+        "联系人",
+        "状态",
+        "评估结果",
+        "操作"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/special-risks/manage",
+        "/special-risks/feedback/${item.id}?order=${order.id}",
+        "/special-risks/feedback/${item.id}/evaluate?order=${order.id}"
+      ],
+      "status_literals": []
+    },
+    "getOrder": {
+      "page_titles": [],
+      "sections": [],
+      "fields": [],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [],
+      "status_literals": [
+        "待反馈"
+      ]
+    },
+    "SpecialRiskFeedbackList": {
+      "page_titles": [
+        "专项风险查看与反馈"
+      ],
+      "sections": [],
+      "fields": [
+        "工单编号",
+        "下发起止时间",
+        "专项风险类型",
+        "状态"
+      ],
+      "columns": [
+        "关联工单编号",
+        "下发日期",
+        "上次反馈时间",
+        "专项风险类型",
+        "提示名称",
+        "查看提示",
+        "状态",
+        "反馈",
+        "解除日期",
+        "报告查看"
+      ],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'待反馈', '已反馈', '评估中', '部分解除', '已解除', '待跟踪反馈'"
+      ],
+      "navigate_paths": [
+        "/special-risks/manage/${item.id}",
+        "/special-risks/manage/${item.id}?order=${order.id}",
+        "/special-risks/feedback/${item.id}?order=${order.id}",
+        "/special-risks/feedback/${item.id}/evaluate?order=${order.id}"
+      ],
+      "status_literals": [
+        "待反馈",
+        "待跟踪反馈",
+        "解除"
+      ]
+    },
+    "SpecialRiskFeedback": {
+      "page_titles": [
+        "专项风险反馈填写"
+      ],
+      "sections": [
+        "专项风险提示基本信息",
+        "机构反馈",
+        "附件"
+      ],
+      "fields": [
+        "反馈机构",
+        "联系人",
+        "联系电话",
+        "对专项风险提示的认识与理解",
+        "自查发现的问题与风险点",
+        "未来风险预防与应对策略",
+        "其他总结反馈"
+      ],
+      "columns": [],
+      "buttons": [
+        "保存"
+      ],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [],
+      "navigate_paths": [
+        "/special-risks/feedback"
+      ],
+      "status_literals": [
+        "已反馈",
+        "评估中"
+      ]
+    },
+    "SpecialRiskEvaluate": {
+      "page_titles": [
+        "专项风险反馈评估"
+      ],
+      "sections": [
+        "提示基本信息",
+        "机构反馈信息",
+        "评估区",
+        "反馈附件"
+      ],
+      "fields": [
+        "评估结果",
+        "评估部门",
+        "分析及总结"
+      ],
+      "columns": [],
+      "buttons": [],
+      "text_actions": [],
+      "tabs": [],
+      "select_options": [
+        "'解除', '部分解除', '驳回'"
+      ],
+      "navigate_paths": [
+        "/special-risks/manage"
+      ],
+      "status_literals": [
+        "驳回",
+        "解除",
+        "部分解除"
+      ]
+    }
+  },
+  "services": {
+    "indicatorPeriodService.ts": {
+      "exports": [
+        "MonitoringFrequency",
+        "LightStatus",
+        "inferIndicatorUnit",
+        "formatIndicatorValue",
+        "normalizeIndicatorRules",
+        "evaluateIndicatorLightStatus",
+        "validateIndicatorLightConsistency",
+        "validateIndicatorPeriodRecords",
+        "normalizeLightStatus",
+        "normalizeMonitoringFrequency",
+        "getIndicatorHistoryRecords",
+        "calculateLightSummaryForRecords",
+        "calculateCumulativeLightCounts",
+        "indicatorPeriodService"
+      ],
+      "methods": [
+        "latest",
+        "history"
+      ],
+      "status_literals": [
+        "红灯",
+        "黄灯",
+        "绿灯"
+      ]
+    },
+    "indicatorService.ts": {
+      "exports": [
+        "indicatorService"
+      ],
+      "methods": [
+        "create"
+      ],
+      "status_literals": [
+        "草稿"
+      ]
+    },
+    "institutionData.ts": {
+      "exports": [
+        "seedInstitutions"
+      ],
+      "methods": [],
+      "status_literals": [
+        "已纳入"
+      ]
+    },
+    "majorEventDefinitionService.ts": {
+      "exports": [
+        "seedMajorRiskEventDefinitions",
+        "majorEventDefinitionService"
+      ],
+      "methods": [
+        "save",
+        "if",
+        "setStatus"
+      ],
+      "status_literals": [
+        "生效"
+      ]
+    },
+    "majorEventService.ts": {
+      "exports": [
+        "majorEventService"
+      ],
+      "methods": [
+        "create",
+        "update",
+        "removeDraft",
+        "applyManagementAction"
+      ],
+      "status_literals": [
+        "已提交",
+        "处理中",
+        "草稿",
+        "已归档"
+      ]
+    },
+    "periodicReportService.ts": {
+      "exports": [
+        "periodicReportService"
+      ],
+      "methods": [
+        "create"
+      ],
+      "status_literals": [
+        "草稿"
+      ]
+    },
+    "permissionService.ts": {
+      "exports": [
+        "roleLabels",
+        "currentInstitution",
+        "resolveStoredRole",
+        "normalizeRole",
+        "getDefaultRouteForRole",
+        "PermissionContext",
+        "canViewInstitution",
+        "scopeStateForRole",
+        "can",
+        "canEditWarningRuleStatus",
+        "canApproveWarningRule",
+        "canViewWarningRuleConfig",
+        "canEditWarningRuleConfig",
+        "canConfigureWarningLetters",
+        "canViewLatestIndicatorStatus",
+        "canViewHistoricalIndicatorData",
+        "canMaintainWarningRule",
+        "canMaintainWarningRuleStatus",
+        "canMaintainLetterDeliveryMode",
+        "canApproveWarningRuleChange",
+        "canManuallySendWarningLetter",
+        "canViewMajorRiskDefinition",
+        "canEditMajorRiskDefinition",
+        "canConfigureDashboard",
+        "canViewInstitutionData",
+        "canAccessDashboardLink",
+        "canAccessRiskPreference",
+        "canViewIndicator",
+        "canCreateIndicator",
+        "canEditIndicator",
+        "canManageIndicatorStatus",
+        "canViewIndicatorVersion",
+        "canManageMajorEventDefinitions",
+        "canViewWorkflowNode",
+        "canViewWorkflowRecord",
+        "canHandleWorkflowNode",
+        "canReturnWorkflowNode",
+        "getAvailableWorkflowActions",
+        "MajorEventAction",
+        "majorEventActionLabels",
+        "canEditMajorEvent",
+        "getMajorEventActions"
+      ],
+      "methods": [
+        "if"
+      ],
+      "status_literals": [
+        "草稿",
+        "已归档",
+        "处理中",
+        "常态跟踪",
+        "待审核"
+      ]
+    },
+    "reportService.ts": {
+      "exports": [
+        "reportService"
+      ],
+      "methods": [
+        "addSubmission",
+        "reset"
+      ],
+      "status_literals": [
+        "已报送"
+      ]
+    },
+    "riskPreferenceService.ts": {
+      "exports": [
+        "riskPreferenceService"
+      ],
+      "methods": [
+        "create",
+        "update"
+      ],
+      "status_literals": [
+        "待提交",
+        "草稿已保存"
+      ]
+    },
+    "specialRiskService.ts": {
+      "exports": [
+        "specialRiskService"
+      ],
+      "methods": [
+        "publish",
+        "create"
+      ],
+      "status_literals": [
+        "已下发",
+        "待反馈",
+        "草稿"
+      ]
+    },
+    "storage.ts": {
+      "exports": [
+        "uid",
+        "createLog",
+        "makeAttachment",
+        "formatSize",
+        "seedState",
+        "normalizeState",
+        "loadState",
+        "saveState",
+        "resetState"
+      ],
+      "methods": [
+        "if"
+      ],
+      "status_literals": [
+        "已生效",
+        "待审核",
+        "已失效",
+        "生效",
+        "暂停预警",
+        "红灯",
+        "待提交应对处置方案",
+        "黄灯",
+        "持续跟踪执行情况",
+        "停用",
+        "黄灯及红灯",
+        "处理中",
+        "已归档",
+        "系统恢复，完成整改。",
+        "已报送",
+        "已提交",
+        "已下发",
+        "已反馈",
+        "待反馈",
+        "部分解除",
+        "草稿",
+        "已完成",
+        "待提交",
+        "待跟踪反馈"
+      ]
+    },
+    "warningLetterService.ts": {
+      "exports": [
+        "letterDeliveryModeLabels",
+        "warningLetterService"
+      ],
+      "methods": [
+        "send"
+      ],
+      "status_literals": []
+    },
+    "warningRuleService.ts": {
+      "exports": [
+        "warningRuleService"
+      ],
+      "methods": [
+        "update",
+        "create",
+        "submitStatusChange",
+        "stageConfig",
+        "stageLetterDeliveryMode",
+        "approve",
+        "if"
+      ],
+      "status_literals": [
+        "未生效",
+        "提示函方式变更待审核",
+        "状态变更待审核",
+        "生效",
+        "被退回"
+      ]
+    },
+    "workflowService.ts": {
+      "exports": [
+        "WorkflowDefinitionNode",
+        "warningDisposalWorkflow",
+        "majorEventWorkflow",
+        "specialRiskWorkflow",
+        "riskPreferenceWorkflow",
+        "workflowService"
+      ],
+      "methods": [
+        "append",
+        "moveNext",
+        "returnTo"
+      ],
+      "status_literals": []
+    }
+  },
+  "types": {
+    "LogEntry": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "action",
+        "type": "string"
+      },
+      {
+        "field": "operator",
+        "type": "string"
+      },
+      {
+        "field": "time",
+        "type": "string"
+      },
+      {
+        "field": "content",
+        "type": "string"
+      }
+    ],
+    "Attachment": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "size",
+        "type": "number"
+      },
+      {
+        "field": "type",
+        "type": "string"
+      },
+      {
+        "field": "uploadedAt",
+        "type": "string"
+      }
+    ],
+    "WorkflowNodeRecord": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "nodeId",
+        "type": "string"
+      },
+      {
+        "field": "nodeName",
+        "type": "string"
+      },
+      {
+        "field": "department",
+        "type": "string"
+      },
+      {
+        "field": "role",
+        "type": "Role"
+      },
+      {
+        "field": "handler",
+        "type": "string"
+      },
+      {
+        "field": "action",
+        "type": "string"
+      },
+      {
+        "field": "result",
+        "type": "string"
+      },
+      {
+        "field": "submittedAt",
+        "type": "string"
+      },
+      {
+        "field": "formData",
+        "type": "Record<string, string>"
+      },
+      {
+        "field": "opinion?",
+        "type": "string"
+      },
+      {
+        "field": "returnReason?",
+        "type": "string"
+      },
+      {
+        "field": "attachments",
+        "type": "Attachment[]"
+      },
+      {
+        "field": "status",
+        "type": "'已完成' | '已退回' | '已关闭' | '已跳过'"
+      },
+      {
+        "field": "iteration",
+        "type": "number"
+      }
+    ],
+    "WorkflowInstance": [
+      {
+        "field": "currentNodeId",
+        "type": "string"
+      },
+      {
+        "field": "records",
+        "type": "WorkflowNodeRecord[]"
+      }
+    ],
+    "InstitutionIndicator": [
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "unit",
+        "type": "string"
+      },
+      {
+        "field": "current",
+        "type": "string"
+      },
+      {
+        "field": "lastYear",
+        "type": "string"
+      },
+      {
+        "field": "yearOnYear",
+        "type": "string"
+      },
+      {
+        "field": "previous",
+        "type": "string"
+      },
+      {
+        "field": "monthOnMonth",
+        "type": "string"
+      },
+      {
+        "field": "light",
+        "type": "'红灯' | '黄灯' | '绿灯'"
+      }
+    ],
+    "InstitutionRelatedParty": [
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "relation",
+        "type": "string"
+      },
+      {
+        "field": "shareholding",
+        "type": "string"
+      },
+      {
+        "field": "onBalanceExposure",
+        "type": "string"
+      },
+      {
+        "field": "offBalanceExposure",
+        "type": "string"
+      },
+      {
+        "field": "netAssetRatio",
+        "type": "string"
+      }
+    ],
+    "Institution": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "shortName",
+        "type": "string"
+      },
+      {
+        "field": "type",
+        "type": "string"
+      },
+      {
+        "field": "establishedAt",
+        "type": "string"
+      },
+      {
+        "field": "registeredCapital",
+        "type": "string"
+      },
+      {
+        "field": "creditCode",
+        "type": "string"
+      },
+      {
+        "field": "ownership",
+        "type": "string"
+      },
+      {
+        "field": "businessScope",
+        "type": "string"
+      },
+      {
+        "field": "management",
+        "type": "string"
+      },
+      {
+        "field": "branches",
+        "type": "string"
+      },
+      {
+        "field": "address",
+        "type": "string"
+      },
+      {
+        "field": "website",
+        "type": "string"
+      },
+      {
+        "field": "emergencyContact",
+        "type": "string"
+      },
+      {
+        "field": "phone",
+        "type": "string"
+      },
+      {
+        "field": "includedAt",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "'已纳入' | '暂缓纳入'"
+      },
+      {
+        "field": "activeIndicatorCount",
+        "type": "number"
+      },
+      {
+        "field": "warningCount",
+        "type": "number"
+      },
+      {
+        "field": "overview",
+        "type": "string"
+      },
+      {
+        "field": "indicators",
+        "type": "InstitutionIndicator[]"
+      },
+      {
+        "field": "rating",
+        "type": "{ regulatory: string"
+      },
+      {
+        "field": "concentrations",
+        "type": "{ category: string"
+      },
+      {
+        "field": "relatedParties",
+        "type": "InstitutionRelatedParty[]"
+      }
+    ],
+    "RiskPreferenceIndicator": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "category",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "definition",
+        "type": "string"
+      },
+      {
+        "field": "unit",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "frequency",
+        "type": "string"
+      },
+      {
+        "field": "warning",
+        "type": "string"
+      },
+      {
+        "field": "tolerance",
+        "type": "string"
+      },
+      {
+        "field": "effectiveDate",
+        "type": "string"
+      }
+    ],
+    "RiskPreference": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "code",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "effectiveDate",
+        "type": "string"
+      },
+      {
+        "field": "expiryDate",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "'待提交' | '待审核' | '已生效' | '已失效'"
+      },
+      {
+        "field": "department",
+        "type": "string"
+      },
+      {
+        "field": "summary",
+        "type": "string"
+      },
+      {
+        "field": "statement",
+        "type": "string"
+      },
+      {
+        "field": "basis",
+        "type": "string"
+      },
+      {
+        "field": "indicators",
+        "type": "RiskPreferenceIndicator[]"
+      },
+      {
+        "field": "attachments",
+        "type": "Attachment[]"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      },
+      {
+        "field": "workflow?",
+        "type": "WorkflowInstance"
+      }
+    ],
+    "WarningRule": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "code",
+        "type": "string"
+      },
+      {
+        "field": "indicator",
+        "type": "string"
+      },
+      {
+        "field": "riskType",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "frequency",
+        "type": "string"
+      },
+      {
+        "field": "ruleType",
+        "type": "string"
+      },
+      {
+        "field": "yellow",
+        "type": "string"
+      },
+      {
+        "field": "red",
+        "type": "string"
+      },
+      {
+        "field": "effectiveDate",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "'草稿' | '未生效' | '待审核' | '状态变更待审核' | '规则配置变更待审核' | '提示函方式变更待审核' | '被退回' | '生效' | '暂停预警' | '停用' | '作废'"
+      },
+      {
+        "field": "letterDeliveryMode?",
+        "type": "'auto' | 'none' | 'manual'"
+      },
+      {
+        "field": "nodes",
+        "type": "{ id: string"
+      },
+      {
+        "field": "segments",
+        "type": "{ name: string"
+      },
+      {
+        "field": "pushMethods",
+        "type": "string[]"
+      },
+      {
+        "field": "submitter",
+        "type": "string"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      },
+      {
+        "field": "versions?",
+        "type": "{ version: string"
+      },
+      {
+        "field": "operationRecords?",
+        "type": "{ id: string"
+      },
+      {
+        "field": "pendingConfig?",
+        "type": "{ version: string"
+      },
+      {
+        "field": "pendingLetterDelivery?",
+        "type": "{ id: string"
+      },
+      {
+        "field": "letterDeliveryChanges?",
+        "type": "{ id: string"
+      }
+    ],
+    "WarningDisposal": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "level",
+        "type": "'黄灯' | '红灯'"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "riskType",
+        "type": "string"
+      },
+      {
+        "field": "indicator",
+        "type": "string"
+      },
+      {
+        "field": "value",
+        "type": "string"
+      },
+      {
+        "field": "signal",
+        "type": "string"
+      },
+      {
+        "field": "rule",
+        "type": "string"
+      },
+      {
+        "field": "letterNo",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "string"
+      },
+      {
+        "field": "triggerDate",
+        "type": "string"
+      },
+      {
+        "field": "reason",
+        "type": "string"
+      },
+      {
+        "field": "plan",
+        "type": "string"
+      },
+      {
+        "field": "assessment",
+        "type": "string"
+      },
+      {
+        "field": "review",
+        "type": "string"
+      },
+      {
+        "field": "followUp",
+        "type": "string"
+      },
+      {
+        "field": "releaseAssessment",
+        "type": "string"
+      },
+      {
+        "field": "expectedReleaseDate",
+        "type": "string"
+      },
+      {
+        "field": "attachments",
+        "type": "Attachment[]"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      },
+      {
+        "field": "associatedRuleId?",
+        "type": "string"
+      },
+      {
+        "field": "ruleVersion?",
+        "type": "string"
+      },
+      {
+        "field": "letterDeliveryMode?",
+        "type": "'auto' | 'none' | 'manual'"
+      },
+      {
+        "field": "letterStatus?",
+        "type": "'已下发' | '不发函' | '待下发'"
+      },
+      {
+        "field": "letterSentBy?",
+        "type": "string"
+      },
+      {
+        "field": "letterSentAt?",
+        "type": "string"
+      },
+      {
+        "field": "workflow?",
+        "type": "WorkflowInstance"
+      }
+    ],
+    "WarningLetterSetting": [
+      {
+        "field": "mode",
+        "type": "'亮灯直接发函' | '只亮灯不发函' | '亮灯后手动发函'"
+      },
+      {
+        "field": "level",
+        "type": "'黄灯' | '红灯' | '黄灯及红灯'"
+      },
+      {
+        "field": "institutionScope",
+        "type": "'全部机构' | '指定机构'"
+      },
+      {
+        "field": "institutions",
+        "type": "string[]"
+      },
+      {
+        "field": "effectiveDate",
+        "type": "string"
+      },
+      {
+        "field": "description",
+        "type": "string"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      }
+    ],
+    "IndicatorVersion": [
+      {
+        "field": "version",
+        "type": "string"
+      },
+      {
+        "field": "operation",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "definition",
+        "type": "string"
+      },
+      {
+        "field": "effectiveDate",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "type",
+        "type": "string"
+      },
+      {
+        "field": "subtype",
+        "type": "string"
+      },
+      {
+        "field": "frequency",
+        "type": "string"
+      },
+      {
+        "field": "sourceTable",
+        "type": "string"
+      },
+      {
+        "field": "stopDate",
+        "type": "string"
+      }
+    ],
+    "Indicator": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "code",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "'草稿' | '未生效' | '生效' | '停用' | '作废'"
+      },
+      {
+        "field": "definition",
+        "type": "string"
+      },
+      {
+        "field": "type",
+        "type": "string"
+      },
+      {
+        "field": "subtype",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "managementType",
+        "type": "string"
+      },
+      {
+        "field": "effectiveDate",
+        "type": "string"
+      },
+      {
+        "field": "frequency",
+        "type": "string"
+      },
+      {
+        "field": "sourceTables",
+        "type": "string[]"
+      },
+      {
+        "field": "versions",
+        "type": "IndicatorVersion[]"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      }
+    ],
+    "IndicatorPeriodRecord": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "indicatorId",
+        "type": "string"
+      },
+      {
+        "field": "indicatorCode",
+        "type": "string"
+      },
+      {
+        "field": "indicatorName",
+        "type": "string"
+      },
+      {
+        "field": "indicatorDefinition",
+        "type": "string"
+      },
+      {
+        "field": "indicatorType",
+        "type": "string"
+      },
+      {
+        "field": "indicatorSubType",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "monitoringFrequency",
+        "type": "'日' | '周' | '月' | '季' | '半年' | '年' | '不定期'"
+      },
+      {
+        "field": "indicatorValue",
+        "type": "string"
+      },
+      {
+        "field": "indicatorUnit",
+        "type": "string"
+      },
+      {
+        "field": "currentLightStatus",
+        "type": "'红灯' | '黄灯' | '绿灯'"
+      },
+      {
+        "field": "cumulativeRedCount",
+        "type": "number"
+      },
+      {
+        "field": "cumulativeYellowCount",
+        "type": "number"
+      },
+      {
+        "field": "cumulativeGreenCount",
+        "type": "number"
+      },
+      {
+        "field": "forecastRange",
+        "type": "string"
+      },
+      {
+        "field": "yellowRule",
+        "type": "string"
+      },
+      {
+        "field": "redRule",
+        "type": "string"
+      },
+      {
+        "field": "period",
+        "type": "string"
+      },
+      {
+        "field": "periodOrder",
+        "type": "number"
+      },
+      {
+        "field": "indicatorStatus?",
+        "type": "'生效' | '未生效' | '停用' | '作废'"
+      },
+      {
+        "field": "warningStatus?",
+        "type": "'绿灯' | '黄灯' | '红灯' | '未评价'"
+      },
+      {
+        "field": "reasonableRange?",
+        "type": "string"
+      }
+    ],
+    "MajorRiskEventDefinition": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "code",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "criteria",
+        "type": "string[]"
+      },
+      {
+        "field": "referenceBasis",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "'生效' | '停用' | '草稿'"
+      },
+      {
+        "field": "version",
+        "type": "string"
+      },
+      {
+        "field": "updatedAt",
+        "type": "string"
+      },
+      {
+        "field": "notes",
+        "type": "string"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      }
+    ],
+    "MajorEvent": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "code",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "type",
+        "type": "string"
+      },
+      {
+        "field": "occurredAt",
+        "type": "string"
+      },
+      {
+        "field": "latestReport",
+        "type": "'首报' | '续报' | '终报'"
+      },
+      {
+        "field": "currentStage",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "'草稿' | '待审核' | '处理中' | '常态跟踪' | '已归档'"
+      },
+      {
+        "field": "impact",
+        "type": "string"
+      },
+      {
+        "field": "contact",
+        "type": "string"
+      },
+      {
+        "field": "phone",
+        "type": "string"
+      },
+      {
+        "field": "basic",
+        "type": "string"
+      },
+      {
+        "field": "analysis",
+        "type": "string"
+      },
+      {
+        "field": "measures",
+        "type": "string"
+      },
+      {
+        "field": "trend",
+        "type": "string"
+      },
+      {
+        "field": "target",
+        "type": "string"
+      },
+      {
+        "field": "plan",
+        "type": "string"
+      },
+      {
+        "field": "responsibleDept",
+        "type": "string"
+      },
+      {
+        "field": "responsible",
+        "type": "string"
+      },
+      {
+        "field": "deadline",
+        "type": "string"
+      },
+      {
+        "field": "attachments",
+        "type": "Attachment[]"
+      },
+      {
+        "field": "followUps",
+        "type": "{ latestProgress: string"
+      },
+      {
+        "field": "finalReport?",
+        "type": "{ result: string"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      },
+      {
+        "field": "workflow?",
+        "type": "WorkflowInstance"
+      }
+    ],
+    "ReportSubmission": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "serial",
+        "type": "string"
+      },
+      {
+        "field": "reportDate",
+        "type": "string"
+      },
+      {
+        "field": "submitDate",
+        "type": "string"
+      },
+      {
+        "field": "submitTime",
+        "type": "string"
+      },
+      {
+        "field": "submitter",
+        "type": "string"
+      },
+      {
+        "field": "note",
+        "type": "string"
+      },
+      {
+        "field": "files",
+        "type": "Attachment[]"
+      }
+    ],
+    "Report": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "code",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "type",
+        "type": "string"
+      },
+      {
+        "field": "frequency",
+        "type": "string"
+      },
+      {
+        "field": "latestReportDate",
+        "type": "string"
+      },
+      {
+        "field": "latestSubmitDate",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "string"
+      },
+      {
+        "field": "description",
+        "type": "string"
+      },
+      {
+        "field": "submissions",
+        "type": "ReportSubmission[]"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      }
+    ],
+    "PeriodicReport": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "type",
+        "type": "string"
+      },
+      {
+        "field": "reportDate",
+        "type": "string"
+      },
+      {
+        "field": "submitDate",
+        "type": "string"
+      },
+      {
+        "field": "cycle",
+        "type": "'周' | '月度' | '季度' | '年度'"
+      },
+      {
+        "field": "overview",
+        "type": "string"
+      },
+      {
+        "field": "attachments",
+        "type": "Attachment[]"
+      },
+      {
+        "field": "visibleInstitutions",
+        "type": "string[]"
+      },
+      {
+        "field": "visibleDepartments",
+        "type": "string[]"
+      },
+      {
+        "field": "viewers",
+        "type": "string[]"
+      },
+      {
+        "field": "pushMethod",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "'草稿' | '已提交'"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      }
+    ],
+    "SpecialRisk": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "name",
+        "type": "string"
+      },
+      {
+        "field": "types",
+        "type": "string[]"
+      },
+      {
+        "field": "institutions",
+        "type": "string[]"
+      },
+      {
+        "field": "institutionNotes",
+        "type": "Record<string, string>"
+      },
+      {
+        "field": "purpose",
+        "type": "string"
+      },
+      {
+        "field": "measures",
+        "type": "string"
+      },
+      {
+        "field": "requirements",
+        "type": "string"
+      },
+      {
+        "field": "attachments",
+        "type": "Attachment[]"
+      },
+      {
+        "field": "createdAt",
+        "type": "string"
+      },
+      {
+        "field": "updatedAt",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "'草稿' | '已下发'"
+      },
+      {
+        "field": "workOrders",
+        "type": "SpecialRiskWorkOrder[]"
+      },
+      {
+        "field": "logs",
+        "type": "LogEntry[]"
+      }
+    ],
+    "SpecialRiskWorkOrder": [
+      {
+        "field": "id",
+        "type": "string"
+      },
+      {
+        "field": "institution",
+        "type": "string"
+      },
+      {
+        "field": "issuedAt",
+        "type": "string"
+      },
+      {
+        "field": "status",
+        "type": "'待反馈' | '已反馈' | '评估中' | '部分解除' | '已解除' | '待跟踪反馈'"
+      },
+      {
+        "field": "feedback?",
+        "type": "{ contact: string"
+      },
+      {
+        "field": "evaluation?",
+        "type": "{ result: string"
+      },
+      {
+        "field": "workflow?",
+        "type": "WorkflowInstance"
+      }
+    ],
+    "DemoState": [
+      {
+        "field": "institutions",
+        "type": "Institution[]"
+      },
+      {
+        "field": "riskPreferences",
+        "type": "RiskPreference[]"
+      },
+      {
+        "field": "warningRules",
+        "type": "WarningRule[]"
+      },
+      {
+        "field": "warningDisposals",
+        "type": "WarningDisposal[]"
+      },
+      {
+        "field": "indicators",
+        "type": "Indicator[]"
+      },
+      {
+        "field": "indicatorPeriodRecords",
+        "type": "IndicatorPeriodRecord[]"
+      },
+      {
+        "field": "warningLetterSetting",
+        "type": "WarningLetterSetting"
+      },
+      {
+        "field": "dashboardIndicatorConfig",
+        "type": "Record<Role, string[]>"
+      },
+      {
+        "field": "majorEvents",
+        "type": "MajorEvent[]"
+      },
+      {
+        "field": "majorRiskEventDefinitions",
+        "type": "MajorRiskEventDefinition[]"
+      },
+      {
+        "field": "reports",
+        "type": "Report[]"
+      },
+      {
+        "field": "periodicReports",
+        "type": "PeriodicReport[]"
+      },
+      {
+        "field": "specialRisks",
+        "type": "SpecialRisk[]"
+      }
+    ]
+  }
+}

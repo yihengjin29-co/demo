@@ -1,0 +1,2943 @@
+[
+  {
+    "page": 1,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-001.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 251.94,
+    "stddev": 26.43,
+    "ink_ratio_sample": 0.0358,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 2,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-002.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 252.09,
+    "stddev": 24.61,
+    "ink_ratio_sample": 0.0771,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 3,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-003.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 253.13,
+    "stddev": 20.0,
+    "ink_ratio_sample": 0.0469,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 4,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-004.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 248.62,
+    "stddev": 34.0,
+    "ink_ratio_sample": 0.1575,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 5,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-005.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.77,
+    "stddev": 38.48,
+    "ink_ratio_sample": 0.1734,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 6,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-006.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.82,
+    "stddev": 38.7,
+    "ink_ratio_sample": 0.177,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 7,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-007.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 251.93,
+    "stddev": 23.39,
+    "ink_ratio_sample": 0.0838,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 8,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-008.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.36,
+    "stddev": 41.08,
+    "ink_ratio_sample": 0.1701,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 9,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-009.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.04,
+    "stddev": 41.61,
+    "ink_ratio_sample": 0.1851,
+    "bbox": [
+      123,
+      107,
+      708,
+      1087
+    ]
+  },
+  {
+    "page": 10,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-010.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 250.32,
+    "stddev": 29.76,
+    "ink_ratio_sample": 0.113,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 11,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-011.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.24,
+    "stddev": 40.8,
+    "ink_ratio_sample": 0.188,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 12,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-012.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 253.6,
+    "stddev": 16.17,
+    "ink_ratio_sample": 0.0297,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 13,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-013.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.08,
+    "stddev": 43.6,
+    "ink_ratio_sample": 0.2432,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 14,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-014.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.41,
+    "stddev": 44.8,
+    "ink_ratio_sample": 0.2708,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 15,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-015.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 247.55,
+    "stddev": 38.53,
+    "ink_ratio_sample": 0.1951,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 16,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-016.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 251.91,
+    "stddev": 24.48,
+    "ink_ratio_sample": 0.0501,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 17,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-017.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.3,
+    "stddev": 34.09,
+    "ink_ratio_sample": 0.2734,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 18,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-018.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 248.37,
+    "stddev": 35.76,
+    "ink_ratio_sample": 0.1681,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 19,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-019.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.02,
+    "stddev": 33.63,
+    "ink_ratio_sample": 0.2606,
+    "bbox": [
+      123,
+      107,
+      709,
+      1087
+    ]
+  },
+  {
+    "page": 20,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-020.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.77,
+    "stddev": 45.31,
+    "ink_ratio_sample": 0.3296,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 21,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-021.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 248.95,
+    "stddev": 33.99,
+    "ink_ratio_sample": 0.1403,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 22,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-022.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.3,
+    "stddev": 35.9,
+    "ink_ratio_sample": 0.2856,
+    "bbox": [
+      123,
+      107,
+      708,
+      1087
+    ]
+  },
+  {
+    "page": 23,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-023.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.11,
+    "stddev": 42.94,
+    "ink_ratio_sample": 0.2781,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 24,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-024.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.58,
+    "stddev": 39.89,
+    "ink_ratio_sample": 0.2315,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 25,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-025.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.12,
+    "stddev": 35.77,
+    "ink_ratio_sample": 0.2775,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 26,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-026.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.46,
+    "stddev": 46.49,
+    "ink_ratio_sample": 0.3249,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 27,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-027.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.12,
+    "stddev": 45.38,
+    "ink_ratio_sample": 0.2835,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 28,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-028.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 254.33,
+    "stddev": 12.36,
+    "ink_ratio_sample": 0.0111,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 29,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-029.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.46,
+    "stddev": 35.58,
+    "ink_ratio_sample": 0.2848,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 30,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-030.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.85,
+    "stddev": 43.48,
+    "ink_ratio_sample": 0.2772,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 31,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-031.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.47,
+    "stddev": 44.55,
+    "ink_ratio_sample": 0.2784,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 32,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-032.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 253.84,
+    "stddev": 16.1,
+    "ink_ratio_sample": 0.0151,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 33,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-033.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.36,
+    "stddev": 35.95,
+    "ink_ratio_sample": 0.2831,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 34,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-034.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.96,
+    "stddev": 44.26,
+    "ink_ratio_sample": 0.2867,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 35,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-035.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.67,
+    "stddev": 42.98,
+    "ink_ratio_sample": 0.2953,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 36,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-036.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.73,
+    "stddev": 44.04,
+    "ink_ratio_sample": 0.2598,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 37,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-037.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 254.84,
+    "stddev": 6.38,
+    "ink_ratio_sample": 0.0043,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 38,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-038.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.08,
+    "stddev": 36.1,
+    "ink_ratio_sample": 0.2719,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 39,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-039.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.35,
+    "stddev": 45.72,
+    "ink_ratio_sample": 0.2914,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 40,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-040.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.56,
+    "stddev": 45.67,
+    "ink_ratio_sample": 0.3319,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 41,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-041.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 248.44,
+    "stddev": 36.08,
+    "ink_ratio_sample": 0.1579,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 42,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-042.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.31,
+    "stddev": 36.35,
+    "ink_ratio_sample": 0.2858,
+    "bbox": [
+      123,
+      107,
+      709,
+      1087
+    ]
+  },
+  {
+    "page": 43,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-043.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.94,
+    "stddev": 45.98,
+    "ink_ratio_sample": 0.3176,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 44,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-044.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.15,
+    "stddev": 47.07,
+    "ink_ratio_sample": 0.3193,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 45,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-045.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 251.27,
+    "stddev": 27.56,
+    "ink_ratio_sample": 0.0801,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 46,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-046.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.06,
+    "stddev": 36.49,
+    "ink_ratio_sample": 0.2892,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 47,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-047.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.05,
+    "stddev": 43.18,
+    "ink_ratio_sample": 0.2891,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 48,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-048.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.72,
+    "stddev": 43.78,
+    "ink_ratio_sample": 0.2917,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 49,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-049.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.13,
+    "stddev": 43.17,
+    "ink_ratio_sample": 0.25,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 50,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-050.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 250.09,
+    "stddev": 31.41,
+    "ink_ratio_sample": 0.118,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 51,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-051.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.51,
+    "stddev": 36.47,
+    "ink_ratio_sample": 0.2854,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 52,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-052.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 248.85,
+    "stddev": 34.34,
+    "ink_ratio_sample": 0.1632,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 53,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-053.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.09,
+    "stddev": 36.74,
+    "ink_ratio_sample": 0.2837,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 54,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-054.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.88,
+    "stddev": 42.7,
+    "ink_ratio_sample": 0.3021,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 55,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-055.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 252.56,
+    "stddev": 22.38,
+    "ink_ratio_sample": 0.0576,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 56,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-056.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.17,
+    "stddev": 36.48,
+    "ink_ratio_sample": 0.2806,
+    "bbox": [
+      123,
+      107,
+      708,
+      1088
+    ]
+  },
+  {
+    "page": 57,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-057.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.91,
+    "stddev": 43.78,
+    "ink_ratio_sample": 0.3011,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 58,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-058.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 254.83,
+    "stddev": 6.42,
+    "ink_ratio_sample": 0.0043,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 59,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-059.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.72,
+    "stddev": 34.5,
+    "ink_ratio_sample": 0.2621,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 60,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-060.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.18,
+    "stddev": 44.74,
+    "ink_ratio_sample": 0.308,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 61,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-061.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.28,
+    "stddev": 44.7,
+    "ink_ratio_sample": 0.2972,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 62,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-062.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.79,
+    "stddev": 35.21,
+    "ink_ratio_sample": 0.2725,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 63,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-063.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.71,
+    "stddev": 45.73,
+    "ink_ratio_sample": 0.3001,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 64,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-064.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 248.54,
+    "stddev": 36.0,
+    "ink_ratio_sample": 0.1753,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 65,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-065.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.02,
+    "stddev": 34.56,
+    "ink_ratio_sample": 0.2663,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 66,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-066.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.12,
+    "stddev": 45.13,
+    "ink_ratio_sample": 0.317,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 67,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-067.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 248.52,
+    "stddev": 35.79,
+    "ink_ratio_sample": 0.1626,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 68,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-068.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.99,
+    "stddev": 36.7,
+    "ink_ratio_sample": 0.2923,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 69,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-069.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.85,
+    "stddev": 43.3,
+    "ink_ratio_sample": 0.287,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 70,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-070.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.98,
+    "stddev": 43.58,
+    "ink_ratio_sample": 0.284,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 71,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-071.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 250.61,
+    "stddev": 29.21,
+    "ink_ratio_sample": 0.1132,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 72,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-072.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.78,
+    "stddev": 34.37,
+    "ink_ratio_sample": 0.2597,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 73,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-073.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.06,
+    "stddev": 47.13,
+    "ink_ratio_sample": 0.3413,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 74,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-074.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.64,
+    "stddev": 44.46,
+    "ink_ratio_sample": 0.2804,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 75,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-075.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 247.12,
+    "stddev": 39.26,
+    "ink_ratio_sample": 0.2005,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 76,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-076.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.62,
+    "stddev": 35.47,
+    "ink_ratio_sample": 0.2816,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 77,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-077.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.17,
+    "stddev": 42.92,
+    "ink_ratio_sample": 0.292,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 78,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-078.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.83,
+    "stddev": 43.61,
+    "ink_ratio_sample": 0.2856,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 79,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-079.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.01,
+    "stddev": 41.72,
+    "ink_ratio_sample": 0.2262,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 80,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-080.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.85,
+    "stddev": 34.24,
+    "ink_ratio_sample": 0.2574,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 81,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-081.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.59,
+    "stddev": 45.86,
+    "ink_ratio_sample": 0.3269,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 82,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-082.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 251.41,
+    "stddev": 26.98,
+    "ink_ratio_sample": 0.0808,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 83,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-083.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.74,
+    "stddev": 35.22,
+    "ink_ratio_sample": 0.2784,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 84,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-084.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.21,
+    "stddev": 42.85,
+    "ink_ratio_sample": 0.2939,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 85,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-085.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.15,
+    "stddev": 40.64,
+    "ink_ratio_sample": 0.2556,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 86,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-086.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 249.45,
+    "stddev": 32.92,
+    "ink_ratio_sample": 0.1217,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 87,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-087.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.89,
+    "stddev": 33.94,
+    "ink_ratio_sample": 0.264,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 88,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-088.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.53,
+    "stddev": 44.19,
+    "ink_ratio_sample": 0.2991,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 89,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-089.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.76,
+    "stddev": 44.13,
+    "ink_ratio_sample": 0.2955,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 90,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-090.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 247.74,
+    "stddev": 37.13,
+    "ink_ratio_sample": 0.192,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 91,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-091.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.78,
+    "stddev": 35.3,
+    "ink_ratio_sample": 0.2694,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 92,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-092.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.07,
+    "stddev": 42.98,
+    "ink_ratio_sample": 0.279,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 93,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-093.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 252.07,
+    "stddev": 25.21,
+    "ink_ratio_sample": 0.0558,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 94,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-094.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.73,
+    "stddev": 34.35,
+    "ink_ratio_sample": 0.2666,
+    "bbox": [
+      123,
+      107,
+      709,
+      1087
+    ]
+  },
+  {
+    "page": 95,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-095.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.68,
+    "stddev": 44.11,
+    "ink_ratio_sample": 0.2918,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 96,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-096.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.92,
+    "stddev": 43.5,
+    "ink_ratio_sample": 0.2847,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 97,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-097.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 247.69,
+    "stddev": 37.9,
+    "ink_ratio_sample": 0.1856,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 98,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-098.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.49,
+    "stddev": 33.87,
+    "ink_ratio_sample": 0.2615,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 99,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-099.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.51,
+    "stddev": 40.42,
+    "ink_ratio_sample": 0.2339,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 100,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-100.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.1,
+    "stddev": 37.13,
+    "ink_ratio_sample": 0.2866,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 101,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-101.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.26,
+    "stddev": 45.02,
+    "ink_ratio_sample": 0.2994,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 102,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-102.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 252.71,
+    "stddev": 22.25,
+    "ink_ratio_sample": 0.0482,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 103,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-103.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.79,
+    "stddev": 34.18,
+    "ink_ratio_sample": 0.2643,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 104,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-104.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.2,
+    "stddev": 43.05,
+    "ink_ratio_sample": 0.2574,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 105,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-105.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.79,
+    "stddev": 41.55,
+    "ink_ratio_sample": 0.2587,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 106,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-106.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.78,
+    "stddev": 43.26,
+    "ink_ratio_sample": 0.2664,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 107,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-107.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.93,
+    "stddev": 41.55,
+    "ink_ratio_sample": 0.2358,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 108,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-108.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.61,
+    "stddev": 34.75,
+    "ink_ratio_sample": 0.265,
+    "bbox": [
+      123,
+      107,
+      708,
+      1088
+    ]
+  },
+  {
+    "page": 109,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-109.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.27,
+    "stddev": 43.18,
+    "ink_ratio_sample": 0.2639,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 110,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-110.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.39,
+    "stddev": 43.55,
+    "ink_ratio_sample": 0.3035,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 111,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-111.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.29,
+    "stddev": 44.72,
+    "ink_ratio_sample": 0.2684,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 112,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-112.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 252.69,
+    "stddev": 22.26,
+    "ink_ratio_sample": 0.0597,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 113,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-113.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.7,
+    "stddev": 35.19,
+    "ink_ratio_sample": 0.2734,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 114,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-114.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.4,
+    "stddev": 46.64,
+    "ink_ratio_sample": 0.3334,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 115,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-115.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.42,
+    "stddev": 46.13,
+    "ink_ratio_sample": 0.3308,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 116,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-116.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.58,
+    "stddev": 42.3,
+    "ink_ratio_sample": 0.237,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 117,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-117.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 249.12,
+    "stddev": 33.79,
+    "ink_ratio_sample": 0.1499,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 118,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-118.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.85,
+    "stddev": 34.77,
+    "ink_ratio_sample": 0.2705,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 119,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-119.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.36,
+    "stddev": 44.24,
+    "ink_ratio_sample": 0.315,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 120,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-120.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 250.72,
+    "stddev": 29.95,
+    "ink_ratio_sample": 0.1248,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 121,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-121.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.6,
+    "stddev": 35.72,
+    "ink_ratio_sample": 0.2815,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 122,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-122.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.62,
+    "stddev": 42.14,
+    "ink_ratio_sample": 0.2515,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 123,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-123.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 254.02,
+    "stddev": 14.87,
+    "ink_ratio_sample": 0.0138,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 124,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-124.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.2,
+    "stddev": 35.6,
+    "ink_ratio_sample": 0.2746,
+    "bbox": [
+      123,
+      107,
+      708,
+      1087
+    ]
+  },
+  {
+    "page": 125,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-125.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.42,
+    "stddev": 44.35,
+    "ink_ratio_sample": 0.301,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 126,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-126.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.76,
+    "stddev": 44.13,
+    "ink_ratio_sample": 0.2957,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 127,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-127.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 247.74,
+    "stddev": 37.14,
+    "ink_ratio_sample": 0.1922,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 128,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-128.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.66,
+    "stddev": 35.32,
+    "ink_ratio_sample": 0.274,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 129,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-129.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.93,
+    "stddev": 45.32,
+    "ink_ratio_sample": 0.3002,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 130,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-130.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 248.74,
+    "stddev": 35.82,
+    "ink_ratio_sample": 0.1551,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 131,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-131.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.26,
+    "stddev": 36.31,
+    "ink_ratio_sample": 0.2851,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 132,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-132.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.69,
+    "stddev": 43.57,
+    "ink_ratio_sample": 0.2901,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 133,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-133.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.85,
+    "stddev": 43.49,
+    "ink_ratio_sample": 0.2689,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 134,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-134.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 250.76,
+    "stddev": 29.75,
+    "ink_ratio_sample": 0.1075,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 135,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-135.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.77,
+    "stddev": 37.55,
+    "ink_ratio_sample": 0.2922,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 136,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-136.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 243.67,
+    "stddev": 44.88,
+    "ink_ratio_sample": 0.323,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 137,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-137.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 250.71,
+    "stddev": 29.47,
+    "ink_ratio_sample": 0.089,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 138,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-138.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.11,
+    "stddev": 34.27,
+    "ink_ratio_sample": 0.2677,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 139,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-139.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.12,
+    "stddev": 42.97,
+    "ink_ratio_sample": 0.2851,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 140,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-140.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.75,
+    "stddev": 43.47,
+    "ink_ratio_sample": 0.2728,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 141,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-141.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 252.87,
+    "stddev": 21.22,
+    "ink_ratio_sample": 0.0567,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 142,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-142.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.51,
+    "stddev": 35.85,
+    "ink_ratio_sample": 0.2816,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 143,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-143.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.42,
+    "stddev": 43.43,
+    "ink_ratio_sample": 0.3094,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 144,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-144.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.03,
+    "stddev": 41.79,
+    "ink_ratio_sample": 0.2086,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 145,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-145.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.05,
+    "stddev": 34.4,
+    "ink_ratio_sample": 0.2696,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 146,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-146.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.44,
+    "stddev": 42.3,
+    "ink_ratio_sample": 0.2712,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 147,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-147.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.1,
+    "stddev": 42.99,
+    "ink_ratio_sample": 0.2728,
+    "bbox": [
+      123,
+      107,
+      704,
+      1087
+    ]
+  },
+  {
+    "page": 148,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-148.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.44,
+    "stddev": 40.57,
+    "ink_ratio_sample": 0.2075,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 149,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-149.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.35,
+    "stddev": 35.99,
+    "ink_ratio_sample": 0.2804,
+    "bbox": [
+      123,
+      107,
+      709,
+      1087
+    ]
+  },
+  {
+    "page": 150,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-150.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.83,
+    "stddev": 43.76,
+    "ink_ratio_sample": 0.2945,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 151,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-151.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.57,
+    "stddev": 40.4,
+    "ink_ratio_sample": 0.2189,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 152,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-152.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 249.05,
+    "stddev": 34.49,
+    "ink_ratio_sample": 0.1502,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 153,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-153.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.81,
+    "stddev": 35.37,
+    "ink_ratio_sample": 0.2772,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 154,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-154.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.42,
+    "stddev": 44.36,
+    "ink_ratio_sample": 0.2847,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 155,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-155.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.63,
+    "stddev": 43.8,
+    "ink_ratio_sample": 0.2703,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 156,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-156.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 252.58,
+    "stddev": 22.29,
+    "ink_ratio_sample": 0.0581,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 157,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-157.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.19,
+    "stddev": 34.11,
+    "ink_ratio_sample": 0.2658,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 158,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-158.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.66,
+    "stddev": 43.89,
+    "ink_ratio_sample": 0.2909,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 159,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-159.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.28,
+    "stddev": 43.42,
+    "ink_ratio_sample": 0.2725,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 160,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-160.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 251.36,
+    "stddev": 27.27,
+    "ink_ratio_sample": 0.0983,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 161,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-161.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.66,
+    "stddev": 35.26,
+    "ink_ratio_sample": 0.274,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 162,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-162.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.21,
+    "stddev": 44.87,
+    "ink_ratio_sample": 0.3151,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 163,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-163.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.05,
+    "stddev": 43.75,
+    "ink_ratio_sample": 0.2678,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 164,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-164.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 251.94,
+    "stddev": 25.76,
+    "ink_ratio_sample": 0.0706,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 165,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-165.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.58,
+    "stddev": 35.74,
+    "ink_ratio_sample": 0.2763,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 166,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-166.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 249.38,
+    "stddev": 33.86,
+    "ink_ratio_sample": 0.1572,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 167,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-167.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 244.12,
+    "stddev": 45.26,
+    "ink_ratio_sample": 0.2523,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 168,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-168.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.23,
+    "stddev": 44.04,
+    "ink_ratio_sample": 0.2457,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 169,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-169.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 246.62,
+    "stddev": 40.63,
+    "ink_ratio_sample": 0.2143,
+    "bbox": [
+      123,
+      107,
+      709,
+      1088
+    ]
+  },
+  {
+    "page": 170,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-170.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.65,
+    "stddev": 42.42,
+    "ink_ratio_sample": 0.2618,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 171,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-171.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.16,
+    "stddev": 43.52,
+    "ink_ratio_sample": 0.2782,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 172,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-172.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 245.74,
+    "stddev": 41.81,
+    "ink_ratio_sample": 0.2263,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  },
+  {
+    "page": 173,
+    "path": "C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\numbered-render\\pages\\page-173.png",
+    "size": [
+      827,
+      1170
+    ],
+    "mean": 251.63,
+    "stddev": 24.54,
+    "ink_ratio_sample": 0.0709,
+    "bbox": [
+      123,
+      107,
+      704,
+      1088
+    ]
+  }
+]

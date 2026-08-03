@@ -1,0 +1,23 @@
+node:internal/fs/watchers:321
+    const error = new UVException({
+                  ^
+
+Error: EBUSY: resource busy or locked, watch 'C:\Users\Yiheng.jin\demo\work\docx-v2\final-render\msoFADF.tmp'
+    at FSWatcher.<computed> (node:internal/fs/watchers:321:19)
+    at Object.watch (node:fs:2548:36)
+    at createFsWatchInstance (file:///C:/Users/Yiheng.jin/demo/node_modules/vite/dist/node/chunks/node.js:9404:16)
+    at setFsWatchListener (file:///C:/Users/Yiheng.jin/demo/node_modules/vite/dist/node/chunks/node.js:9446:14)
+    at NodeFsHandler._watchWithNodeFs (file:///C:/Users/Yiheng.jin/demo/node_modules/vite/dist/node/chunks/node.js:9561:20)
+    at NodeFsHandler._handleFile (file:///C:/Users/Yiheng.jin/demo/node_modules/vite/dist/node/chunks/node.js:9605:24)
+    at NodeFsHandler._addToNodeFs (file:///C:/Users/Yiheng.jin/demo/node_modules/vite/dist/node/chunks/node.js:9779:26)
+Emitted 'error' event on FSWatcher instance at:
+    at FSWatcher._handleError (file:///C:/Users/Yiheng.jin/demo/node_modules/vite/dist/node/chunks/node.js:10578:146)
+    at NodeFsHandler._addToNodeFs (file:///C:/Users/Yiheng.jin/demo/node_modules/vite/dist/node/chunks/node.js:9784:18) {
+  errno: -4082,
+  syscall: 'watch',
+  code: 'EBUSY',
+  path: 'C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\final-render\\msoFADF.tmp',
+  filename: 'C:\\Users\\Yiheng.jin\\demo\\work\\docx-v2\\final-render\\msoFADF.tmp'
+}
+
+Node.js v24.18.1

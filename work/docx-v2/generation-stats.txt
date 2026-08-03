@@ -1,0 +1,6 @@
+output=C:\Users\Yiheng.jin\demo\work\docx-v2\final-clean.docx
+primary_menus=13
+secondary_menus=11
+written_pages=42
+screenshots=0
+screenshot_placeholders=42
