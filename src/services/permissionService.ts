@@ -1,4 +1,4 @@
-import type { DemoState, Indicator, MajorEvent, Role, WarningRule, WorkflowNodeRecord } from '../types';
+import type { DemoState, Indicator, MajorEvent, Role, WarningDisposal, WarningRule, WorkflowNodeRecord } from '../types';
 
 export const roleLabels: Role[] = ['集团', '金控公司', '各金融机构'];
 export const currentInstitution = '国际AMC';
@@ -84,6 +84,34 @@ export const canMaintainWarningRuleStatus = canMaintainWarningRule;
 export const canMaintainLetterDeliveryMode = canMaintainWarningRule;
 export const canApproveWarningRuleChange = canApproveWarningRule;
 export const canManuallySendWarningLetter = (role: Role) => role === '金控公司';
+export const canViewWarningOverview = (role: Role, item: Pick<WarningDisposal, 'institution'>) => canViewInstitution(role, item.institution);
+export const canEditWarningResponse = (role: Role, item: Pick<WarningDisposal, 'institution'>) => role === '各金融机构' && canViewInstitution(role, item.institution);
+export const canEditDisposalPlan = canEditWarningResponse;
+export const canUpdateExecutionProgress = (role: Role, item: Pick<WarningDisposal, 'institution' | 'level'>) => item.level === '黄灯'
+  ? canEditWarningResponse(role, item)
+  : (role === '金控公司' || canEditWarningResponse(role, item));
+export const canHandleGroupAssessment = (role: Role, item: Pick<WarningDisposal, 'institution' | 'level'>) => item.level === '红灯' && role === '集团' && canViewInstitution(role, item.institution);
+export const canHandleGroupReview = canHandleGroupAssessment;
+export const canTrackRedWarningExecution = (role: Role, item: Pick<WarningDisposal, 'institution' | 'level'>) => item.level === '红灯' && role === '金控公司' && canViewInstitution(role, item.institution);
+export const canEvaluateWarningRelease = (role: Role, item: Pick<WarningDisposal, 'institution' | 'level'>) => item.level === '黄灯'
+  ? canEditWarningResponse(role, item)
+  : canTrackRedWarningExecution(role, item);
+
+export const canHandleWarningNode = (role: Role, nodeId: string, item: Pick<WarningDisposal, 'institution' | 'level'> & Partial<Pick<WarningDisposal, 'status' | 'letterDeliveryMode' | 'letterStatus'>>) => {
+  if (!canViewWarningOverview(role, item)) return false;
+  if (item.status && /^(已解除|已关闭|常态化跟踪)$/.test(item.status)) return false;
+  if (item.letterDeliveryMode === 'manual' && item.letterStatus !== '已下发') return false;
+  if (nodeId.endsWith('-system-issued')) return false;
+  if (nodeId.endsWith('-reason')) return canEditWarningResponse(role, item);
+  if (nodeId.endsWith('-plan')) return canEditDisposalPlan(role, item);
+  if (nodeId === 'yellow-execution') return canUpdateExecutionProgress(role, item);
+  if (nodeId === 'yellow-release') return canEvaluateWarningRelease(role, item);
+  if (nodeId === 'red-group-assessment') return canHandleGroupAssessment(role, item);
+  if (nodeId === 'red-group-review') return canHandleGroupReview(role, item);
+  if (nodeId === 'red-execution') return canUpdateExecutionProgress(role, item);
+  if (nodeId === 'red-release') return canEvaluateWarningRelease(role, item);
+  return false;
+};
 export const canViewMajorRiskDefinition = (_role: Role) => true;
 export const canEditMajorRiskDefinition = (role: Role) => role === '金控公司';
 export const canConfigureDashboard = (_role: Role) => true;
@@ -106,8 +134,41 @@ export const canManageMajorEventDefinitions = (role: Role) => role === '金控�
 export const canViewWorkflowNode = (role: Role, institution: string) => canViewInstitution(role, institution);
 export const canViewWorkflowRecord = (role: Role, institution: string, _record?: WorkflowNodeRecord) => canViewInstitution(role, institution);
 
+export const canViewMajorEventOverview = (role: Role, event: Pick<MajorEvent, 'institution'>) => canViewInstitution(role, event.institution);
+export const canSubmitMajorEventInitialReport = (role: Role, event: Pick<MajorEvent, 'institution'>) => role === '各金融机构' && canViewInstitution(role, event.institution);
+export const canVerifyMajorEvent = (role: Role) => role === '集团';
+export const canSubmitMajorEventPlan = canSubmitMajorEventInitialReport;
+export const canAssessMajorEventPlan = (role: Role) => role === '集团';
+export const canReviewMajorEventPlan = (role: Role) => role === '集团';
+export const canSubmitMajorEventFollowUp = canSubmitMajorEventInitialReport;
+export const canTrackMajorEvent = (role: Role) => role === '金控公司';
+export const canEvaluateMajorEventClosure = canTrackMajorEvent;
+export const canSubmitMajorEventFinalReport = (role: Role, event: Pick<MajorEvent, 'institution' | 'closureBranch' | 'node8Actor'>) => event.closureBranch === 'final-report' && event.node8Actor === '各金融机构' && canSubmitMajorEventInitialReport(role, event);
+export const canApproveMajorEventFinalReport = (role: Role, event: Pick<MajorEvent, 'closureBranch' | 'node8Actor'>) => role === '金控公司' && event.closureBranch === 'final-report' && event.node8Actor === '金控公司';
+export const canManageMajorEventRoutineTracking = (role: Role, event: Pick<MajorEvent, 'institution' | 'closureBranch' | 'node8Actor'>) => event.closureBranch === 'routine-tracking' && role === event.node8Actor && (role !== '各金融机构' || canViewInstitution(role, event.institution));
+export const getMajorEventNodeRole = (event: Pick<MajorEvent, 'closureBranch' | 'node8Actor'>, nodeId: string): Role => nodeId === 'event-final-routine' ? (event.node8Actor || (event.closureBranch === 'routine-tracking' ? '金控公司' : '各金融机构')) : nodeId === 'event-verify' || nodeId === 'event-plan-assessment' || nodeId === 'event-executive-review' ? '集团' : nodeId === 'event-holding-track' ? '金控公司' : '各金融机构';
+export const canHandleMajorEventNode = (role: Role, nodeId: string, event: MajorEvent) => {
+  if (!canViewMajorEventOverview(role, event) || ['已归档', '已关闭'].includes(event.status)) return false;
+  if (nodeId === 'event-initial-report') return canSubmitMajorEventInitialReport(role, event);
+  if (nodeId === 'event-verify') return canVerifyMajorEvent(role);
+  if (nodeId === 'event-plan') return canSubmitMajorEventPlan(role, event);
+  if (nodeId === 'event-plan-assessment') return canAssessMajorEventPlan(role);
+  if (nodeId === 'event-executive-review') return canReviewMajorEventPlan(role);
+  if (nodeId === 'event-execution-report') return canSubmitMajorEventFollowUp(role, event);
+  if (nodeId === 'event-holding-track') return canTrackMajorEvent(role);
+  if (nodeId === 'event-final-routine') return canSubmitMajorEventFinalReport(role, event) || canApproveMajorEventFinalReport(role, event) || canManageMajorEventRoutineTracking(role, event);
+  return false;
+};
+
 export const canHandleWorkflowNode = (role: Role, nodeId: string, institution: string) => {
   if (!canViewInstitution(role, institution)) return false;
+  if (/^(yellow|red)-/.test(nodeId)) return canHandleWarningNode(role, nodeId, { institution, level: nodeId.startsWith('yellow-') ? '黄灯' : '红灯' });
+  if (/^event-/.test(nodeId)) {
+    if (['event-verify', 'event-plan-assessment', 'event-executive-review'].includes(nodeId)) return role === '集团';
+    if (nodeId === 'event-holding-track') return role === '金控公司';
+    if (nodeId === 'event-final-routine') return role === '各金融机构' || role === '金控公司';
+    return role === '各金融机构';
+  }
   const institutionNodes = ['reason-fill', 'plan-fill', 'execution', 'event-create', 'first-report', 'event-execution', 'final-archive', 'special-feedback', 'special-track'];
   const sharedReviewNodes = ['reason-review', 'plan-review', 'tracking-release'];
   const companyNodes = ['rule-status', 'rule-config'];
@@ -121,7 +182,7 @@ export const canHandleWorkflowNode = (role: Role, nodeId: string, institution: s
   return false;
 };
 
-export const canReturnWorkflowNode = (role: Role, nodeId: string, institution: string) => canHandleWorkflowNode(role, nodeId, institution) && ['reason-review', 'plan-review', 'verify-report', 'special-evaluate', 'management-review'].includes(nodeId);
+export const canReturnWorkflowNode = (role: Role, nodeId: string, institution: string) => canHandleWorkflowNode(role, nodeId, institution) && ['reason-review', 'plan-review', 'red-group-assessment', 'red-group-review', 'red-execution', 'verify-report', 'special-evaluate', 'management-review'].includes(nodeId);
 
 export const getAvailableWorkflowActions = (role: Role, nodeId: string, institution: string) => {
   if (!canHandleWorkflowNode(role, nodeId, institution)) return [];
@@ -166,25 +227,11 @@ export const canEditMajorEvent = (role: Role, event: MajorEvent) => role === '�
 export const getMajorEventActions = (role: Role, event: MajorEvent): MajorEventAction[] => {
   if (!canViewInstitution(role, event.institution)) return [];
   const actions: MajorEventAction[] = ['view', 'history'];
-  if (event.status === '已归档') return actions;
+  if (event.status === '已归档' || event.status === '已关闭') return actions;
 
   if (role === '各金融机构') {
     if (event.status === '草稿') actions.splice(1, 0, 'edit', 'delete', 'submit-first');
-    if (event.status === '处理中') actions.splice(1, 0, 'follow-up', 'final-report');
-    if (event.status === '常态跟踪') actions.splice(1, 0, 'follow-up');
     return actions;
   }
-
-  if (role === '集团') {
-    if (/管理层审阅|董事会审阅/.test(event.currentStage)) actions.splice(1, 0, 'review');
-    if (event.status === '待审核') actions.splice(1, 0, 'verify', 'approve', 'return', 'remind');
-    if (event.status === '处理中') actions.splice(1, 0, 'remind', 'track');
-    if (event.status === '常态跟踪') actions.splice(1, 0, 'track', 'close');
-    return actions;
-  }
-
-  if (event.status === '待审核') actions.splice(1, 0, 'verify', 'approve', 'return', 'remind');
-  if (event.status === '处理中') actions.splice(1, 0, 'remind', 'track');
-  if (event.status === '常态跟踪') actions.splice(1, 0, 'track', 'close');
   return actions;
 };

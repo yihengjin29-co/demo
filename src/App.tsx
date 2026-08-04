@@ -1,21 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent, ReactNode } from 'react';
-import type { DemoState, Role, Attachment, RiskPreference, WarningRule, WarningDisposal, Indicator, IndicatorPeriodRecord, MajorEvent, MajorRiskEventDefinition, PeriodicReport, SpecialRisk, SpecialRiskWorkOrder, WorkflowInstance } from './types';
+import type { DemoState, Role, Attachment, RiskPreference, WarningRule, WarningDisposal, WarningDisposalMeasure, Indicator, IndicatorPeriodRecord, MajorEvent, MajorEventMeasure, MajorRiskEventDefinition, PeriodicReport, SpecialRisk, SpecialRiskWorkOrder, WorkflowInstance } from './types';
 import { createLog, formatSize, loadState, makeAttachment, resetState, saveState, uid } from './services/storage';
-import { can, canAccessDashboardLink, canAccessRiskPreference, canApproveWarningRule, canConfigureDashboard, canCreateIndicator, canEditIndicator, canEditMajorEvent, canEditWarningRuleConfig, canHandleWorkflowNode, canManageIndicatorStatus, canManageMajorEventDefinitions, canMaintainLetterDeliveryMode, canMaintainWarningRule, canMaintainWarningRuleStatus, canManuallySendWarningLetter, canViewInstitution, canViewWarningRuleConfig, canViewWorkflowRecord, currentInstitution, getDefaultRouteForRole, getMajorEventActions, majorEventActionLabels, resolveStoredRole, roleLabels, scopeStateForRole } from './services/permissionService';
+import { can, canAccessDashboardLink, canAccessRiskPreference, canApproveWarningRule, canConfigureDashboard, canCreateIndicator, canEditIndicator, canEditMajorEvent, canEditWarningRuleConfig, canHandleMajorEventNode, canHandleWarningNode, canHandleWorkflowNode, canManageIndicatorStatus, canManageMajorEventDefinitions, canMaintainLetterDeliveryMode, canMaintainWarningRule, canMaintainWarningRuleStatus, canManuallySendWarningLetter, canViewInstitution, canViewMajorEventOverview, canViewWarningOverview, canViewWarningRuleConfig, canViewWorkflowRecord, currentInstitution, getDefaultRouteForRole, getMajorEventActions, getMajorEventNodeRole, majorEventActionLabels, resolveStoredRole, roleLabels, scopeStateForRole } from './services/permissionService';
 import { riskPreferenceService } from './services/riskPreferenceService';
 import { warningRuleService } from './services/warningRuleService';
 import { indicatorService } from './services/indicatorService';
 import { calculateLightSummaryForRecords, getIndicatorHistoryRecords, indicatorPeriodService } from './services/indicatorPeriodService';
-import { majorEventService } from './services/majorEventService';
-import { majorEventDefinitionService } from './services/majorEventDefinitionService';
+import { getMajorEventNodeFields, majorEventService } from './services/majorEventService';
+import { getMajorRiskEventTypeOptions, isValidMajorRiskEventType, majorEventDefinitionService } from './services/majorEventDefinitionService';
 import { letterDeliveryModeLabels, warningLetterService } from './services/warningLetterService';
+import { isWarningLetterPending } from './services/warningConsistencyService';
 import { reportService } from './services/reportService';
 import { periodicReportService } from './services/periodicReportService';
 import { specialRiskService } from './services/specialRiskService';
 import { majorEventWorkflow, riskPreferenceWorkflow, specialRiskWorkflow, warningDisposalWorkflow, workflowService } from './services/workflowService';
 import type { WorkflowDefinitionNode } from './services/workflowService';
+import { getWarningNodeFormFields, getWarningNoticeType, getWarningWorkflowSteps, warningDisposalService } from './services/warningDisposalService';
 import { downloadCSV, downloadText } from './utils/download';
+import SmartAssistant from './SmartAssistant';
 
 export default App;
 
@@ -272,7 +275,8 @@ function App() {
     if (path === '/warning/rules/new/config' || path.match(/^\/warning\/rules\/[^/]+\/config\/edit$/)) return <RuleConfig state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path.match(/^\/warning\/rules\/[^/]+\/config$/)) return <RuleConfigView state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/warning/disposal') return <WarningDisposalList state={state} role={role} navigate={navigate} update={update} toast={toast} />;
-    if (path.startsWith('/warning/disposal/')) return <WarningDisposalDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
+    if (path.match(/^\/warning\/disposal\/[^/]+\/detail\/[^/]+$/)) return <WarningDisposalDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
+    if (path.match(/^\/warning\/disposal\/[^/]+\/overview$/) || path.match(/^\/warning\/disposal\/[^/]+$/)) return <WarningDisposalOverview state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/indicators/maintenance') return <IndicatorList state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/indicators/versions') return <IndicatorVersions state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/indicators/latest-status') return <LatestIndicatorStatus state={state} role={role} navigate={navigate} update={update} toast={toast} />;
@@ -282,9 +286,9 @@ function App() {
     if (path.startsWith('/major-events/definitions/')) return <MajorEventDefinitionDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/major-events') return <MajorEventList state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/major-events/new' || path.match(/^\/major-events\/[^/]+\/edit$/)) return <MajorEventEditor state={state} role={role} navigate={navigate} update={update} toast={toast} />;
-    if (path.endsWith('/follow-up')) return <EventFollowUp state={state} role={role} navigate={navigate} update={update} toast={toast} />;
-    if (path.endsWith('/final-report')) return <EventFinalReport state={state} role={role} navigate={navigate} update={update} toast={toast} />;
-    if (path.startsWith('/major-events/')) return <MajorEventDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
+    if (path.match(/^\/major-events\/[^/]+\/nodes\/[^/]+$/)) return <MajorEventDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
+    if (path.match(/^\/major-events\/[^/]+\/overview$/) || path.match(/^\/major-events\/[^/]+$/)) return <MajorEventOverview state={state} role={role} navigate={navigate} update={update} toast={toast} />;
+    if (path.endsWith('/follow-up') || path.endsWith('/final-report')) return <MajorEventOverview state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/reports') return <Reports state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path.startsWith('/reports/indicator/')) return <IndicatorHistoryDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/reports/upload') return <ReportUpload state={state} role={role} navigate={navigate} update={update} toast={toast} />;
@@ -300,9 +304,9 @@ function App() {
     if (path.startsWith('/special-risks/feedback/')) return <SpecialRiskFeedback state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     return <RiskPreferenceList state={state} role={role} navigate={navigate} update={update} toast={toast} />;
   };
-  if (!authenticated) return <LoginPage initialRole={loginRole} onLogin={login} />;
-  if (path === '/' || path === '/login') return null;
-  return <div className="app"><Header role={role} setRole={changeRole} onReset={() => { reset(); toast('演示数据已恢复'); }} onLogout={logout} /><Sidebar path={path} role={role} navigate={navigate} /><main className="content">{render()}</main>{notice && <Modal title="操作提示" onClose={() => setNotice(null)} footer={<Button variant="secondary" onClick={() => setNotice(null)}>关闭</Button>}><div className="modal-note">{notice}</div></Modal>}</div>;
+  if (!authenticated) return <><LoginPage initialRole={loginRole} onLogin={login} /><SmartAssistant /></>;
+  if (path === '/' || path === '/login') return <SmartAssistant />;
+  return <div className="app"><Header role={role} setRole={changeRole} onReset={() => { reset(); toast('演示数据已恢复'); }} onLogout={logout} /><Sidebar path={path} role={role} navigate={navigate} /><main className="content">{render()}</main>{notice && <Modal title="操作提示" onClose={() => setNotice(null)} footer={<Button variant="secondary" onClick={() => setNotice(null)}>关闭</Button>}><div className="modal-note">{notice}</div></Modal>}<SmartAssistant /></div>;
 }
 
 type PageProps = { state: DemoState; role: Role; navigate: (path: string) => void; update: (fn: (state: DemoState) => void) => void; toast: (message: string) => void };
@@ -552,18 +556,19 @@ function RuleApprove({ state, role, navigate, update, toast }: PageProps) {
   </Page>;
 }
 
-function WarningDisposalList({ state, role, navigate, update, toast }: PageProps) {
+function LegacyWarningDisposalList({ state, role, navigate, update, toast }: PageProps) {
   const [q, setQ] = useState({ level: '', institution: '', risk: '', indicator: '', status: '' });
   const items = state.warningDisposals.filter(x => (!q.level || x.level === q.level) && (!q.institution || x.institution === q.institution) && (!q.risk || x.riskType === q.risk) && (!q.indicator || x.indicator.includes(q.indicator)) && (!q.status || x.status === q.status));
   const sendLetter = (item: WarningDisposal) => {
     if (!window.confirm(`确认向“${item.institution}”下发提示函 ${item.letterNo} 吗？`)) return;
-    update(current => { warningLetterService.send(current, item.id, role); });
-    toast('提示函已模拟下发并写入操作记录');
+    let sent = false;
+    update(current => { sent = warningLetterService.send(current, item.id, role); });
+    toast(sent ? '提示函已下发，流程已进入各金融机构原因分析节点' : '当前事项不满足手动下发条件');
   };
   return <Page title="预警提示与处置" breadcrumb={['预警管理', '预警提示与处置']}><SearchPanel onSearch={() => undefined} onReset={() => setQ({ level: '', institution: '', risk: '', indicator: '', status: '' })}><Field label="预警等级"><Select value={q.level} onChange={v => setQ({ ...q, level: v })} options={['黄灯', '红灯']} /></Field><Field label="所属机构"><Select value={q.institution} onChange={v => setQ({ ...q, institution: v })} options={role === '各金融机构' ? [currentInstitution] : institutions} disabled={role === '各金融机构'} /></Field><Field label="风险类型"><Select value={q.risk} onChange={v => setQ({ ...q, risk: v })} options={riskTypes} /></Field><Field label="指标名称"><Input value={q.indicator} onChange={v => setQ({ ...q, indicator: v })} /></Field><Field label="处理状态"><Select value={q.status} onChange={v => setQ({ ...q, status: v })} options={['待填写原因分析答复', '待提交应对处置方案', '待审阅处置方案', '持续跟踪执行情况', '待评估反馈']} /></Field><Field label="预警时间"><div className="date-range"><Input type="date" /><span>~</span><Input type="date" /></div></Field></SearchPanel><div className="list-toolbar"><span>预警事项列表 · {items.length} 条</span><Button variant="secondary" onClick={() => downloadCSV('预警事项.csv', [['提示函号', '等级', '机构', '规则版本', '提示函方式', '函件状态'], ...items.map(x => [x.letterNo, x.level, x.institution, x.ruleVersion || 'V1.0', letterDeliveryModeLabels[x.letterDeliveryMode || 'manual'], x.letterStatus || '待下发'])])}>⇩ 导出</Button></div><Table><thead><tr><th>序号</th><th>预警等级</th><th>所属机构</th><th>风险类型</th><th>指标名称</th><th>关联规则</th><th>规则版本</th><th>提示函方式</th><th>提示函号</th><th>函件状态</th><th>处理状态</th><th>预警时间</th><th>操作</th></tr></thead><tbody>{items.map((item, i) => { const manual = canManuallySendWarningLetter(role) && item.letterDeliveryMode === 'manual' && item.letterStatus === '待下发'; return <tr key={item.id}><td>{i + 1}</td><td><StatusTag value={item.level} /></td><td>{item.institution}</td><td>{item.riskType}</td><td>{item.indicator}</td><td>{state.warningRules.find(rule => rule.id === item.associatedRuleId)?.code || '—'}</td><td>{item.ruleVersion || 'V1.0'}</td><td>{letterDeliveryModeLabels[item.letterDeliveryMode || 'manual']}</td><td>{item.letterNo}</td><td><StatusTag value={item.letterStatus || '待下发'} /></td><td><button className="status-link" onClick={() => navigate(`/warning/disposal/${item.id}`)}><StatusTag value={item.status} /></button></td><td>{item.triggerDate}</td><td><TextAction onClick={() => navigate(`/warning/disposal/${item.id}`)}>查看详情</TextAction>{manual && <TextAction onClick={() => sendLetter(item)}>下发提示函</TextAction>}</td></tr>; })}</tbody></Table><Pagination total={items.length} page={1} setPage={() => undefined} /></Page>;
 }
 
-function WarningDisposalDetail({ state, role, navigate, update, toast }: PageProps) {
+function LegacyWarningDisposalDetail({ state, role, navigate, update, toast }: PageProps) {
   const id = window.location.pathname.split('/')[3];
   const item = state.warningDisposals.find(disposal => disposal.id === id);
   if (!item) return <Page title="预警处置工单" breadcrumb={['预警管理', '预警提示与处置']} actions={<Button variant="secondary" onClick={() => navigate('/warning/disposal')}>返回</Button>}><div className="empty-state"><h2>无权查看该工单或工单不存在</h2></div></Page>;
@@ -621,6 +626,154 @@ function WarningDisposalDetail({ state, role, navigate, update, toast }: PagePro
     {selectedNodeId === workflow.currentNodeId && canHandle && <Section title={'当前节点操作 · ' + currentNode.name}><div className="current-node-note">前序节点内容均为只读，本区域只记录当前节点的新反馈。</div><div className="form-grid">{(fields[currentNode.id] || []).map((label, index) => <Field label={label} required={index === 0} key={label}>{label === '责任部门' ? <Input value={form[label] || ''} maxLength={100} placeholder="手工输入，多个部门请使用顿号或逗号分隔" onChange={value => setForm({ ...form, [label]: value })} /> : <Textarea value={form[label] || ''} onChange={value => setForm({ ...form, [label]: value })} />}</Field>)}</div><Field label="本节点附件"><FileUploader files={files} onChange={setFiles} /></Field><div className="form-actions">{['reason-review', 'plan-review'].includes(currentNode.id) && <Button variant="danger" onClick={() => submitNode('退回')}>退回</Button>}{currentNode.id === 'execution' ? <><Button variant="secondary" onClick={() => submitNode('追加反馈')}>提交本期反馈</Button><Button onClick={() => submitNode('完成反馈')}>提交并进入跟踪确认</Button></> : <Button onClick={() => submitNode(['reason-review', 'plan-review'].includes(currentNode.id) ? '通过' : '提交')}>{['reason-review', 'plan-review'].includes(currentNode.id) ? '通过' : '提交当前节点'}</Button>}</div></Section>}
     {selectedNodeId === workflow.currentNodeId && !canHandle && <div className="readonly-current-node">当前节点由“{currentNode.role}”办理，当前角色可查看全部历史反馈但不能修改。</div>}
     <Section title="完整操作记录"><OperationHistory logs={item.logs} /></Section>
+  </Page>;
+}
+
+function WarningDisposalList({ state, role, navigate, update, toast }: PageProps) {
+  const [q, setQ] = useState({ level: '', institution: '', risk: '', indicator: '', status: '' });
+  const items = state.warningDisposals.filter(item => (!q.level || item.level === q.level) && (!q.institution || item.institution === q.institution) && (!q.risk || item.riskType === q.risk) && (!q.indicator || item.indicator.includes(q.indicator)) && (!q.status || item.status === q.status));
+  const openOverview = (item: WarningDisposal) => navigate(`/warning/disposal/${item.id}/overview`);
+  const sendLetter = (item: WarningDisposal) => {
+    if (!window.confirm(`确认向“${item.institution}”下发提示函 ${item.letterNo} 吗？`)) return;
+    let sent = false;
+    update(current => { sent = warningLetterService.send(current, item.id, role); });
+    toast(sent ? '提示函已下发，流程已进入各金融机构原因分析节点' : '当前事项不满足手动下发条件');
+  };
+  return <Page title="预警提示与处置" breadcrumb={['预警管理', '预警提示与处置']}>
+    <SearchPanel onSearch={() => undefined} onReset={() => setQ({ level: '', institution: '', risk: '', indicator: '', status: '' })}>
+      <Field label="预警等级"><Select value={q.level} onChange={level => setQ({ ...q, level })} options={['黄灯', '红灯']} /></Field>
+      <Field label="所属机构"><Select value={q.institution} onChange={institution => setQ({ ...q, institution })} options={role === '各金融机构' ? [currentInstitution] : institutions} disabled={role === '各金融机构'} /></Field>
+      <Field label="风险类型"><Select value={q.risk} onChange={risk => setQ({ ...q, risk })} options={riskTypes} /></Field>
+      <Field label="指标名称"><Input value={q.indicator} onChange={indicator => setQ({ ...q, indicator })} /></Field>
+      <Field label="处理状态"><Select value={q.status} onChange={status => setQ({ ...q, status })} options={['待下发预警提示函', '待下发重大风险提示', '原因分析中', '处置方案编制中', '待集团评估', '待集团审阅', '执行跟踪中', '待解除评估', '常态化跟踪', '已解除']} /></Field>
+      <Field label="预警时间"><div className="date-range"><Input type="date" /><span>~</span><Input type="date" /></div></Field>
+    </SearchPanel>
+    <div className="list-toolbar"><span>预警事项列表 · {items.length} 条</span><Button variant="secondary" onClick={() => downloadCSV('预警事项.csv', [['提示函号', '等级', '机构', '指标', '当前节点', '状态'], ...items.map(item => [item.letterNo, item.level, item.institution, item.indicator, getWarningWorkflowSteps(item).find(node => node.id === item.workflow?.currentNodeId)?.name || '—', item.status])])}>⇩ 导出</Button></div>
+    <Table><thead><tr><th>序号</th><th>预警等级</th><th>所属机构</th><th>风险类型</th><th>指标名称</th><th>提示类型</th><th>提示函号</th><th>提示函方式</th><th>函件状态</th><th>当前节点</th><th>处理状态</th><th>预警时间</th><th>操作</th></tr></thead><tbody>{items.map((item, index) => {
+      const currentNode = getWarningWorkflowSteps(item).find(node => node.id === item.workflow?.currentNodeId);
+      const manual = canManuallySendWarningLetter(role) && isWarningLetterPending(item);
+      return <tr key={item.id}><td>{index + 1}</td><td><StatusTag value={item.level} /></td><td>{item.institution}</td><td>{item.riskType}</td><td>{item.indicator}</td><td>{item.noticeType || getWarningNoticeType(item.level)}</td><td>{item.letterNo}</td><td>{letterDeliveryModeLabels[item.letterDeliveryMode || 'manual']}</td><td><StatusTag value={item.letterStatus || '待下发'} /></td><td>{currentNode?.name || '—'}</td><td><button className="status-link" onClick={() => openOverview(item)}><StatusTag value={item.status} /></button></td><td>{item.triggerDate}</td><td><TextAction onClick={() => openOverview(item)}>查看详情</TextAction>{manual && <TextAction onClick={() => sendLetter(item)}>下发提示函</TextAction>}</td></tr>;
+    })}</tbody></Table>
+    <Pagination total={items.length} page={1} setPage={() => undefined} />
+  </Page>;
+}
+
+function WarningDisposalOverview({ state, role, navigate, update, toast }: PageProps) {
+  const id = window.location.pathname.split('/')[3];
+  const item = state.warningDisposals.find(disposal => disposal.id === id);
+  if (!item || !canViewWarningOverview(role, item)) return <Page title="预警进度总览" breadcrumb={['预警管理', '预警提示与处置']} onClose={() => navigate('/warning/disposal')} actions={<Button variant="secondary" onClick={() => navigate('/warning/disposal')}>返回列表</Button>}><div className="empty-state"><h2>无权查看该事项或事项不存在</h2></div></Page>;
+  const definition = getWarningWorkflowSteps(item);
+  const workflow = item.workflow || { currentNodeId: definition[1].id, records: [] };
+  const currentIndex = definition.findIndex(node => node.id === workflow.currentNodeId);
+  const letterPending = isWarningLetterPending(item);
+  const downloadAttachment = (file: Attachment) => {
+    downloadText(file.name + '.txt', `文件：${file.name}\n类型：${file.type}\n大小：${formatSize(file.size)}\n上传时间：${file.uploadedAt}`);
+    update(current => { current.warningDisposals.find(candidate => candidate.id === item.id)?.logs.push(createLog('下载附件', `下载附件：${file.name}`, role)); });
+    toast('附件已下载并记录操作日志');
+  };
+  return <Page title="预警进度总览" breadcrumb={['预警管理', '预警提示与处置', item.letterNo, '进度总览']} onClose={() => navigate('/warning/disposal')} actions={<Button variant="secondary" onClick={() => navigate('/warning/disposal')}>返回列表</Button>}>
+    <div className={`warning-overview-banner ${item.level === '红灯' ? 'red' : 'yellow'}`}><div><span>{item.noticeType || getWarningNoticeType(item.level)}</span><h2>{item.indicator}预警处置</h2><p>{item.institution} · {item.riskType} · {item.triggerDate}</p></div><div><StatusTag value={item.level} /><StatusTag value={item.status} /></div></div>
+    <Section title="预警事项基本信息"><div className="detail-grid warning-info-grid"><b>提示编号<span>{item.letterNo}</span></b><b>机构名称<span>{item.institution}</span></b><b>指标编码<span>{item.indicatorCode || '—'}</span></b><b>指标名称<span>{item.indicator}</span></b><b>指标风险类型<span>{item.riskType}</span></b><b>监测频率<span>{item.monitoringFrequency || '—'}</span></b><b>指标期次<span>{item.period || '—'}</span></b><b>本期指标值<span>{item.value}</span></b><b>当期亮灯情况<span><StatusTag value={item.currentLightStatus || item.level} /></span></b><b>黄灯规则<span>{item.yellowRule || '—'}</span></b><b>红灯规则<span>{item.redRule || '—'}</span></b><b>提示类型<span>{item.noticeType || getWarningNoticeType(item.level)}</span></b><b>触发日期<span>{item.triggerDate}</span></b><b>关联预警规则编号<span>{item.ruleCode || state.warningRules.find(rule => rule.id === item.associatedRuleId)?.code || '—'}</span></b><b>规则版本<span>{item.ruleVersion || 'V1.0'}</span></b><b>提示函下发方式<span>{letterDeliveryModeLabels[item.letterDeliveryMode || 'manual']}</span></b><b>函件状态<span><StatusTag value={item.letterStatus || '待下发'} /></span></b><b>当前处理节点<span>{definition.find(node => node.id === workflow.currentNodeId)?.name || '—'}</span></b><b>事项状态<span><StatusTag value={item.status} /></span></b></div></Section>
+    <Section title={item.level === '黄灯' ? '黄灯处置流程（5个节点）' : '红灯处置流程（7个节点）'}>
+      <div className={`warning-overview-flow ${item.level === '红灯' ? 'red' : 'yellow'}`}>{definition.map((node, index) => {
+        const nodeRecords = workflow.records.filter(record => record.nodeId === node.id);
+        const latest = nodeRecords[nodeRecords.length - 1];
+        const isCurrent = node.id === workflow.currentNodeId;
+        const completed = !letterPending && (index < currentIndex || (!!latest && !['进行中', '已退回'].includes(latest.status) && !isCurrent) || node.role === '系统');
+        const returned = latest?.status === '已退回';
+        const canEdit = isCurrent && canHandleWarningNode(role, node.id, item);
+        const canOpen = isCurrent || completed || nodeRecords.length > 0;
+        const label = canEdit ? (node.role === '各金融机构' ? '填写' : '办理') : canOpen ? '查看' : '未开始';
+        return <React.Fragment key={node.id}><div className={`warning-flow-node ${isCurrent ? 'current' : ''} ${completed ? 'completed' : ''} ${returned ? 'returned' : ''}`}><div className="warning-flow-index">{completed ? '✓' : index + 1}</div><b>{node.name}</b><span>{isCurrent ? '进行中' : returned ? '已退回' : completed ? '已完成' : '未开始'}</span><small>{latest ? `${latest.role} · ${latest.submittedAt}` : node.role}</small><Button variant={canEdit ? 'primary' : 'secondary'} disabled={!canOpen} onClick={() => navigate(`/warning/disposal/${item.id}/detail/${node.id}?mode=${canEdit ? 'edit' : 'view'}`)}>{label}</Button></div>{index < definition.length - 1 && <i className="warning-flow-arrow">›</i>}</React.Fragment>;
+      })}</div>
+    </Section>
+    <Section title="处置附件"><div className="warning-attachment-list">{item.attachments.length ? item.attachments.map(file => <div key={file.id}><span>▣ {file.name}</span><small>{formatSize(file.size)} · {file.uploadedAt}</small><TextAction onClick={() => downloadAttachment(file)}>下载</TextAction></div>) : <div className="empty-inline">暂无附件</div>}</div></Section>
+    <Section title="操作记录"><OperationHistory logs={item.logs} /></Section>
+  </Page>;
+}
+
+const createWarningMeasure = (): WarningDisposalMeasure => ({ id: uid('warning-measure'), responsibleDepartment: '', responsiblePerson: '', measure: '', plannedStartDate: '', plannedCompletionDate: '', expectedEffect: '', resourceSupport: '', submitted: false });
+
+function WarningDisposalDetail({ state, role, navigate, update, toast }: PageProps) {
+  const parts = window.location.pathname.split('/');
+  const id = parts[3];
+  const requestedNodeId = parts[5];
+  const requestedEdit = new URLSearchParams(window.location.search).get('mode') === 'edit';
+  const item = state.warningDisposals.find(disposal => disposal.id === id);
+  const definition = item ? getWarningWorkflowSteps(item) : [];
+  const node = definition.find(candidate => candidate.id === requestedNodeId);
+  const [form, setForm] = useState<Record<string, string>>({});
+  const [files, setFiles] = useState<Attachment[]>([]);
+  const [measures, setMeasures] = useState<WarningDisposalMeasure[]>([]);
+  useEffect(() => {
+    if (!item || !node) return;
+    const draft = item.drafts?.[node.id];
+    setForm(draft?.formData || {});
+    setFiles(draft?.attachments || []);
+    setMeasures(draft?.measures?.length ? structuredClone(draft.measures) : item.disposalMeasures?.length ? structuredClone(item.disposalMeasures) : [createWarningMeasure()]);
+  }, [item?.id, node?.id]);
+  const back = () => navigate(`/warning/disposal/${id}/overview`);
+  if (!item || !node || !item.workflow || !canViewWarningOverview(role, item)) return <Page title="预警处置详情" breadcrumb={['预警管理', '预警提示与处置']} onClose={() => navigate('/warning/disposal')} actions={<Button variant="secondary" onClick={() => navigate('/warning/disposal')}>返回</Button>}><div className="empty-state"><h2>无权查看该节点或节点不存在</h2></div></Page>;
+  const workflow = item.workflow;
+  const nodeRecords = workflow.records.filter(record => record.nodeId === node.id);
+  const current = workflow.currentNodeId === node.id;
+  const started = definition.findIndex(candidate => candidate.id === node.id) <= definition.findIndex(candidate => candidate.id === workflow.currentNodeId) || node.role === '系统' || nodeRecords.length > 0;
+  const editable = requestedEdit && current && canHandleWarningNode(role, node.id, item);
+  const fields = getWarningNodeFormFields(node.id, role);
+  const setField = (name: string, value: string) => setForm(currentForm => ({ ...currentForm, [name]: value }));
+  const updateMeasure = (index: number, key: keyof WarningDisposalMeasure, value: string) => setMeasures(currentMeasures => currentMeasures.map((measure, measureIndex) => measureIndex === index ? { ...measure, [key]: value } : measure));
+  const validate = () => {
+    const missing = fields.find(field => field.required && !String(form[field.name] || '').trim());
+    if (missing) { toast(`请填写${missing.label}`); return false; }
+    if (node.id.endsWith('-plan')) {
+      const invalid = !measures.length || measures.some(measure => !measure.responsibleDepartment || !measure.responsiblePerson || !measure.measure || !measure.plannedStartDate || !measure.plannedCompletionDate || !measure.expectedEffect);
+      if (invalid) { toast('请完整填写至少一条处置措施、责任部门、责任人、计划时间和预期效果'); return false; }
+    }
+    if (node.id === 'yellow-release' && (form['是否恢复绿灯'] !== '是' || form['风险是否得到有效控制'] !== '是')) { toast('指标恢复绿灯且风险得到有效控制后方可提交解除评估'); return false; }
+    return true;
+  };
+  const saveDraft = () => {
+    update(currentState => { warningDisposalService.saveDraft(currentState, item.id, node.id, role, form, files, node.id.endsWith('-plan') ? measures : undefined); });
+    toast('当前节点草稿已保存至本地存储');
+  };
+  const submit = (action: string) => {
+    if (!canHandleWarningNode(role, node.id, item)) return toast('当前角色无权办理该节点');
+    if (!validate()) return;
+    if (node.id === 'red-release' && action === '确认解除' && (form['是否建议解除'] !== '是' || form['是否恢复绿灯'] !== '是' || form['风险是否得到有效控制'] !== '是')) return toast('恢复绿灯、风险有效控制且建议解除后方可确认解除');
+    if (node.id === 'red-release' && action === '转入常态化跟踪' && form['是否转入常态化跟踪'] !== '是') return toast('请选择“是”后再转入常态化跟踪');
+    let success = false;
+    update(currentState => { success = warningDisposalService.submitNode(currentState, item.id, node.id, role, form, files, action, node.id.endsWith('-plan') ? measures : undefined); });
+    if (!success) return toast('节点状态已变化，请返回进度总览后重试');
+    toast(`${action}成功，流程状态已更新`);
+    back();
+  };
+  const downloadAttachment = (file: Attachment) => {
+    downloadText(file.name + '.txt', `文件：${file.name}\n类型：${file.type}\n大小：${formatSize(file.size)}\n上传时间：${file.uploadedAt}`);
+    update(currentState => { currentState.warningDisposals.find(candidate => candidate.id === item.id)?.logs.push(createLog('下载附件', `在${node.name}下载附件：${file.name}`, role)); });
+    toast('附件已下载并记录操作日志');
+  };
+  const actionButtons = () => {
+    if (node.id.endsWith('-reason') || node.id.endsWith('-plan')) return <Button onClick={() => submit('提交')}>提交</Button>;
+    if (node.id === 'yellow-execution') return <><Button variant="secondary" onClick={() => submit('提交进展')}>提交进展</Button><Button onClick={() => submit('发起解除评估')}>发起解除评估</Button></>;
+    if (node.id === 'yellow-release') return <Button onClick={() => submit('提交解除评估')}>提交解除评估</Button>;
+    if (node.id === 'red-group-assessment') return <><Button variant="danger" onClick={() => submit('退回修改')}>退回</Button><Button onClick={() => submit('提交审阅')}>提交审阅</Button></>;
+    if (node.id === 'red-group-review') return <><Button variant="danger" onClick={() => submit('退回调整')}>退回调整</Button><Button onClick={() => submit('审阅通过')}>审阅通过</Button></>;
+    if (node.id === 'red-execution' && role === '各金融机构') return <Button onClick={() => submit('提交进展')}>提交进展</Button>;
+    if (node.id === 'red-execution') return <><Button variant="secondary" onClick={() => submit('审核进展')}>审核进展</Button><Button variant="secondary" onClick={() => submit('退回补充')}>退回补充</Button><Button variant="secondary" onClick={() => submit('催办')}>催办</Button><Button variant="secondary" onClick={() => submit('记录协调情况')}>记录协调情况</Button><Button onClick={() => submit('发起解除评估')}>发起解除评估</Button></>;
+    if (node.id === 'red-release') return <><Button variant="secondary" onClick={() => submit('继续跟踪')}>继续跟踪</Button><Button variant="secondary" onClick={() => submit('转入常态化跟踪')}>转入常态化跟踪</Button><Button onClick={() => submit('确认解除')}>确认解除</Button></>;
+    return null;
+  };
+  if (!started) return <Page title="预警处置详情" breadcrumb={['预警管理', '预警提示与处置', item.letterNo]} onClose={back} actions={<Button variant="secondary" onClick={back}>返回进度总览</Button>}><div className="empty-state"><h2>该流程节点尚未开始</h2><p>请在前序节点完成后再查看或办理。</p></div></Page>;
+  return <Page title={item.level === '黄灯' ? '预警提示处置详情' : '重大风险提示处置详情'} breadcrumb={['预警管理', '预警提示与处置', item.letterNo, node.name]} onClose={back} actions={<Button variant="secondary" onClick={back}>返回进度总览</Button>}>
+    <Section title="事项基本信息"><div className="detail-grid warning-info-grid"><b>提示编号<span>{item.letterNo}</span></b><b>机构名称<span>{item.institution}</span></b><b>指标编码<span>{item.indicatorCode || '—'}</span></b><b>指标名称<span>{item.indicator}</span></b><b>指标风险类型<span>{item.riskType}</span></b><b>监测频率<span>{item.monitoringFrequency || '—'}</span></b><b>指标期次<span>{item.period || '—'}</span></b><b>本期指标值<span>{item.value}</span></b><b>当期亮灯情况<span><StatusTag value={item.currentLightStatus || item.level} /></span></b><b>黄灯规则<span>{item.yellowRule || '—'}</span></b><b>红灯规则<span>{item.redRule || '—'}</span></b><b>提示类型<span>{item.noticeType || getWarningNoticeType(item.level)}</span></b><b>提示函下发方式<span>{letterDeliveryModeLabels[item.letterDeliveryMode || 'manual']}</span></b><b>函件状态<span><StatusTag value={item.letterStatus || '待下发'} /></span></b><b>触发日期<span>{item.triggerDate}</span></b><b>当前节点<span>{node.name}</span></b><b>事项状态<span><StatusTag value={item.status} /></span></b><b>关联规则编号<span>{item.ruleCode || state.warningRules.find(rule => rule.id === item.associatedRuleId)?.code || '—'}</span></b><b>关联规则版本<span>{item.ruleVersion || 'V1.0'}</span></b></div></Section>
+    <Section title={item.level === '黄灯' ? '黄灯处置流程' : '红灯处置流程'}><div className={`warning-detail-workflow ${item.level === '红灯' ? 'red' : 'yellow'}`}><InteractiveWorkflow definition={definition} instance={workflow} selectedNodeId={node.id} onSelect={nodeId => navigate(`/warning/disposal/${item.id}/detail/${nodeId}?mode=${nodeId === workflow.currentNodeId && canHandleWarningNode(role, nodeId, item) ? 'edit' : 'view'}`)} /></div></Section>
+    <WorkflowFeedbackOverview definition={definition} instance={workflow} role={role} institution={item.institution} selectedNodeId={node.id} onReturnCurrent={() => navigate(`/warning/disposal/${item.id}/detail/${workflow.currentNodeId}?mode=${canHandleWarningNode(role, workflow.currentNodeId, item) ? 'edit' : 'view'}`)} />
+    {editable && <Section title={`节点办理 · ${node.name}`}><div className="current-node-note">当前节点内容支持保存草稿；提交后形成一条独立办理记录并进入下一流程节点。</div><div className="form-grid">{fields.map(field => <Field label={field.label} required={field.required} span={field.type === 'textarea' ? 2 : 1} key={field.name}>{field.type === 'textarea' ? <Textarea value={form[field.name] || ''} onChange={value => setField(field.name, value)} maxLength={field.maxLength} showCount /> : field.type === 'select' ? <Select value={form[field.name] || ''} onChange={value => setField(field.name, value)} options={field.options || []} /> : <Input type={field.type || 'text'} value={form[field.name] || ''} onChange={value => setField(field.name, value)} maxLength={field.maxLength} />}</Field>)}</div>
+      {node.id.endsWith('-plan') && <div className="warning-measures"><div className="warning-subsection-head"><b>处置措施清单</b><Button variant="secondary" onClick={() => setMeasures(currentMeasures => [...currentMeasures, createWarningMeasure()])}>＋ 新增措施</Button></div>{measures.map((measure, index) => <div className="warning-measure-card" key={measure.id}><div className="warning-measure-title"><b>措施 {index + 1}{measure.submitted ? '（已提交记录）' : ''}</b><TextAction disabled={measures.length === 1 || measure.submitted} onClick={() => setMeasures(currentMeasures => currentMeasures.filter((_, measureIndex) => measureIndex !== index))}>删除</TextAction></div><div className="form-grid"><Field label="责任部门" required><Input value={measure.responsibleDepartment} onChange={value => updateMeasure(index, 'responsibleDepartment', value)} /></Field><Field label="责任人" required><Input value={measure.responsiblePerson} onChange={value => updateMeasure(index, 'responsiblePerson', value)} /></Field><Field label="处置措施" required span={2}><Textarea value={measure.measure} onChange={value => updateMeasure(index, 'measure', value)} maxLength={1500} showCount /></Field><Field label="计划开始时间" required><Input type="date" value={measure.plannedStartDate} onChange={value => updateMeasure(index, 'plannedStartDate', value)} /></Field><Field label="计划完成时间" required><Input type="date" value={measure.plannedCompletionDate} onChange={value => updateMeasure(index, 'plannedCompletionDate', value)} /></Field><Field label="预期效果" required span={2}><Textarea value={measure.expectedEffect} onChange={value => updateMeasure(index, 'expectedEffect', value)} /></Field><Field label="资源保障" span={2}><Textarea value={measure.resourceSupport || ''} onChange={value => updateMeasure(index, 'resourceSupport', value)} /></Field></div></div>)}</div>}
+      <Field label="本节点附件"><FileUploader files={files} onChange={setFiles} /></Field><div className="form-actions"><Button variant="secondary" onClick={saveDraft}>保存草稿</Button>{actionButtons()}<Button variant="secondary" onClick={back}>返回</Button></div></Section>}
+    {current && !editable && <div className="readonly-current-node">当前节点由“{node.role}”办理，当前角色仅可查看已提交记录。{requestedEdit ? '系统已自动切换为只读模式。' : ''}</div>}
+    <Section title="事项附件"><div className="warning-attachment-list">{item.attachments.length ? item.attachments.map(file => <div key={file.id}><span>▣ {file.name}</span><small>{formatSize(file.size)} · {file.uploadedAt}</small><TextAction onClick={() => downloadAttachment(file)}>下载</TextAction></div>) : <div className="empty-inline">暂无附件</div>}</div></Section>
+    <Section title="全部操作记录"><OperationHistory logs={item.logs} /></Section>
   </Page>;
 }
 
@@ -721,14 +874,14 @@ function MajorEventDefinitionEditor({ state, role, navigate, update, toast }: Pa
   return <Page title={existing ? '编辑重大风险事件定义' : '新增重大风险事件定义'} breadcrumb={['重大风险事件管理', '重大风险事件定义管理', existing ? '编辑' : '新增']} actions={<><Button variant="secondary" onClick={() => navigate('/major-events/definitions')}>取消</Button><Button onClick={save}>保存</Button></>}><Section title="基本信息"><div className="form-grid"><Field label="事件类型编码"><Input value={form.code} onChange={code => setForm({ ...form, code })} placeholder="不填写则自动生成" /></Field><Field label="事件类型名称" required><Input value={form.name} onChange={name => setForm({ ...form, name })} /></Field><Field label="定义状态"><Select value={form.status} onChange={status => setForm({ ...form, status: status as MajorRiskEventDefinition['status'] })} options={['生效', '停用', '草稿']} /></Field><Field label="版本号"><Input value={existing?.version || 'V1.0'} disabled /></Field><Field label="参考依据" span={2}><Textarea value={form.referenceBasis} onChange={referenceBasis => setForm({ ...form, referenceBasis })} /></Field><Field label="备注" span={2}><Textarea value={form.notes} onChange={notes => setForm({ ...form, notes })} /></Field></div></Section><Section title="事件定义判断标准" extra={<Button variant="secondary" onClick={() => setForm({ ...form, criteria: [...criteria, ''] })}>＋ 增加一条</Button>}><div className="criteria-editor">{criteria.map((criterion, index) => <div key={index}><span>{index + 1}</span><Textarea value={criterion} onChange={value => setForm({ ...form, criteria: criteria.map((item, itemIndex) => itemIndex === index ? value : item) })} />{criteria.length > 1 && <TextAction onClick={() => setForm({ ...form, criteria: criteria.filter((_, itemIndex) => itemIndex !== index) })}>删除</TextAction>}</div>)}</div></Section></Page>;
 }
 
-const majorEventWorkflowSteps = ['新增事件', '提交首报及处置方案', '核实并组织汇报', '管理层审阅', '董事会审阅', '执行处置并续报', '终报归档/常态跟踪'];
+const majorEventWorkflowSteps = ['各金融机构提交事件首报', '集团核实事件并组织汇报', '各金融机构提交处置方案', '集团评估并审阅处置方案', '经理层、董事会审阅', '各金融机构执行处置并提交续报', '金控公司持续跟踪及结束评估', '终报归档或转入常态化跟踪'];
 
 function MajorEventList({ state, role, navigate, update, toast }: PageProps) {
   const [q, setQ] = useState({ name: '', institution: '', type: '', status: '' });
   const items = state.majorEvents.filter(x => canViewInstitution(role, x.institution) && (!q.name || x.name.includes(q.name)) && (!q.institution || x.institution === q.institution) && (!q.type || x.type === q.type) && (!q.status || x.status === q.status));
   const behindEditorModal = window.location.pathname === '/major-events/new' || window.location.pathname.endsWith('/edit');
   const perform = (action: ReturnType<typeof getMajorEventActions>[number], item: MajorEvent) => {
-    if (action === 'view') return navigate(`/major-events/${item.id}`);
+    if (action === 'view') return navigate(`/major-events/${item.id}/overview`);
     if (action === 'edit' || action === 'submit-first') return navigate(`/major-events/${item.id}/edit`);
     if (action === 'follow-up') return navigate(`/major-events/${item.id}/follow-up`);
     if (action === 'final-report') return navigate(`/major-events/${item.id}/final-report`);
@@ -748,8 +901,8 @@ function MajorEventList({ state, role, navigate, update, toast }: PageProps) {
     <SearchPanel onSearch={() => undefined} onReset={() => setQ({ name: '', institution: '', type: '', status: '' })}>
       <Field label="事件名称"><Input value={q.name} onChange={v => setQ({ ...q, name: v })} /></Field>
       <Field label="所属机构"><Select value={q.institution} onChange={v => setQ({ ...q, institution: v })} options={role === '各金融机构' ? [currentInstitution] : institutions} /></Field>
-      <Field label="风险事件类型"><Select value={q.type} onChange={v => setQ({ ...q, type: v })} options={[...new Set([...state.majorRiskEventDefinitions.map(definition => definition.name), ...state.majorEvents.map(event => event.type)])]} /></Field>
-      <Field label="事件状态"><Select value={q.status} onChange={v => setQ({ ...q, status: v })} options={['草稿', '待审核', '处理中', '常态跟踪', '已归档']} /></Field>
+      <Field label="风险事件类型"><Select value={q.type} onChange={v => setQ({ ...q, type: v })} options={getMajorRiskEventTypeOptions(state, true)} /></Field>
+      <Field label="事件状态"><Select value={q.status} onChange={v => setQ({ ...q, status: v })} options={['草稿', '待核实', '待提交处置方案', '待集团评估', '待经理层审阅', '待董事会审阅', '处置执行中', '持续跟踪中', '待终报', '终报审核中', '常态化跟踪', '已归档', '已关闭', '已退回']} /></Field>
       <Field label="发生时间"><div className="date-range"><Input type="date" /><span>至</span><Input type="date" /></div></Field>
     </SearchPanel>
     <div className="list-toolbar">
@@ -759,7 +912,7 @@ function MajorEventList({ state, role, navigate, update, toast }: PageProps) {
         <Button variant="secondary" onClick={() => downloadCSV('重大风险事件.csv', [['事件编号', '事件名称', '机构', '状态'], ...items.map(x => [x.code, x.name, x.institution, x.status])])}>⇩ 批量导出</Button>
       </div>
     </div>
-    <Table><thead><tr><th>序号</th><th>事件编号</th><th>事件名称</th><th>所属机构</th><th>风险事件类型</th><th>发生时间</th><th>最新报送类型</th><th>当前环节</th><th>事件状态</th><th>操作</th><th>事件流程</th></tr></thead><tbody>{items.map((item, i) => { const actions = getMajorEventActions(role, item); return <tr key={item.id}><td>{i + 1}</td><td>{item.code}</td><td>{item.name}</td><td>{item.institution}</td><td>{item.type}</td><td>{item.occurredAt}</td><td>{item.latestReport}</td><td>{item.currentStage}</td><td><button className="status-link" onClick={() => navigate(`/major-events/${item.id}`)}><StatusTag value={item.status} /></button></td><td>{actions.filter(action => action !== 'history').map(action => <TextAction key={action} onClick={() => perform(action, item)}>{majorEventActionLabels[action]}</TextAction>)}</td><td>{actions.includes('history') && <TextAction onClick={() => navigate(`/major-events/${item.id}`)}>查看流程</TextAction>}</td></tr>; })}</tbody></Table>
+    <Table><thead><tr><th>序号</th><th>事件编号</th><th>事件名称</th><th>所属机构</th><th>风险事件类型</th><th>发生时间</th><th>最新报送类型</th><th>当前环节</th><th>事件状态</th><th>操作</th><th>事件流程</th></tr></thead><tbody>{items.map((item, i) => { const actions = getMajorEventActions(role, item); return <tr key={item.id}><td>{i + 1}</td><td>{item.code}</td><td>{item.name}</td><td>{item.institution}</td><td>{item.type}</td><td>{item.occurredAt}</td><td>{item.latestReport}</td><td>{item.currentStage}</td><td><button className="status-link" onClick={() => navigate(`/major-events/${item.id}/overview`)}><StatusTag value={item.status} /></button></td><td>{actions.filter(action => action !== 'history').map(action => <TextAction key={action} onClick={() => perform(action, item)}>{majorEventActionLabels[action]}</TextAction>)}</td><td>{actions.includes('history') && <TextAction onClick={() => navigate(`/major-events/${item.id}/overview`)}>查看流程</TextAction>}</td></tr>; })}</tbody></Table>
     <Pagination total={items.length} page={1} setPage={() => undefined} />
   </Page>;
 }
@@ -767,29 +920,30 @@ function MajorEventList({ state, role, navigate, update, toast }: PageProps) {
 function MajorEventEditor({ state, role, navigate, update, toast }: PageProps) {
   const editingId = window.location.pathname.endsWith('/edit') ? window.location.pathname.split('/')[2] : undefined;
   const editing = state.majorEvents.find(event => event.id === editingId);
-  const [form, setForm] = useState<Partial<MajorEvent>>(() => editing ? structuredClone(editing) : { name: '', institution: currentInstitution, type: '', occurredAt: '', impact: '', contact: '', phone: '', basic: '', analysis: '', measures: '', trend: '', target: '', plan: '', responsibleDept: '', responsible: '', deadline: '' });
+  const [form, setForm] = useState<Partial<MajorEvent>>(() => editing ? structuredClone(editing) : { name: '', institution: currentInstitution, type: '', occurredAt: '', discoveredAt: '', impact: '', contact: '', phone: '', basic: '', analysis: '', measures: '', trend: '', target: '', plan: '', responsibleDept: '', responsible: '', deadline: '' });
   const [files, setFiles] = useState<Attachment[]>(editing?.attachments || []);
   const set = (patch: Partial<MajorEvent>) => setForm(value => ({ ...value, ...patch }));
   const close = () => navigate('/major-events');
   const save = (mode: 'draft' | 'submit') => {
     if (!form.name?.trim()) return toast('请至少填写事件名称后保存草稿');
-    if (mode === 'submit' && (!form.type || !form.institution || !form.occurredAt || !form.basic?.trim())) return toast('请填写事件名称、风险事件类型、所属机构、发生时间和事件基本情况');
+    if (!form.type || !isValidMajorRiskEventType(state, form.type)) return toast('请选择当前已生效的重大风险事件类型');
+    if (mode === 'submit' && (!form.type || !form.institution || !form.occurredAt || !form.discoveredAt || !form.basic?.trim())) return toast('请填写事件名称、风险事件类型、所属机构、发生时间、发现时间和事件基本情况');
+    let saved = false;
     update(current => {
       const value = { ...form, institution: currentInstitution, name: form.name?.trim(), basic: form.basic?.trim(), attachments: files };
       const target = editing ? current.majorEvents.find(event => event.id === editing.id) : undefined;
-      if (target) majorEventService.update(target, value, role, mode);
-      else majorEventService.create(current, value, role, mode);
+      saved = target ? !!majorEventService.update(target, value, role, mode, current) : !!majorEventService.create(current, value, role, mode);
     });
-    toast(mode === 'draft' ? '重大风险事件草稿已保存' : '重大风险事件首报已提交申请');
+    if (!saved) return toast('事件类型已停用或不存在，请重新选择当前生效类型');
+    toast(mode === 'draft' ? '重大风险事件首报草稿已保存' : '重大风险事件首报已提交集团核实');
     close();
   };
   const descriptionLimit = 1000;
   const permittedToEdit = editingId ? !!editing && canEditMajorEvent(role, editing) : can(role, 'event-create', { institution: currentInstitution });
-  const activeEventTypes = state.majorRiskEventDefinitions.filter(definition => definition.status === '生效').map(definition => definition.name);
-  const eventTypeOptions = editing?.type && !activeEventTypes.includes(editing.type) ? [editing.type, ...activeEventTypes] : activeEventTypes;
+  const eventTypeOptions = getMajorRiskEventTypeOptions(state);
   return <>
     <MajorEventList state={state} role={role} navigate={navigate} update={update} toast={toast} />
-    <Page title={editing ? '编辑重大风险事件（首报及处置方案）' : '新增重大风险事件（首报及处置方案）'} breadcrumb={['重大风险事件管理', editing ? '编辑事件' : '新增事件']} onClose={close} hidePageTitle>
+    <Page title={editing ? '编辑重大风险事件（事件首报）' : '新增重大风险事件（事件首报）'} breadcrumb={['重大风险事件管理', editing ? '编辑事件首报' : '新增事件首报']} onClose={close} hidePageTitle>
       {!permittedToEdit ? <div className="empty-state"><div className="empty-icon">!</div><h2>当前角色无权编辑重大风险事件</h2><p>仅各金融机构可新增本机构事件或编辑本机构草稿。</p></div> : <>
       <WorkflowSteps steps={majorEventWorkflowSteps} current={0} />
       <Section title="事件基本信息"><div className="form-grid">
@@ -798,8 +952,9 @@ function MajorEventEditor({ state, role, navigate, update, toast }: PageProps) {
         <Field label="风险事件类型" required><Select value={form.type} onChange={value => set({ type: value })} options={eventTypeOptions} /></Field>
         <Field label="所属机构"><Input value={currentInstitution} disabled /></Field>
         <Field label="发生时间" required><Input type="date" value={form.occurredAt} onChange={value => set({ occurredAt: value })} /></Field>
+        <Field label="发现时间" required><Input type="date" value={form.discoveredAt} onChange={value => set({ discoveredAt: value })} /></Field>
         <Field label="最新报送类型"><Input value={editing?.latestReport || '首报'} disabled /></Field>
-        <Field label="当前环节"><Input value={editing?.currentStage || '新增事件'} disabled /></Field>
+        <Field label="当前环节"><Input value={editing?.currentStage || '各金融机构提交事件首报'} disabled /></Field>
         <Field label="事件状态"><Input value={editing?.status || '草稿'} disabled /></Field>
         <Field label="影响范围"><Input value={form.impact} onChange={value => set({ impact: value })} placeholder="集团内、机构内、外部影响等" /></Field>
         <Field label="联系人"><div className="contact-fields"><Input value={form.contact} onChange={value => set({ contact: value })} placeholder="联系人" /><Input value={form.phone} onChange={value => set({ phone: value })} placeholder="联系电话" /></div></Field>
@@ -809,13 +964,6 @@ function MajorEventEditor({ state, role, navigate, update, toast }: PageProps) {
         <Field label="初步分析研判"><Textarea value={form.analysis} onChange={value => set({ analysis: value })} maxLength={descriptionLimit} showCount /></Field>
         <Field label="已采取措施"><Textarea value={form.measures} onChange={value => set({ measures: value })} maxLength={descriptionLimit} showCount /></Field>
         <Field label="发展趋势"><Textarea value={form.trend} onChange={value => set({ trend: value })} maxLength={descriptionLimit} showCount /></Field>
-      </div></Section>
-      <Section title="处置方案"><div className="form-grid">
-        <Field label="处置目标"><Textarea value={form.target} onChange={value => set({ target: value })} /></Field>
-        <Field label="责任部门"><Input value={form.responsibleDept} onChange={value => set({ responsibleDept: value })} maxLength={100} placeholder="手工输入，多个部门请使用顿号或逗号分隔" /></Field>
-        <Field label="责任人"><Input value={form.responsible} onChange={value => set({ responsible: value })} /></Field>
-        <Field label="计划完成时间"><Input type="date" value={form.deadline} onChange={value => set({ deadline: value })} /></Field>
-        <Field label="处置措施" span={2}><Textarea value={form.plan} onChange={value => set({ plan: value })} /></Field>
       </div></Section>
       <Section title="附件上传"><FileUploader files={files} onChange={setFiles} /></Section>
       <Section title="审阅及处理记录">{editing?.logs.length ? <OperationHistory logs={editing.logs} /> : <div className="inline-empty">保存后将生成操作记录</div>}</Section>
@@ -829,96 +977,139 @@ function MajorEventEditor({ state, role, navigate, update, toast }: PageProps) {
   </>;
 }
 
-function MajorEventDetail({ state, role, navigate, update, toast }: PageProps) {
+function MajorEventOverview({ state, role, navigate, update, toast }: PageProps) {
   const id = window.location.pathname.split('/')[2];
   const item = state.majorEvents.find(event => event.id === id);
-  const workflow = item?.workflow || { currentNodeId: 'event-create', records: [] };
-  const [selectedNodeId, setSelectedNodeId] = useState(workflow.currentNodeId);
-  const [nodeOpinion, setNodeOpinion] = useState('');
-  const [nodeFiles, setNodeFiles] = useState<Attachment[]>([]);
-  if (!item || !canViewInstitution(role, item.institution)) return <Page title="重大风险事件详情" breadcrumb={['重大风险事件管理']} actions={<Button variant="secondary" onClick={() => navigate('/major-events')}>返回</Button>}><div className="empty-state"><div className="empty-icon">!</div><h2>无权查看该重大风险事件</h2><p>各金融机构仅可查看本机构数据。</p></div></Page>;
-  const currentNode = majorEventWorkflow.find(node => node.id === workflow.currentNodeId) || majorEventWorkflow[0];
-  const submitNodeOpinion = (pass: boolean) => {
-    if (!nodeOpinion) return toast('请填写当前节点处理意见');
-    const returnTarget = currentNode.id === 'verify-report' ? 'event-create' : 'first-report';
-    const nextIndex = majorEventWorkflow.findIndex(node => node.id === currentNode.id) + 1;
-    const nextNodeId = pass ? majorEventWorkflow[Math.min(nextIndex, majorEventWorkflow.length - 1)].id : returnTarget;
-    update(current => {
-      const target = current.majorEvents.find(event => event.id === item.id);
-      if (!target) return;
-      target.workflow ||= { currentNodeId: currentNode.id, records: [] };
-      workflowService.append(target.workflow, currentNode, { role, action: pass ? '审阅通过' : '退回', result: pass ? '通过' : '退回修改', formData: { 处理意见: nodeOpinion }, opinion: nodeOpinion, returnReason: pass ? undefined : nodeOpinion, attachments: nodeFiles, status: pass ? undefined : '已退回' });
-      if (pass) workflowService.moveNext(target.workflow, majorEventWorkflow, currentNode.id); else workflowService.returnTo(target.workflow, returnTarget);
-      target.currentStage = majorEventWorkflow.find(node => node.id === target.workflow!.currentNodeId)?.name || target.currentStage;
-      target.status = pass && ['management-review', 'board-review'].includes(currentNode.id) ? '处理中' : pass ? target.status : '草稿';
-      target.logs.push(createLog(pass ? '节点处理通过' : '节点退回', `${currentNode.name}：${nodeOpinion}`, role));
-    });
-    setNodeOpinion(''); setNodeFiles([]); setSelectedNodeId(nextNodeId); toast(pass ? '当前节点已完成，后续处理人可查看本次意见' : '已退回且保留原处理记录');
+  if (!item || !canViewMajorEventOverview(role, item)) return <Page title="重大风险事件进度总览" breadcrumb={['重大风险事件管理']} onClose={() => navigate('/major-events')} actions={<Button variant="secondary" onClick={() => navigate('/major-events')}>返回列表</Button>}><div className="empty-state"><h2>无权查看该重大风险事件或事件不存在</h2></div></Page>;
+  const workflow = item.workflow || { currentNodeId: 'event-initial-report', records: [] };
+  const currentIndex = majorEventWorkflow.findIndex(node => node.id === workflow.currentNodeId);
+  const downloadAttachment = (file: Attachment) => {
+    downloadText(file.name + '.txt', `重大风险事件：${item.name}\n文件：${file.name}\n类型：${file.type}\n大小：${formatSize(file.size)}\n上传时间：${file.uploadedAt}`);
+    update(current => { current.majorEvents.find(event => event.id === item.id)?.logs.push(createLog('下载附件', `下载事件附件：${file.name}`, role)); });
+    toast('附件已下载并记录操作日志');
   };
-  return <Page title="重大风险事件详情" breadcrumb={['重大风险事件管理', item.code]} actions={<><Button variant="secondary" onClick={() => navigate('/major-events')}>返回</Button><Button variant="secondary" onClick={() => downloadCSV(`${item.code}.csv`, [['事件编号', '事件名称', '状态'], [item.code, item.name, item.status]])}>⇩ 导出</Button></>}>
-    <InteractiveWorkflow definition={majorEventWorkflow} instance={workflow} selectedNodeId={selectedNodeId} onSelect={setSelectedNodeId} />
-    <Section title="事件基本信息"><div className="detail-grid"><b>事件编号<span>{item.code}</span></b><b>事件名称<span>{item.name}</span></b><b>风险事件类型<span>{item.type}</span></b><b>所属机构<span>{item.institution}</span></b><b>发生时间<span>{item.occurredAt}</span></b><b>最新报送类型<span>{item.latestReport}</span></b><b>当前环节<span>{item.currentStage}</span></b><b>事件状态<span><StatusTag value={item.status} /></span></b><b>影响范围<span>{item.impact}</span></b><b>联系人<span>{item.contact} / {item.phone}</span></b></div></Section>
-    <Section title="首报信息"><div className="read-block"><b>事件基本情况</b><p>{item.basic}</p><b>初步分析研判</b><p>{item.analysis}</p><b>已采取措施</b><p>{item.measures}</p><b>发展趋势</b><p>{item.trend}</p></div></Section>
-    <Section title="处置方案"><div className="detail-grid"><b>处置目标<span>{item.target}</span></b><b>责任部门<span>{item.responsibleDept}</span></b><b>责任人<span>{item.responsible}</span></b><b>计划完成时间<span>{item.deadline}</span></b></div><p className="read-paragraph">{item.plan}</p></Section>
-    {item.followUps.length > 0 && <Section title="续报记录">{item.followUps.map((report, index) => <div className="report-block" key={index}><b>第 {index + 1} 次续报 · {report.date}</b><p>最新进展：{report.latestProgress}</p><p>风险变化：{report.riskChange}</p><p>措施执行情况：{report.execution}</p><p>下一步安排：{report.nextStep}</p></div>)}</Section>}
-    {item.finalReport && <Section title="终报记录"><div className="report-block"><b>终报 · {item.finalReport.date}</b><p>最终处置结果：{item.finalReport.result}</p><p>实际影响：{item.finalReport.impact}</p><p>风险解除情况：{item.finalReport.release}</p><p>后续管理安排：{item.finalReport.followUp}</p></div></Section>}
-    <WorkflowFeedbackOverview definition={majorEventWorkflow} instance={workflow} role={role} institution={item.institution} selectedNodeId={selectedNodeId} onReturnCurrent={() => setSelectedNodeId(workflow.currentNodeId)} />
-    {selectedNodeId === workflow.currentNodeId && canHandleWorkflowNode(role, currentNode.id, item.institution) && <Section title={`当前节点操作 · ${currentNode.name}`}>{['event-create', 'first-report'].includes(currentNode.id) ? <div className="form-actions"><Button onClick={() => navigate(`/major-events/${item.id}/edit`)}>进入首报填报</Button></div> : currentNode.id === 'event-execution' ? <div className="form-actions"><Button variant="secondary" onClick={() => navigate(`/major-events/${item.id}/follow-up`)}>提交续报</Button><Button onClick={() => navigate(`/major-events/${item.id}/final-report`)}>提交终报</Button></div> : <><Field label="处理意见" required><Textarea value={nodeOpinion} onChange={setNodeOpinion} /></Field><Field label="本节点附件"><FileUploader files={nodeFiles} onChange={setNodeFiles} /></Field><div className="form-actions"><Button variant="danger" onClick={() => submitNodeOpinion(false)}>退回</Button><Button onClick={() => submitNodeOpinion(true)}>通过</Button></div></>}</Section>}
-    <Section title="审阅及处理记录"><OperationHistory logs={item.logs} /></Section>
+  return <Page title="重大风险事件进度总览" breadcrumb={['重大风险事件管理', item.code, '进度总览']} onClose={() => navigate('/major-events')} actions={<><Button variant="secondary" onClick={() => navigate('/major-events')}>返回列表</Button><Button variant="secondary" onClick={() => downloadCSV(`${item.code}-进度总览.csv`, [['事件编号', '事件名称', '所属机构', '当前环节', '事件状态'], [item.code, item.name, item.institution, item.currentStage, item.status]])}>⇩ 导出</Button></>}>
+    <div className="major-event-overview-banner"><div><span>MAJOR RISK EVENT</span><h2>{item.name}</h2><p>{item.code} · {item.institution} · {item.type}</p></div><div><StatusTag value={item.status} />{item.closureBranch && <StatusTag value={item.closureBranch === 'final-report' ? '终报归档' : '常态化跟踪'} />}</div></div>
+    <Section title="事件基本信息"><div className="detail-grid major-event-info-grid"><b>事件编号<span>{item.code}</span></b><b>事件名称<span>{item.name}</span></b><b>风险事件类型<span>{item.type}</span></b><b>所属机构<span>{item.institution}</span></b><b>发生时间<span>{item.occurredAt}</span></b><b>发现时间<span>{item.discoveredAt || '—'}</span></b><b>最新报送类型<span>{item.latestReport}</span></b><b>当前环节<span>{item.currentStage}</span></b><b>事件状态<span><StatusTag value={item.status} /></span></b><b>影响范围<span>{item.impact || '—'}</span></b><b>联系人<span>{item.contact || '—'}</span></b><b>联系方式<span>{item.phone || '—'}</span></b></div></Section>
+    <Section title="重大风险事件8节点处置进度"><div className="major-event-overview-flow">{majorEventWorkflow.map((node, index) => {
+      const records = workflow.records.filter(record => record.nodeId === node.id);
+      const latest = records[records.length - 1];
+      const current = node.id === workflow.currentNodeId;
+      const terminal = ['已归档', '已关闭'].includes(item.status) && current;
+      const completed = index < currentIndex || terminal || (!!latest && latest.status !== '已退回' && !current);
+      const returned = latest?.status === '已退回';
+      const actor = getMajorEventNodeRole(item, node.id);
+      const editable = current && canHandleMajorEventNode(role, node.id, item);
+      const canOpen = current || completed || records.length > 0;
+      const displayName = node.id === 'event-final-routine' && item.closureBranch ? (item.closureBranch === 'final-report' ? '终报归档' : '常态化跟踪') : node.name;
+      return <React.Fragment key={node.id}><div className={`major-event-flow-node ${current ? 'current' : ''} ${completed ? 'completed' : ''} ${returned ? 'returned' : ''}`}><div className="major-event-flow-index">{completed ? '✓' : index + 1}</div><b>{displayName}</b><span>{current && !terminal ? '进行中' : returned ? '已退回' : completed ? '已完成' : '未开始'}</span><small>{latest ? `${latest.role} · ${latest.submittedAt}` : actor}</small><Button variant={editable ? 'primary' : 'secondary'} disabled={!canOpen} onClick={() => navigate(`/major-events/${item.id}/nodes/${node.id}?mode=${editable ? 'edit' : 'view'}`)}>{editable ? (actor === '各金融机构' ? '填写' : '办理') : canOpen ? '查看' : '未开始'}</Button></div>{index < majorEventWorkflow.length - 1 && <i className="major-event-flow-arrow">›</i>}</React.Fragment>;
+    })}</div></Section>
+    <Section title="事件附件"><div className="major-event-attachment-list">{item.attachments.length ? item.attachments.map(file => <div key={file.id}><span>▣ {file.name}</span><small>{formatSize(file.size)} · {file.uploadedAt}</small><TextAction onClick={() => downloadAttachment(file)}>下载</TextAction></div>) : <div className="empty-inline">暂无附件</div>}</div></Section>
+    <Section title="操作记录"><OperationHistory logs={item.logs} /></Section>
   </Page>;
 }
 
-function EventFollowUp({ state, role, navigate, update, toast }: PageProps) {
-  const id = window.location.pathname.split('/')[2];
+const createMajorEventMeasure = (): MajorEventMeasure => ({ id: uid('event-measure'), responsibleDepartment: '', responsiblePerson: '', measure: '', plannedStartDate: '', plannedCompletionDate: '', expectedEffect: '', submitted: false });
+const initialMajorEventNodeForm = (item: MajorEvent, nodeId: string): Record<string, string> => {
+  if (nodeId === 'event-initial-report') return { 事件名称: item.name, 风险事件类型: item.type, 发生时间: item.occurredAt, 发现时间: item.discoveredAt || item.occurredAt, 事件基本情况: item.basic, 初步分析研判: item.analysis, 影响范围: item.impact, 发展趋势: item.trend, 联系人: item.contact, 联系方式: item.phone };
+  if (nodeId === 'event-plan') return { 处置目标: item.target || '', 资源保障: '', 风险控制目标: '', 信息报送安排: '' };
+  if (nodeId === 'event-execution-report') return { 续报编号: `${item.code}-XB-${String(item.followUps.length + 1).padStart(2, '0')}`, 续报时间: today() };
+  if (nodeId === 'event-final-routine' && item.closureBranch === 'final-report' && item.node8Actor === '各金融机构') return { 终报编号: item.finalReport?.code || `${item.code}-ZB-${String(1).padStart(2, '0')}` };
+  if (nodeId === 'event-final-routine' && item.closureBranch === 'routine-tracking' && item.node8Actor === '各金融机构') return { 跟踪原因: item.routineTracking?.reason || '', 跟踪事项: item.routineTracking?.items || '', 责任机构: item.routineTracking?.responsibleInstitution || item.institution, 跟踪频率: item.routineTracking?.frequency || '', 下次反馈时间: item.routineTracking?.nextFeedbackDate || '', 当前风险情况: item.routineTracking?.currentRisk || '', 后续措施: item.routineTracking?.nextMeasures || '' };
+  return {};
+};
+
+function MajorEventDetail({ state, role, navigate, update, toast }: PageProps) {
+  const parts = window.location.pathname.split('/');
+  const id = parts[2];
+  const nodeId = parts[4];
+  const requestedEdit = new URLSearchParams(window.location.search).get('mode') === 'edit';
   const item = state.majorEvents.find(event => event.id === id);
-  const [form, setForm] = useState({ latestProgress: '', riskChange: '', execution: '', nextStep: '' });
+  const node = majorEventWorkflow.find(candidate => candidate.id === nodeId);
+  const [form, setForm] = useState<Record<string, string>>({});
   const [files, setFiles] = useState<Attachment[]>([]);
-  if (!item || !can(role, 'event-progress', { institution: item.institution })) return <Page title="重大风险事件 - 续报" breadcrumb={['重大风险事件管理']} actions={<Button variant="secondary" onClick={() => navigate('/major-events')}>返回</Button>}><div className="empty-state"><div className="empty-icon">!</div><h2>当前角色无权提交该事件续报</h2></div></Page>;
-  const submit = () => {
-    if (!form.latestProgress || !form.riskChange || !form.execution || !form.nextStep) return toast('请完整填写续报信息');
-    update(current => {
-      const target = current.majorEvents.find(event => event.id === item.id);
-      if (!target) return;
-      target.followUps.push({ ...form, attachments: files, date: today() });
-      target.workflow ||= { currentNodeId: 'event-execution', records: [] };
-      workflowService.append(target.workflow, majorEventWorkflow[5], { role, action: `提交第${target.followUps.length}次续报`, result: '持续跟踪', formData: { 最新进展: form.latestProgress, 风险变化: form.riskChange, 措施执行情况: form.execution, 下一步安排: form.nextStep }, attachments: files });
-      target.workflow.currentNodeId = 'event-execution';
-      target.latestReport = '续报';
-      target.currentStage = '续报跟踪';
-      target.status = '处理中';
-      target.logs.push(createLog('续报', '提交事件最新进展续报', role));
-    });
-    toast('续报已提交');
-    navigate(`/major-events/${item.id}`);
+  const [measures, setMeasures] = useState<MajorEventMeasure[]>([]);
+  useEffect(() => {
+    if (!item || !node) return;
+    const draft = item.eventDrafts?.[node.id];
+    setForm(draft?.formData || initialMajorEventNodeForm(item, node.id));
+    setFiles(draft?.attachments || []);
+    setMeasures(draft?.measures?.length ? structuredClone(draft.measures) : item.planMeasures?.length ? structuredClone(item.planMeasures) : [createMajorEventMeasure()]);
+  }, [item?.id, node?.id, item?.reviewStage, item?.closureBranch, item?.node8Actor]);
+  const back = () => navigate(`/major-events/${id}/overview`);
+  if (!item || !node || !item.workflow || !canViewMajorEventOverview(role, item)) return <Page title="重大风险事件节点详情" breadcrumb={['重大风险事件管理']} onClose={() => navigate('/major-events')} actions={<Button variant="secondary" onClick={() => navigate('/major-events')}>返回</Button>}><div className="empty-state"><h2>无权查看该节点或节点不存在</h2></div></Page>;
+  const workflow = item.workflow;
+  const currentIndex = majorEventWorkflow.findIndex(candidate => candidate.id === workflow.currentNodeId);
+  const nodeIndex = majorEventWorkflow.findIndex(candidate => candidate.id === node.id);
+  const nodeRecords = workflow.records.filter(record => record.nodeId === node.id);
+  const current = workflow.currentNodeId === node.id;
+  const started = nodeIndex <= currentIndex || nodeRecords.length > 0;
+  const editable = requestedEdit && current && canHandleMajorEventNode(role, node.id, item);
+  const fields = getMajorEventNodeFields(item, node.id, role);
+  const actor = getMajorEventNodeRole(item, node.id);
+  const definition = state.majorRiskEventDefinitions.find(candidate => candidate.name === item.type);
+  const setField = (name: string, value: string) => setForm(currentForm => ({ ...currentForm, [name]: value }));
+  const updateMeasure = (index: number, key: keyof MajorEventMeasure, value: string) => setMeasures(currentMeasures => currentMeasures.map((measure, measureIndex) => measureIndex === index ? { ...measure, [key]: value } : measure));
+  const validate = () => {
+    const missing = fields.find(field => field.required && !String(form[field.name] || '').trim());
+    if (missing) { toast(`请填写${missing.label}`); return false; }
+    if (node.id === 'event-plan' && (!measures.length || measures.some(measure => !measure.responsibleDepartment || !measure.responsiblePerson || !measure.measure || !measure.plannedStartDate || !measure.plannedCompletionDate || !measure.expectedEffect))) { toast('请完整填写至少一条处置措施及其责任人、责任部门、计划时间和预期效果'); return false; }
+    return true;
   };
-  return <Page title="重大风险事件 - 续报" breadcrumb={['重大风险事件管理', item.code, '续报']} actions={<><Button variant="secondary" onClick={() => navigate(`/major-events/${item.id}`)}>返回</Button><Button onClick={submit}>提交续报</Button></>}><Section title="当前事件"><div className="detail-grid"><b>事件编号<span>{item.code}</span></b><b>事件名称<span>{item.name}</span></b><b>当前状态<span><StatusTag value={item.status} /></span></b></div></Section><Section title="续报信息"><div className="form-grid"><Field label="最新进展" required><Textarea value={form.latestProgress} onChange={value => setForm({ ...form, latestProgress: value })} /></Field><Field label="风险变化" required><Textarea value={form.riskChange} onChange={value => setForm({ ...form, riskChange: value })} /></Field><Field label="措施执行情况" required><Textarea value={form.execution} onChange={value => setForm({ ...form, execution: value })} /></Field><Field label="下一步安排" required><Textarea value={form.nextStep} onChange={value => setForm({ ...form, nextStep: value })} /></Field></div></Section><Section title="附件"><FileUploader files={files} onChange={setFiles} /></Section></Page>;
+  const saveDraft = () => {
+    update(currentState => { majorEventService.saveNodeDraft(currentState, item.id, node.id, role, form, files, node.id === 'event-plan' ? measures : undefined); });
+    toast('当前节点草稿已保存至本地存储');
+  };
+  const submit = (action: string) => {
+    if (!canHandleMajorEventNode(role, node.id, item)) return toast('当前角色无权办理该节点');
+    if (node.id === 'event-initial-report' && !isValidMajorRiskEventType(state, form['风险事件类型'] || '')) return toast('风险事件类型已停用或不存在，请选择当前生效类型');
+    if (!validate()) return;
+    if (node.id === 'event-verify' && action === '核实通过' && form['核实结论'] !== '核实通过') return toast('请选择“核实通过”后再提交');
+    if (node.id === 'event-final-routine' && item.closureBranch === 'final-report' && role === '金控公司' && action === '审核终报并归档' && form['是否同意关闭'] !== '是') return toast('请选择同意关闭后再确认归档');
+    let success = false;
+    update(currentState => { success = majorEventService.submitNode(currentState, item.id, node.id, role, form, files, action, node.id === 'event-plan' ? measures : undefined); });
+    if (!success) return toast('节点状态已变化，请返回进度总览后重试');
+    toast(`${action}成功，事件流程已更新`);
+    back();
+  };
+  const downloadAttachment = (file: Attachment) => {
+    downloadText(file.name + '.txt', `重大风险事件：${item.name}\n文件：${file.name}\n大小：${formatSize(file.size)}\n上传时间：${file.uploadedAt}`);
+    update(currentState => { currentState.majorEvents.find(event => event.id === item.id)?.logs.push(createLog('下载附件', `在${node.name}下载附件：${file.name}`, role)); });
+    toast('附件已下载并记录操作日志');
+  };
+  const actionButtons = () => {
+    if (node.id === 'event-initial-report') return <Button onClick={() => submit('提交首报')}>提交首报</Button>;
+    if (node.id === 'event-verify') return <><Button variant="danger" onClick={() => submit('退回首报')}>退回补充</Button><Button variant="secondary" onClick={() => submit('不予认定')}>不予认定</Button><Button onClick={() => submit('核实通过')}>核实通过</Button></>;
+    if (node.id === 'event-plan') return <Button onClick={() => submit('提交处置方案')}>提交处置方案</Button>;
+    if (node.id === 'event-plan-assessment') return <><Button variant="danger" onClick={() => submit('退回处置方案')}>退回修改</Button><Button onClick={() => submit('评估通过')}>提交审阅</Button></>;
+    if (node.id === 'event-executive-review' && item.reviewStage === 'board') return <><Button variant="danger" onClick={() => submit('退回调整')}>退回调整</Button><Button onClick={() => submit('董事会审阅')}>董事会审阅通过</Button></>;
+    if (node.id === 'event-executive-review') return <><Button variant="danger" onClick={() => submit('退回调整')}>退回调整</Button><Button onClick={() => submit(form['是否提交董事会'] === '是' ? '提交董事会审阅' : '经理层审阅')}>{form['是否提交董事会'] === '是' ? '提交下一审阅环节' : '经理层审阅通过'}</Button></>;
+    if (node.id === 'event-execution-report') return <Button onClick={() => submit('提交续报')}>提交续报</Button>;
+    if (node.id === 'event-holding-track') return <><Button variant="secondary" onClick={() => submit('退回补充')}>退回补充</Button><Button variant="secondary" onClick={() => submit('催办')}>催办</Button><Button variant="secondary" onClick={() => submit('协调')}>记录协调情况</Button><Button variant="secondary" onClick={() => submit('继续处置')}>继续处置</Button><Button onClick={() => submit('进入终报')}>提交终报</Button><Button onClick={() => submit('转入常态化跟踪')}>转入常态化跟踪</Button></>;
+    if (item.closureBranch === 'final-report' && role === '各金融机构') return <Button onClick={() => submit('提交终报')}>提交终报</Button>;
+    if (item.closureBranch === 'final-report') return <><Button variant="danger" onClick={() => submit('退回补充')}>退回补充</Button><Button variant="secondary" onClick={() => submit('转入常态化跟踪')}>转入常态化跟踪</Button><Button onClick={() => submit('审核终报并归档')}>审核终报并归档</Button></>;
+    if (role === '各金融机构') return <Button onClick={() => submit('更新常态化跟踪')}>提交跟踪更新</Button>;
+    return <><Button variant="secondary" onClick={() => submit('催办')}>催办</Button><Button variant="secondary" onClick={() => submit('继续跟踪')}>继续跟踪</Button><Button variant="secondary" onClick={() => submit('重新进入处置流程')}>重新进入处置流程</Button><Button onClick={() => submit('结束跟踪并归档')}>结束跟踪并归档</Button></>;
+  };
+  if (!started) return <Page title="重大风险事件节点详情" breadcrumb={['重大风险事件管理', item.code]} onClose={back} actions={<Button variant="secondary" onClick={back}>返回进度总览</Button>}><div className="empty-state"><h2>该流程节点尚未开始</h2><p>请在前序节点完成后再查看或办理。</p></div></Page>;
+  return <Page title={`重大风险事件节点详情 · ${node.id === 'event-final-routine' && item.closureBranch === 'routine-tracking' ? '常态化跟踪' : node.name}`} breadcrumb={['重大风险事件管理', item.code, node.name]} onClose={back} actions={<Button variant="secondary" onClick={back}>返回进度总览</Button>}>
+    <Section title="重大风险事件8节点流程"><div className="major-event-detail-workflow"><InteractiveWorkflow definition={majorEventWorkflow} instance={workflow} selectedNodeId={node.id} onSelect={selected => navigate(`/major-events/${item.id}/nodes/${selected}?mode=${selected === workflow.currentNodeId && canHandleMajorEventNode(role, selected, item) ? 'edit' : 'view'}`)} /></div></Section>
+    <Section title="事件基本信息"><div className="detail-grid major-event-info-grid"><b>事件编号<span>{item.code}</span></b><b>事件名称<span>{item.name}</span></b><b>风险事件类型<span>{item.type}</span></b><b>所属机构<span>{item.institution}</span></b><b>发生时间<span>{item.occurredAt}</span></b><b>发现时间<span>{item.discoveredAt || '—'}</span></b><b>当前环节<span>{item.currentStage}</span></b><b>事件状态<span><StatusTag value={item.status} /></span></b><b>当前办理角色<span>{actor}</span></b><b>节点8分支<span>{item.closureBranch === 'final-report' ? '终报归档' : item.closureBranch === 'routine-tracking' ? '常态化跟踪' : '—'}</span></b></div></Section>
+    {node.id === 'event-verify' && <Section title="事件定义及判断依据"><div className="read-block"><b>{definition?.name || item.type}</b><p>{definition?.criteria.join('；') || '按当前重大风险事件定义及管理要求核实判断。'}</p><b>参考依据</b><p>{definition?.referenceBasis || '—'}</p></div></Section>}
+    {item.planMeasures?.length ? <Section title="处置措施"><Table><thead><tr><th>序号</th><th>责任部门</th><th>责任人</th><th>处置措施</th><th>计划开始</th><th>计划完成</th><th>预期效果</th></tr></thead><tbody>{item.planMeasures.map((measure, index) => <tr key={measure.id}><td>{index + 1}</td><td>{measure.responsibleDepartment}</td><td>{measure.responsiblePerson}</td><td>{measure.measure}</td><td>{measure.plannedStartDate}</td><td>{measure.plannedCompletionDate}</td><td>{measure.expectedEffect}</td></tr>)}</tbody></Table></Section> : null}
+    {item.followUps.length > 0 && <Section title="全部续报记录"><Table><thead><tr><th>续报编号</th><th>续报时间</th><th>事件最新情况</th><th>风险变化</th><th>完成比例</th><th>下一步安排</th></tr></thead><tbody>{item.followUps.map((report, index) => <tr key={report.id || index}><td>{report.code || `续报${index + 1}`}</td><td>{report.date}</td><td>{report.latestProgress}</td><td>{report.riskChange}</td><td>{report.completionRate ? `${report.completionRate}%` : '—'}</td><td>{report.nextStep}</td></tr>)}</tbody></Table></Section>}
+    {item.finalReport && <Section title="终报信息"><div className="read-block"><b>{item.finalReport.code || '终报'}</b><p>事件最终情况：{item.finalReport.result}</p><p>事件影响结果：{item.finalReport.impact}</p><p>风险是否解除：{item.finalReport.release}</p><p>后续管理建议：{item.finalReport.followUp}</p></div></Section>}
+    {item.routineTracking?.records.length ? <Section title="常态化跟踪记录">{item.routineTracking.records.map(record => <div className="report-block" key={record.id}><b>{record.date} · {record.role}</b><p>{record.content}</p></div>)}</Section> : null}
+    <WorkflowFeedbackOverview definition={majorEventWorkflow} instance={workflow} role={role} institution={item.institution} selectedNodeId={node.id} onReturnCurrent={() => navigate(`/major-events/${item.id}/nodes/${workflow.currentNodeId}?mode=${canHandleMajorEventNode(role, workflow.currentNodeId, item) ? 'edit' : 'view'}`)} />
+    {editable && <Section title={`当前节点办理 · ${node.name}${node.id === 'event-executive-review' ? `（${item.reviewStage === 'board' ? '董事会审阅' : '经理层审阅'}）` : ''}`}><div className="current-node-note">只允许当前办理角色编辑本节点；保存草稿不改变流程状态，提交后形成独立历史记录。</div><div className="form-grid">{fields.map(field => <Field label={field.label} required={field.required} span={field.type === 'textarea' ? 2 : 1} key={field.name}>{field.type === 'textarea' ? <Textarea value={form[field.name] || ''} onChange={value => setField(field.name, value)} maxLength={field.maxLength} showCount /> : field.type === 'select' ? <Select value={form[field.name] || ''} onChange={value => setField(field.name, value)} options={field.options || []} /> : <Input type={field.type || 'text'} value={form[field.name] || ''} onChange={value => setField(field.name, value)} maxLength={field.maxLength} />}</Field>)}</div>
+      {node.id === 'event-plan' && <div className="major-event-measures"><div className="major-event-subsection-head"><b>处置措施清单</b><Button variant="secondary" onClick={() => setMeasures(currentMeasures => [...currentMeasures, createMajorEventMeasure()])}>＋ 新增措施</Button></div>{measures.map((measure, index) => <div className="major-event-measure-card" key={measure.id}><div className="major-event-measure-title"><b>措施 {index + 1}{measure.submitted ? '（已提交记录）' : ''}</b><TextAction disabled={measures.length === 1 || measure.submitted} onClick={() => setMeasures(currentMeasures => currentMeasures.filter((_, measureIndex) => measureIndex !== index))}>删除</TextAction></div><div className="form-grid"><Field label="责任部门" required><Input value={measure.responsibleDepartment} onChange={value => updateMeasure(index, 'responsibleDepartment', value)} placeholder="手工输入，多个部门请使用顿号或逗号分隔" /></Field><Field label="责任人" required><Input value={measure.responsiblePerson} onChange={value => updateMeasure(index, 'responsiblePerson', value)} /></Field><Field label="处置措施" required span={2}><Textarea value={measure.measure} onChange={value => updateMeasure(index, 'measure', value)} maxLength={1500} showCount /></Field><Field label="计划开始时间" required><Input type="date" value={measure.plannedStartDate} onChange={value => updateMeasure(index, 'plannedStartDate', value)} /></Field><Field label="计划完成时间" required><Input type="date" value={measure.plannedCompletionDate} onChange={value => updateMeasure(index, 'plannedCompletionDate', value)} /></Field><Field label="预期效果" required span={2}><Textarea value={measure.expectedEffect} onChange={value => updateMeasure(index, 'expectedEffect', value)} /></Field></div></div>)}</div>}
+      <Field label="本节点附件"><FileUploader files={files} onChange={setFiles} /></Field><div className="form-actions"><Button variant="secondary" onClick={saveDraft}>{actor === '各金融机构' ? '保存草稿' : '保存意见'}</Button>{actionButtons()}<Button variant="secondary" onClick={back}>返回</Button></div></Section>}
+    {current && !editable && <div className="readonly-current-node">当前节点由“{actor}”办理，当前角色仅可查看已提交信息和历史记录。{requestedEdit ? '系统已自动切换为只读模式。' : ''}</div>}
+    <Section title="事件附件"><div className="major-event-attachment-list">{item.attachments.length ? item.attachments.map(file => <div key={file.id}><span>▣ {file.name}</span><small>{formatSize(file.size)} · {file.uploadedAt}</small><TextAction onClick={() => downloadAttachment(file)}>下载</TextAction></div>) : <div className="empty-inline">暂无附件</div>}</div></Section>
+    <Section title="全部操作记录"><OperationHistory logs={item.logs} /></Section>
+  </Page>;
 }
 
-function EventFinalReport({ state, role, navigate, update, toast }: PageProps) {
-  const id = window.location.pathname.split('/')[2];
-  const item = state.majorEvents.find(event => event.id === id);
-  const [form, setForm] = useState({ result: '', impact: '', release: '', followUp: '' });
-  const [files, setFiles] = useState<Attachment[]>([]);
-  if (!item || !can(role, 'event-progress', { institution: item.institution })) return <Page title="重大风险事件 - 终报" breadcrumb={['重大风险事件管理']} actions={<Button variant="secondary" onClick={() => navigate('/major-events')}>返回</Button>}><div className="empty-state"><div className="empty-icon">!</div><h2>当前角色无权提交该事件终报</h2></div></Page>;
-  const submit = () => {
-    if (!form.result || !form.impact || !form.release || !form.followUp) return toast('请完整填写终报信息');
-    update(current => {
-      const target = current.majorEvents.find(event => event.id === item.id);
-      if (!target) return;
-      target.finalReport = { ...form, attachments: files, date: today() };
-      target.workflow ||= { currentNodeId: 'final-archive', records: [] };
-      workflowService.append(target.workflow, majorEventWorkflow[6], { role, action: '提交终报', result: form.release.includes('未') ? '常态跟踪' : '已归档', formData: { 最终处置结果: form.result, 实际影响: form.impact, 风险解除情况: form.release, 后续管理安排: form.followUp }, attachments: files, status: form.release.includes('未') ? '已完成' : '已关闭' });
-      target.workflow.currentNodeId = 'final-archive';
-      target.latestReport = '终报';
-      target.currentStage = form.release.includes('未') ? '常态化跟踪' : '终报完成';
-      target.status = form.release.includes('未') ? '常态跟踪' : '已归档';
-      target.logs.push(createLog('终报', target.status === '已归档' ? '提交终报并归档' : '提交终报并转入常态化跟踪', role));
-    });
-    toast('终报已提交');
-    navigate(`/major-events/${item.id}`);
-  };
-  return <Page title="重大风险事件 - 终报" breadcrumb={['重大风险事件管理', item.code, '终报']} actions={<><Button variant="secondary" onClick={() => navigate(`/major-events/${item.id}`)}>返回</Button><Button onClick={submit}>提交终报</Button></>}><Section title="终报信息"><div className="form-grid"><Field label="最终处置结果" required><Textarea value={form.result} onChange={value => setForm({ ...form, result: value })} /></Field><Field label="实际影响" required><Textarea value={form.impact} onChange={value => setForm({ ...form, impact: value })} /></Field><Field label="风险解除情况" required><Textarea value={form.release} onChange={value => setForm({ ...form, release: value })} placeholder="已解除或未完全解除" /></Field><Field label="后续管理安排" required><Textarea value={form.followUp} onChange={value => setForm({ ...form, followUp: value })} /></Field></div></Section><Section title="附件"><FileUploader files={files} onChange={setFiles} /></Section></Page>;
-}
 
 function periodInputOrder(value: string) { const digits = value.replace(/\D/g, '').slice(0, 6); return digits ? Number(digits.padEnd(6, '0')) : 0; }
 

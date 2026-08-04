@@ -22,6 +22,38 @@ export const seedMajorRiskEventDefinitions = (): MajorRiskEventDefinition[] => [
   { id: 'med-5', code: 'MED-005', name: '重大信息科技风险事件', status: '生效', version: 'V1.0', updatedAt: '2026-06-30', notes: '', referenceBasis: '《银行保险机构操作风险管理办法》第四十二条', criteria: ['重要信息系统出现故障、受到网络攻击，导致在同一省份的营业网点、电子渠道业务中断3小时以上，或者在两个及以上省份业务中断30分钟以上；', '因网络欺诈及其他信息安全事件，导致本机构或客户资金损失5000万元以上，或者造成重大社会影响。'], logs: [createLog('初始化', '创建重大风险事件定义')] },
 ];
 
+export const getActiveMajorRiskEventDefinitions = (state: Pick<DemoState, 'majorRiskEventDefinitions'>) =>
+  state.majorRiskEventDefinitions.filter(definition => definition.status === '生效');
+
+export const getMajorRiskEventTypeOptions = (state: Pick<DemoState, 'majorRiskEventDefinitions' | 'majorEvents'>, includeReferenced = false) => {
+  const active = getActiveMajorRiskEventDefinitions(state).map(definition => definition.name);
+  return includeReferenced ? [...new Set([...active, ...state.majorEvents.map(event => event.type)])] : active;
+};
+
+export const isValidMajorRiskEventType = (state: Pick<DemoState, 'majorRiskEventDefinitions'>, eventType: string, activeOnly = true) =>
+  state.majorRiskEventDefinitions.some(definition => definition.name === eventType && (!activeOnly || definition.status === '生效'));
+
+const legacyMajorRiskEventTypeMap: Record<string, string> = {
+  重大信用风险事件: '关注/异常项目事件',
+  信用风险事件: '关注/异常项目事件',
+  项目风险事件: '关注/异常项目事件',
+};
+
+export const normalizeMajorRiskEventType = (eventType: string, eventName: string, definitions: MajorRiskEventDefinition[]) => {
+  if (definitions.some(definition => definition.name === eventType)) return eventType;
+  const mapped = legacyMajorRiskEventTypeMap[eventType];
+  if (mapped && definitions.some(definition => definition.name === mapped)) return mapped;
+  const candidates: [RegExp, string][] = [
+    [/信息科技|信息系统|网络安全|系统故障/, '重大信息科技风险事件'],
+    [/合规|处罚|监管|诉讼/, '重大合规风险事件'],
+    [/声誉|舆情|群体性事件/, '重大声誉风险事件'],
+    [/操作风险|欺诈|员工违法|数据泄露/, '重大操作风险事件'],
+    [/项目|信用|逾期|不良资产/, '关注/异常项目事件'],
+  ];
+  const inferred = candidates.find(([pattern]) => pattern.test(eventName))?.[1];
+  return inferred && definitions.some(definition => definition.name === inferred) ? inferred : eventType;
+};
+
 export const majorEventDefinitionService = {
   save(state: DemoState, value: Partial<MajorRiskEventDefinition>, operator: Role) {
     const existing = value.id ? state.majorRiskEventDefinitions.find(item => item.id === value.id) : undefined;

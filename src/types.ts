@@ -3,6 +3,8 @@ export type Role =
   | '金控公司'
   | '各金融机构';
 
+export type WorkflowActor = Role | '系统';
+
 export type Status = string;
 
 export type LogEntry = {
@@ -26,7 +28,7 @@ export type WorkflowNodeRecord = {
   nodeId: string;
   nodeName: string;
   department: string;
-  role: Role;
+  role: WorkflowActor;
   handler: string;
   action: string;
   result: string;
@@ -35,7 +37,7 @@ export type WorkflowNodeRecord = {
   opinion?: string;
   returnReason?: string;
   attachments: Attachment[];
-  status: '已完成' | '已退回' | '已关闭' | '已跳过';
+  status: '进行中' | '已完成' | '已退回' | '已关闭' | '已跳过';
   iteration: number;
 };
 
@@ -147,6 +149,39 @@ export type WarningRule = {
   letterDeliveryChanges?: { id: string; currentMode: 'auto' | 'none' | 'manual'; requestedMode: 'auto' | 'none' | 'manual'; reason: string; effectiveDate: string; applicant: string; appliedAt: string; reviewStatus: '待审核' | '通过' | '驳回'; reviewer?: string; reviewedAt?: string; reviewOpinion?: string }[];
 };
 
+export type WarningDisposalMeasure = {
+  id: string;
+  responsibleDepartment: string;
+  responsiblePerson: string;
+  measure: string;
+  plannedStartDate: string;
+  plannedCompletionDate: string;
+  expectedEffect: string;
+  resourceSupport?: string;
+  submitted: boolean;
+};
+
+export type WarningExecutionProgress = {
+  id: string;
+  updatedAt: string;
+  measure: string;
+  currentProgress: string;
+  completedItems: string;
+  incompleteItems: string;
+  problems: string;
+  nextSteps: string;
+  completionRate: string;
+  riskChange?: string;
+  attachments: Attachment[];
+  submitted: boolean;
+};
+
+export type WarningDisposalDraft = {
+  formData: Record<string, string>;
+  attachments: Attachment[];
+  measures?: WarningDisposalMeasure[];
+};
+
 export type WarningDisposal = {
   id: string;
   level: '黄灯' | '红灯';
@@ -174,6 +209,24 @@ export type WarningDisposal = {
   letterStatus?: '已下发' | '不发函' | '待下发';
   letterSentBy?: string;
   letterSentAt?: string;
+  noticeType?: '预警提示函' | '重大风险提示';
+  workflowType?: 'yellow' | 'red';
+  indicatorId?: string;
+  indicatorCode?: string;
+  monitoringFrequency?: string;
+  period?: string;
+  currentLightStatus?: '黄灯' | '红灯';
+  yellowRule?: string;
+  redRule?: string;
+  ruleCode?: string;
+  currentNode?: string;
+  itemStatus?: string;
+  disposalMeasures?: WarningDisposalMeasure[];
+  executionProgressList?: WarningExecutionProgress[];
+  groupAssessmentData?: Record<string, string>;
+  groupReviewData?: Record<string, string>;
+  releaseEvaluationData?: Record<string, string>;
+  drafts?: Record<string, WarningDisposalDraft>;
   workflow?: WorkflowInstance;
 };
 
@@ -257,6 +310,25 @@ export type MajorRiskEventDefinition = {
   logs: LogEntry[];
 };
 
+export type MajorEventStatus = '草稿' | '待核实' | '待提交处置方案' | '待集团评估' | '待经理层审阅' | '待董事会审阅' | '处置执行中' | '持续跟踪中' | '待终报' | '终报审核中' | '常态化跟踪' | '已归档' | '已关闭' | '已退回' | '待审核' | '处理中' | '常态跟踪';
+
+export type MajorEventMeasure = {
+  id: string;
+  responsibleDepartment: string;
+  responsiblePerson: string;
+  measure: string;
+  plannedStartDate: string;
+  plannedCompletionDate: string;
+  expectedEffect: string;
+  submitted: boolean;
+};
+
+export type MajorEventDraft = {
+  formData: Record<string, string>;
+  attachments: Attachment[];
+  measures?: MajorEventMeasure[];
+};
+
 export type MajorEvent = {
   id: string;
   code: string;
@@ -264,9 +336,10 @@ export type MajorEvent = {
   institution: string;
   type: string;
   occurredAt: string;
+  discoveredAt?: string;
   latestReport: '首报' | '续报' | '终报';
   currentStage: string;
-  status: '草稿' | '待审核' | '处理中' | '常态跟踪' | '已归档';
+  status: MajorEventStatus;
   impact: string;
   contact: string;
   phone: string;
@@ -280,9 +353,22 @@ export type MajorEvent = {
   responsible: string;
   deadline: string;
   attachments: Attachment[];
-  followUps: { latestProgress: string; riskChange: string; execution: string; nextStep: string; attachments: Attachment[]; date: string }[];
-  finalReport?: { result: string; impact: string; release: string; followUp: string; attachments: Attachment[]; date: string };
+  followUps: { id?: string; code?: string; latestProgress: string; riskChange: string; execution: string; nextStep: string; attachments: Attachment[]; date: string; completedItems?: string; incompleteItems?: string; completionRate?: string; problems?: string; newImpact?: string }[];
+  finalReport?: { code?: string; result: string; impact: string; release: string; followUp: string; attachments: Attachment[]; date: string; completion?: string; effect?: string; remainingIssues?: string; lessons?: string };
   logs: LogEntry[];
+  planMeasures?: MajorEventMeasure[];
+  verificationData?: Record<string, string>;
+  planAssessmentData?: Record<string, string>;
+  executiveReviewData?: { management?: Record<string, string>; board?: Record<string, string> };
+  reviewStage?: 'management' | 'board';
+  holdingTrackData?: Record<string, string>;
+  closureBranch?: 'final-report' | 'routine-tracking';
+  node8Actor?: Role;
+  finalReportReview?: Record<string, string>;
+  routineTracking?: { reason: string; items: string; responsibleInstitution: string; frequency: string; nextFeedbackDate: string; currentRisk: string; nextMeasures: string; records: { id: string; date: string; content: string; attachments: Attachment[]; role: Role }[] };
+  archivedAt?: string;
+  archivedBy?: string;
+  eventDrafts?: Record<string, MajorEventDraft>;
   workflow?: WorkflowInstance;
 };
 
