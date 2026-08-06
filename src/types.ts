@@ -443,6 +443,89 @@ export type SpecialRiskWorkOrder = {
   workflow?: WorkflowInstance;
 };
 
+export type ConcentrationType = 'singleCustomer' | 'groupCustomer' | 'industry' | 'region';
+export type ConcentrationLightStatus = 'red' | 'yellow' | 'green';
+
+export type ConcentrationHistoryRecord = {
+  period: string;
+  businessBalance: number;
+  denominatorValue: number;
+  concentrationRate: number;
+  lightStatus: ConcentrationLightStatus;
+};
+
+export type ConcentrationCompositionItem = {
+  id: string;
+  name: string;
+  businessBalance: number;
+  proportion: number;
+  lightStatus: ConcentrationLightStatus;
+};
+
+export type ConcentrationRecord = {
+  id: string;
+  concentrationType: ConcentrationType;
+  objectCode: string;
+  objectName: string;
+  metricName: string;
+  metricFormula: string;
+  numeratorDescription: string;
+  denominatorType: '净资产' | '合格资本';
+  denominatorValue: number;
+  concentrationRate: number;
+  businessBalance: number;
+  yellowRule: string;
+  redRule: string;
+  yellowThreshold: number;
+  redThreshold: number;
+  lightStatus: ConcentrationLightStatus;
+  involvedInstitutionNames: string[];
+  primaryBusinessTypes: string[];
+  primaryCustomerCount: number;
+  period: string;
+  frequency: string;
+  regionLevel?: '省级行政区' | '直辖市' | '特别行政区' | '国别' | '管理区域';
+  historicalRecords: ConcentrationHistoryRecord[];
+  compositionByInstitution: ConcentrationCompositionItem[];
+  compositionByBusinessType: ConcentrationCompositionItem[];
+  compositionByCustomer: ConcentrationCompositionItem[];
+  businessDetailIds: string[];
+  relatedWarningId?: string;
+};
+
+export type ConcentrationBusinessDetail = {
+  id: string;
+  businessNo: string;
+  businessDate: string;
+  customerName: string;
+  groupCustomerName: string;
+  institution: string;
+  businessType: string;
+  financingType: string;
+  businessBalance: number;
+  industry: string;
+  industryCode: string;
+  region: string;
+  regionLevel: ConcentrationRecord['regionLevel'];
+  collateralRegion: string;
+  startDate: string;
+  maturityDate: string;
+  included: boolean;
+  period: string;
+  dataSource: string;
+};
+
+export type ConcentrationDisplayConfig = {
+  role: Role;
+  types: ConcentrationType[];
+  updatedAt: string;
+};
+
+export type ConcentrationData = {
+  records: ConcentrationRecord[];
+  businessDetails: ConcentrationBusinessDetail[];
+};
+
 export type DemoState = {
   institutions: Institution[];
   riskPreferences: RiskPreference[];

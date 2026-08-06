@@ -1,4 +1,4 @@
-import type { DemoState, Indicator, MajorEvent, Role, WarningDisposal, WarningRule, WorkflowNodeRecord } from '../types';
+import type { ConcentrationBusinessDetail, ConcentrationRecord, DemoState, Indicator, MajorEvent, Role, WarningDisposal, WarningRule, WorkflowNodeRecord } from '../types';
 
 export const roleLabels: Role[] = ['集团', '金控公司', '各金融机构'];
 export const currentInstitution = '国际AMC';
@@ -76,6 +76,21 @@ export const canApproveWarningRule = (role: Role, rule: WarningRule) => role ===
 export const canViewWarningRuleConfig = (role: Role, rule: WarningRule) => canViewInstitution(role, rule.institution);
 export const canEditWarningRuleConfig = (role: Role) => role === '金控公司';
 export const canConfigureWarningLetters = (role: Role) => role === '金控公司';
+
+export const canViewConcentrationMonitoring = (role: Role) => roleLabels.includes(role);
+export const canConfigureConcentrationDashboard = (role: Role) => role !== '各金融机构';
+export const canViewAllInstitutionConcentration = (role: Role) => role !== '各金融机构';
+export const canViewOwnInstitutionConcentration = (role: Role) => role === '各金融机构';
+export const canExportConcentrationData = canViewConcentrationMonitoring;
+export const canViewConcentrationBusinessDetail = (role: Role, detail: Pick<ConcentrationBusinessDetail, 'institution'>) => canViewInstitution(role, detail.institution);
+export const canViewConcentrationRecord = (role: Role, record: Pick<ConcentrationRecord, 'involvedInstitutionNames'>) => role !== '各金融机构' || record.involvedInstitutionNames.includes(currentInstitution);
+export const canViewConcentrationWarning = (role: Role, warning: Pick<WarningDisposal, 'institution'> | undefined) => !!warning && canViewInstitution(role, warning.institution);
+
+export const filterDataByCurrentInstitution = <T>(items: T[], role: Role, getInstitution: (item: T) => string) => role === '各金融机构'
+  ? items.filter(item => canViewInstitution(role, getInstitution(item)))
+  : items;
+export const canHandleWorkbenchTask = (role: Role, taskRole: Role) => role === taskRole;
+export const canViewWorkbenchInstitutionOverview = (role: Role, institution: string) => role !== '各金融机构' || institution === currentInstitution;
 
 export const canViewLatestIndicatorStatus = (role: Role) => ['集团', '金控公司', '各金融机构'].includes(role);
 export const canViewHistoricalIndicatorData = (role: Role) => ['集团', '金控公司', '各金融机构'].includes(role);
