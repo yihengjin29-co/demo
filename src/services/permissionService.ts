@@ -133,8 +133,8 @@ export const canConfigureDashboard = (_role: Role) => true;
 export const canViewInstitutionData = canViewInstitution;
 export const canAccessDashboardLink = (role: Role, path: string) => {
   if (path === '/warning/risk-preference') return canAccessRiskPreference(role);
-  if (path === '/indicators/latest-status') return canViewLatestIndicatorStatus(role);
-  if (path === '/reports' || path.startsWith('/reports/indicator/')) return canViewHistoricalIndicatorData(role);
+  if (path === '/indicators/query' || path === '/indicators/latest-status' || path.startsWith('/indicators/query/')) return canViewLatestIndicatorStatus(role) && canViewHistoricalIndicatorData(role);
+  if (path.startsWith('/reports/indicator/')) return canViewHistoricalIndicatorData(role);
   return true;
 };
 
@@ -187,7 +187,7 @@ export const canHandleWorkflowNode = (role: Role, nodeId: string, institution: s
   const institutionNodes = ['reason-fill', 'plan-fill', 'execution', 'event-create', 'first-report', 'event-execution', 'final-archive', 'special-feedback', 'special-track'];
   const sharedReviewNodes = ['reason-review', 'plan-review', 'tracking-release'];
   const companyNodes = ['rule-status', 'rule-config'];
-  const managementNodes = ['management-coordination', 'verify-report', 'special-evaluate', 'special-release'];
+  const managementNodes = ['management-coordination', 'verify-report', 'special-review'];
   const executiveNodes = ['management-review', 'board-review', 'rp-review'];
   if (institutionNodes.includes(nodeId)) return role === '各金融机构';
   if (sharedReviewNodes.includes(nodeId)) return role === '集团' || role === '金控公司';
@@ -197,7 +197,7 @@ export const canHandleWorkflowNode = (role: Role, nodeId: string, institution: s
   return false;
 };
 
-export const canReturnWorkflowNode = (role: Role, nodeId: string, institution: string) => canHandleWorkflowNode(role, nodeId, institution) && ['reason-review', 'plan-review', 'red-group-assessment', 'red-group-review', 'red-execution', 'verify-report', 'special-evaluate', 'management-review'].includes(nodeId);
+export const canReturnWorkflowNode = (role: Role, nodeId: string, institution: string) => canHandleWorkflowNode(role, nodeId, institution) && ['reason-review', 'plan-review', 'red-group-assessment', 'red-group-review', 'red-execution', 'verify-report', 'management-review'].includes(nodeId);
 
 export const getAvailableWorkflowActions = (role: Role, nodeId: string, institution: string) => {
   if (!canHandleWorkflowNode(role, nodeId, institution)) return [];

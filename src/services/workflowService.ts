@@ -36,11 +36,10 @@ export const majorEventWorkflow: WorkflowDefinitionNode[] = [
 ];
 
 export const specialRiskWorkflow: WorkflowDefinitionNode[] = [
-  { id: 'special-issued', name: '专项风险提示', role: '金控公司', department: '金控风险管理部' },
-  { id: 'special-feedback', name: '机构首次反馈', role: '各金融机构', department: '机构风险管理部门' },
-  { id: 'special-evaluate', name: '管理评估意见', role: '集团', department: '金融机构管理部' },
-  { id: 'special-track', name: '跟踪反馈', role: '各金融机构', department: '机构风险管理部门' },
-  { id: 'special-release', name: '解除意见及管理报告', role: '集团', department: '金融机构管理部' },
+  { id: 'special-issued', name: '国资公司下发专项风险提示函', role: '金控公司', department: '金控风险管理部' },
+  { id: 'special-feedback', name: '金融机构答复专项风险提示函', role: '各金融机构', department: '机构风险管理部门' },
+  { id: 'special-review', name: '国资公司审阅答复函', role: '集团', department: '金融机构管理部' },
+  { id: 'special-track', name: '金融机构后续跟踪反馈', role: '各金融机构', department: '机构风险管理部门' },
 ];
 
 export const riskPreferenceWorkflow: WorkflowDefinitionNode[] = [

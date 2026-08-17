@@ -418,6 +418,7 @@ export type PeriodicReport = {
 
 export type SpecialRisk = {
   id: string;
+  letterNo?: string;
   name: string;
   types: string[];
   institutions: string[];
@@ -437,7 +438,7 @@ export type SpecialRiskWorkOrder = {
   id: string;
   institution: string;
   issuedAt: string;
-  status: '待反馈' | '已反馈' | '评估中' | '部分解除' | '已解除' | '待跟踪反馈';
+  status: '已下发专项风险提示函' | '已答复专项风险提示函' | '已审阅答复函';
   feedback?: { contact: string; phone: string; understanding: string; problems: string; strategy: string; other: string; attachments: Attachment[]; date: string };
   evaluation?: { result: string; department: string; summary: string; date: string; attachments: Attachment[] };
   workflow?: WorkflowInstance;

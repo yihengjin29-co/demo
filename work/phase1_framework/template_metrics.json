@@ -1,0 +1,316 @@
+﻿{
+  "source": "C:\\Users\\Yiheng.jin\\Desktop\\SHGJ\\金控并表系统功能需求说明书_风险并表板块..docx",
+  "sections": [
+    {
+      "index": 0,
+      "width_cm": 21.00086111111111,
+      "height_cm": 29.70036111111111,
+      "top_cm": 2.54,
+      "bottom_cm": 2.54,
+      "left_cm": 3.175,
+      "right_cm": 3.175,
+      "header_cm": 1.4993055555555554,
+      "footer_cm": 1.4993055555555554,
+      "start_type": "NEW_PAGE (2)",
+      "header_text": "",
+      "footer_text": "1"
+    }
+  ],
+  "styles": {
+    "Normal": {
+      "name": "Normal",
+      "type": "PARAGRAPH (1)",
+      "base_style": null,
+      "font_name": "华文细黑",
+      "font_size_pt": 14.0,
+      "bold": null,
+      "italic": null,
+      "font_xml": {
+        "ascii": "华文细黑",
+        "eastAsia": "华文细黑",
+        "hAnsi": "华文细黑"
+      },
+      "alignment": "None",
+      "left_indent_cm": null,
+      "first_line_indent_cm": null,
+      "space_before_pt": null,
+      "space_after_pt": 6.0,
+      "line_spacing": "1.5",
+      "keep_with_next": null,
+      "page_break_before": null
+    },
+    "Title": null,
+    "Heading 1": {
+      "name": "Heading 1",
+      "type": "PARAGRAPH (1)",
+      "base_style": "Normal",
+      "font_name": null,
+      "font_size_pt": null,
+      "bold": true,
+      "italic": null,
+      "font_xml": {
+        "cs": "Times New Roman"
+      },
+      "alignment": "JUSTIFY (3)",
+      "left_indent_cm": null,
+      "first_line_indent_cm": null,
+      "space_before_pt": 10.0,
+      "space_after_pt": null,
+      "line_spacing": "2.408333333333333",
+      "keep_with_next": true,
+      "page_break_before": null
+    },
+    "Heading 2": {
+      "name": "Heading 2",
+      "type": "PARAGRAPH (1)",
+      "base_style": "Normal",
+      "font_name": null,
+      "font_size_pt": null,
+      "bold": true,
+      "italic": null,
+      "font_xml": {
+        "asciiTheme": "majorHAnsi",
+        "eastAsiaTheme": "majorEastAsia",
+        "hAnsiTheme": "majorHAnsi",
+        "cstheme": "majorBidi"
+      },
+      "alignment": "None",
+      "left_indent_cm": null,
+      "first_line_indent_cm": null,
+      "space_before_pt": 10.0,
+      "space_after_pt": null,
+      "line_spacing": "None",
+      "keep_with_next": true,
+      "page_break_before": null
+    },
+    "Heading 3": {
+      "name": "Heading 3",
+      "type": "PARAGRAPH (1)",
+      "base_style": "Normal",
+      "font_name": null,
+      "font_size_pt": null,
+      "bold": true,
+      "italic": null,
+      "font_xml": {
+        "asciiTheme": "majorHAnsi",
+        "eastAsiaTheme": "majorEastAsia",
+        "hAnsiTheme": "majorHAnsi",
+        "cstheme": "majorBidi"
+      },
+      "alignment": "None",
+      "left_indent_cm": null,
+      "first_line_indent_cm": null,
+      "space_before_pt": 6.0,
+      "space_after_pt": null,
+      "line_spacing": "None",
+      "keep_with_next": true,
+      "page_break_before": null
+    },
+    "Heading 4": {
+      "name": "Heading 4",
+      "type": "PARAGRAPH (1)",
+      "base_style": "Normal",
+      "font_name": null,
+      "font_size_pt": null,
+      "bold": true,
+      "italic": true,
+      "font_xml": {
+        "asciiTheme": "majorHAnsi",
+        "eastAsiaTheme": "majorEastAsia",
+        "hAnsiTheme": "majorHAnsi",
+        "cstheme": "majorBidi"
+      },
+      "alignment": "None",
+      "left_indent_cm": null,
+      "first_line_indent_cm": null,
+      "space_before_pt": 6.0,
+      "space_after_pt": null,
+      "line_spacing": "None",
+      "keep_with_next": true,
+      "page_break_before": null
+    },
+    "样式2": {
+      "name": "样式2",
+      "type": "PARAGRAPH (1)",
+      "base_style": "Normal",
+      "font_name": null,
+      "font_size_pt": null,
+      "bold": null,
+      "italic": null,
+      "font_xml": null,
+      "alignment": "None",
+      "left_indent_cm": null,
+      "first_line_indent_cm": 0.9877777777777778,
+      "space_before_pt": null,
+      "space_after_pt": null,
+      "line_spacing": "None",
+      "keep_with_next": null,
+      "page_break_before": null
+    },
+    "toc 1": {
+      "name": "toc 1",
+      "type": "PARAGRAPH (1)",
+      "base_style": "Normal",
+      "font_name": null,
+      "font_size_pt": 11.0,
+      "bold": null,
+      "italic": null,
+      "font_xml": {
+        "cs": "Times New Roman"
+      },
+      "alignment": "None",
+      "left_indent_cm": null,
+      "first_line_indent_cm": null,
+      "space_before_pt": null,
+      "space_after_pt": 5.0,
+      "line_spacing": "1.0791666666666666",
+      "keep_with_next": null,
+      "page_break_before": null
+    },
+    "toc 2": {
+      "name": "toc 2",
+      "type": "PARAGRAPH (1)",
+      "base_style": "Normal",
+      "font_name": null,
+      "font_size_pt": 11.0,
+      "bold": null,
+      "italic": null,
+      "font_xml": {
+        "cs": "Times New Roman"
+      },
+      "alignment": "None",
+      "left_indent_cm": 0.38805555555555554,
+      "first_line_indent_cm": null,
+      "space_before_pt": null,
+      "space_after_pt": 5.0,
+      "line_spacing": "1.0791666666666666",
+      "keep_with_next": null,
+      "page_break_before": null
+    },
+    "toc 3": {
+      "name": "toc 3",
+      "type": "PARAGRAPH (1)",
+      "base_style": "Normal",
+      "font_name": null,
+      "font_size_pt": 11.0,
+      "bold": true,
+      "italic": null,
+      "font_xml": {
+        "cs": "Times New Roman"
+      },
+      "alignment": "None",
+      "left_indent_cm": 0.7761111111111111,
+      "first_line_indent_cm": null,
+      "space_before_pt": null,
+      "space_after_pt": 5.0,
+      "line_spacing": "1.0791666666666666",
+      "keep_with_next": null,
+      "page_break_before": null
+    },
+    "Table Grid": {
+      "name": "Table Grid",
+      "type": "TABLE (3)",
+      "base_style": "Normal Table",
+      "font_name": "Times New Roman",
+      "font_size_pt": 14.0,
+      "bold": null,
+      "italic": null,
+      "font_xml": {
+        "ascii": "Times New Roman",
+        "eastAsia": "彩虹粗仿宋",
+        "hAnsi": "Times New Roman",
+        "cs": "Times New Roman"
+      },
+      "alignment": "None",
+      "left_indent_cm": null,
+      "first_line_indent_cm": null,
+      "space_before_pt": null,
+      "space_after_pt": null,
+      "line_spacing": "1.0",
+      "keep_with_next": null,
+      "page_break_before": null
+    }
+  },
+  "tables": [
+    {
+      "index": 0,
+      "style": "Table Grid",
+      "rows": 5,
+      "cols": 4
+    },
+    {
+      "index": 1,
+      "style": "Table Grid",
+      "rows": 2,
+      "cols": 4
+    },
+    {
+      "index": 2,
+      "style": "Table Grid",
+      "rows": 4,
+      "cols": 4
+    },
+    {
+      "index": 3,
+      "style": "Table Grid",
+      "rows": 5,
+      "cols": 4
+    },
+    {
+      "index": 4,
+      "style": "Table Grid",
+      "rows": 16,
+      "cols": 5
+    },
+    {
+      "index": 5,
+      "style": "Table Grid",
+      "rows": 10,
+      "cols": 2
+    },
+    {
+      "index": 6,
+      "style": "Table Grid",
+      "rows": 4,
+      "cols": 4
+    },
+    {
+      "index": 7,
+      "style": "Table Grid",
+      "rows": 19,
+      "cols": 5
+    },
+    {
+      "index": 8,
+      "style": "Table Grid",
+      "rows": 6,
+      "cols": 2
+    },
+    {
+      "index": 9,
+      "style": "Table Grid",
+      "rows": 4,
+      "cols": 4
+    },
+    {
+      "index": 10,
+      "style": "Table Grid",
+      "rows": 25,
+      "cols": 5
+    },
+    {
+      "index": 11,
+      "style": "Table Grid",
+      "rows": 9,
+      "cols": 2
+    }
+  ],
+  "header_parts": [
+    "word/header1.xml"
+  ],
+  "footer_parts": [
+    "word/footer1.xml"
+  ],
+  "settings_has_update_fields": false,
+  "numbering_size": 119292
+}

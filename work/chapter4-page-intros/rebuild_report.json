@@ -1,0 +1,36 @@
+{
+  "source": "C:\\Users\\Yiheng.jin\\demo\\work\\chapter4-page-intros\\source.docx",
+  "output": "C:\\Users\\Yiheng.jin\\demo\\deliverables\\金控并表系统业务功能需求说明书（一期）_页面说明精简版.docx",
+  "source_media_count": 38,
+  "output_media_count": 38,
+  "media_hashes_identical": true,
+  "source_inline_shapes": 38,
+  "output_inline_shapes": 38,
+  "chapter2_identical": true,
+  "chapter3_identical": true,
+  "remaining_tables": 5,
+  "remaining_operation_markers": {
+    "界面规则": 0,
+    "操作功能说明": 0,
+    "操作界面字段规则及要求": 0,
+    "点击“": 0
+  },
+  "term_presence": {
+    "集团并表风险偏好": true,
+    "风险偏好目标": true,
+    "风险偏好指标": true,
+    "金融机构风险限额": true,
+    "风险并表指标": true,
+    "预警规则": true,
+    "黄灯预警": true,
+    "红灯预警": true,
+    "风险指标重检": true,
+    "重大风险事件": true,
+    "首报": true,
+    "续报": true,
+    "终报": true,
+    "专项风险提示": true,
+    "指标版本": true
+  },
+  "paragraph_count": 199
+}

@@ -59,8 +59,8 @@ export const seedState = (): DemoState => ({
     { id: 'pr-2', name: '2024年6月风险监测快报', institution: '浦发银行', type: '风险监测报告', reportDate: '2024-06-30', submitDate: '2024-07-02', cycle: '月度', overview: '月度风险指标监测快报。', attachments: [], visibleInstitutions: ['集团本部'], visibleDepartments: ['金融机构管理部'], viewers: [], pushMethod: '邮件', status: '已提交', logs: [createLog('提交', '报告已提交')] },
   ],
   specialRisks: [
-    { id: 'sr-1', name: '重点行业信用风险专项提示', types: ['信用风险', '集中度风险'], institutions: ['国际AMC', '申能财务', '东方证券'], institutionNotes: { 国际AMC: '关注大额客户风险暴露。', 申能财务: '强化融资端风险监测。', 东方证券: '关注行业集中度变化。' }, purpose: '针对重点行业风险变化开展专项排查，压实机构风险防控责任。', measures: '完善授信准入、存续期管理及风险预警阈值。', requirements: '请于反馈期内完成自检并提交风险点、整改措施及后续安排。', attachments: [], createdAt: '2024-06-10', updatedAt: '2024-06-18', status: '已下发', workOrders: [{ id: 'WO-2024-001', institution: '国际AMC', issuedAt: '2024-06-10', status: '已反馈', feedback: { contact: '王五', phone: '13800138000', understanding: '已组织学习并理解提示要求。', problems: '发现一项重点客户集中度偏高问题。', strategy: '增加授信限额监测频次。', other: '将纳入月度风险报告。', attachments: [], date: '2024-06-15' } }, { id: 'WO-2024-002', institution: '申能财务', issuedAt: '2024-06-10', status: '待反馈' }, { id: 'WO-2024-003', institution: '东方证券', issuedAt: '2024-06-10', status: '部分解除', feedback: { contact: '钱七', phone: '13700137000', understanding: '已完成专项自查。', problems: '个别行业敞口仍需跟踪。', strategy: '建立跟踪台账。', other: '', attachments: [], date: '2024-06-16' }, evaluation: { result: '部分解除', department: '金融机构管理部', summary: '主要风险已缓释，个别风险点继续跟踪。', date: '2024-06-17', attachments: [] } }], logs: [createLog('提交并下发', '已针对3家机构生成独立工单')] },
-    { id: 'sr-2', name: '流动性风险季节性专项排查', types: ['流动性风险'], institutions: ['浦发银行', '上农商'], institutionNotes: { 浦发银行: '', 上农商: '' }, purpose: '关注季节性资金波动风险。', measures: '做好流动性储备与压力测试。', requirements: '提交排查结果及后续管理安排。', attachments: [], createdAt: '2024-05-22', updatedAt: '2024-06-03', status: '草稿', workOrders: [], logs: [createLog('保存草稿', '专项提示草稿已保存')] },
+    { id: 'sr-1', letterNo: 'ZXFX-2024-001', name: '专项风险提示A', types: ['风险类型A'], institutions: ['国际AMC', '浦发银行', '国泰海通'], institutionNotes: { 国际AMC: '按提示函要求开展专项自查。', 浦发银行: '按提示函要求开展专项自查。', 国泰海通: '按提示函要求开展专项自查。' }, purpose: '针对风险类型A相关风险变化开展专项排查，压实机构风险防控责任。', measures: '完善风险识别、持续监测及内部管理措施。', requirements: '请于反馈期内完成自检并提交风险点、应对措施及后续安排。', attachments: [], createdAt: '2024-06-10', updatedAt: '2024-06-18', status: '已下发', workOrders: [{ id: 'ZXFX-2024-001-01', institution: '国际AMC', issuedAt: '2024-06-10', status: '已答复专项风险提示函', feedback: { contact: '机构联系人A', phone: '13800000001', understanding: '已组织学习并理解专项风险提示函要求。', problems: '已完成相关风险事项自查。', strategy: '持续加强风险监测并完善应对安排。', other: '后续按要求持续反馈。', attachments: [], date: '2024-06-15' } }, { id: 'ZXFX-2024-001-02', institution: '浦发银行', issuedAt: '2024-06-10', status: '已下发专项风险提示函' }, { id: 'ZXFX-2024-001-03', institution: '国泰海通', issuedAt: '2024-06-10', status: '已审阅答复函', feedback: { contact: '机构联系人B', phone: '13800000002', understanding: '已完成专项风险提示函传达。', problems: '已完成相关事项自查。', strategy: '建立持续跟踪机制。', other: '', attachments: [], date: '2024-06-16' }, evaluation: { result: '已审阅', department: '金融机构管理部', summary: '答复内容已审阅，请按要求持续开展跟踪反馈。', date: '2024-06-17', attachments: [] } }], logs: [createLog('提交并下发', '专项风险提示函已下发至3家机构')] },
+    { id: 'sr-2', letterNo: 'ZXFX-2024-002', name: '专项风险提示B', types: ['风险类型B'], institutions: ['浦发银行', '上海农商银行'], institutionNotes: { 浦发银行: '', 上海农商银行: '' }, purpose: '针对风险类型B相关风险变化开展专项排查。', measures: '做好风险监测与必要的管理准备。', requirements: '提交自查结果及后续管理安排。', attachments: [], createdAt: '2024-05-22', updatedAt: '2024-06-03', status: '草稿', workOrders: [], logs: [createLog('保存草稿', '专项提示草稿已保存')] },
   ],
 });
 
@@ -379,15 +379,32 @@ export const normalizeState = (source: DemoState): DemoState => {
   state.reports.forEach(x => x.institution = normalizeInstitution(x.institution));
   state.periodicReports.forEach(x => { x.institution = normalizeInstitution(x.institution); x.visibleInstitutions = x.visibleInstitutions.map(y => normalizeInstitution(y)); });
   state.specialRisks.forEach(x => {
+    const specialIndex = state.specialRisks.indexOf(x);
+    const suffix = String(specialIndex + 1).padStart(3, '0');
+    x.letterNo = /^ZXFX-\d{4}-\d{3}$/.test(x.letterNo || '') ? x.letterNo : `ZXFX-2024-${suffix}`;
+    const simulated = x.types.length > 0 && x.types.every(type => /^风险类型[A-D]$/.test(type));
+    if (!simulated) {
+      const typeCode = String.fromCharCode(65 + Math.min(specialIndex, 3));
+      x.name = `专项风险提示${typeCode}`;
+      x.types = [`风险类型${typeCode}`];
+      x.purpose = `针对风险类型${typeCode}相关风险变化开展专项排查，压实机构风险防控责任。`;
+      x.measures = '完善风险识别、持续监测及内部管理措施。';
+      x.requirements = '请按专项风险提示函要求完成自查、提交答复并持续开展后续跟踪反馈。';
+    }
+    x.logs.forEach(log => { log.content = log.content.replace(/独立机构工单|机构工单|工单/g, '专项风险提示函接收记录'); });
     x.institutions = x.institutions.flatMap(y => normalizeInstitution(y).split('、'));
     x.institutionNotes = Object.fromEntries(Object.entries(x.institutionNotes).map(([k, v]) => [normalizeInstitution(k), v]));
-    x.workOrders.forEach(y => {
+    x.workOrders.forEach((y, orderIndex) => {
+      y.id = `${x.letterNo}-${String(orderIndex + 1).padStart(2, '0')}`;
       y.institution = normalizeInstitution(y.institution);
-      if (!y.workflow) {
-        const records = [workflowRecord(`wf-${y.id}-1`, 'special-issued', '专项风险提示', '金控公司', { 提示背景与目的: x.purpose, 管理措施与建议: x.measures, 反馈要求: x.requirements }, '下发提示', '已下发', x.attachments, x.createdAt)];
-        if (y.feedback) records.push(workflowRecord(`wf-${y.id}-2`, 'special-feedback', '机构首次反馈', '各金融机构', { 认识与理解: y.feedback.understanding, 自查问题与风险点: y.feedback.problems, 风险应对策略: y.feedback.strategy, 其他反馈: y.feedback.other }, '提交反馈', '已反馈', y.feedback.attachments, y.feedback.date));
-        if (y.evaluation) records.push(workflowRecord(`wf-${y.id}-3`, 'special-evaluate', '管理评估意见', '集团', { 分析及总结: y.evaluation.summary }, '提交评估', y.evaluation.result, y.evaluation.attachments, y.evaluation.date));
-        y.workflow = { currentNodeId: y.status === '待反馈' ? 'special-feedback' : ['已反馈', '评估中'].includes(y.status) ? 'special-evaluate' : y.status === '待跟踪反馈' ? 'special-track' : 'special-release', records };
+      const legacyStatus = y.status as string;
+      y.status = !y.feedback ? '已下发专项风险提示函' : y.evaluation || ['部分' + '解除', '已' + '解除', '待跟踪反馈', '已审阅答复函'].includes(legacyStatus) ? '已审阅答复函' : '已答复专项风险提示函';
+      const legacyWorkflow = !y.workflow || !['special-feedback', 'special-review', 'special-track'].includes(y.workflow.currentNodeId) || y.workflow.records.some(record => ['special-evaluate', 'special-release'].includes(record.nodeId));
+      if (legacyWorkflow) {
+        const records = [workflowRecord(`wf-${y.id}-1`, 'special-issued', '国资公司下发专项风险提示函', '金控公司', { 提示背景与目的: x.purpose, 管理措施与建议: x.measures, 反馈要求: x.requirements }, '下发专项风险提示函', '已下发专项风险提示函', x.attachments, x.createdAt)];
+        if (y.feedback) records.push(workflowRecord(`wf-${y.id}-2`, 'special-feedback', '金融机构答复专项风险提示函', '各金融机构', { 认识与理解: y.feedback.understanding, 自查问题与风险点: y.feedback.problems, 风险应对策略: y.feedback.strategy, 其他反馈: y.feedback.other }, '提交答复函', '已答复专项风险提示函', y.feedback.attachments, y.feedback.date));
+        if (y.evaluation) records.push(workflowRecord(`wf-${y.id}-3`, 'special-review', '国资公司审阅答复函', '集团', { 审阅意见: y.evaluation.summary }, '完成答复函审阅', '已审阅答复函', y.evaluation.attachments, y.evaluation.date));
+        y.workflow = { currentNodeId: y.status === '已下发专项风险提示函' ? 'special-feedback' : y.status === '已答复专项风险提示函' ? 'special-review' : 'special-track', records };
       }
     });
   });
