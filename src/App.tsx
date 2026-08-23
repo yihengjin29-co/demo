@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent, ReactNode } from 'react';
 import type { DemoState, Role, Attachment, RiskPreference, WarningRule, WarningDisposal, WarningDisposalMeasure, Indicator, IndicatorPeriodRecord, MajorEvent, MajorEventMeasure, MajorRiskEventDefinition, PeriodicReport, SpecialRisk, SpecialRiskWorkOrder, WorkflowInstance, ConcentrationBusinessDetail, ConcentrationCompositionItem, ConcentrationLightStatus, ConcentrationRecord, ConcentrationType } from './types';
 import { createLog, formatSize, loadState, makeAttachment, resetState, saveState, uid } from './services/storage';
-import { can, canAccessDashboardLink, canAccessRiskPreference, canApproveWarningRule, canConfigureDashboard, canCreateIndicator, canEditIndicator, canEditMajorEvent, canEditWarningRuleConfig, canExportConcentrationData, canHandleMajorEventNode, canHandleWarningNode, canHandleWorkflowNode, canManageIndicatorStatus, canManageMajorEventDefinitions, canMaintainLetterDeliveryMode, canMaintainWarningRule, canMaintainWarningRuleStatus, canManuallySendWarningLetter, canViewConcentrationMonitoring, canViewConcentrationWarning, canViewInstitution, canViewMajorEventOverview, canViewWarningOverview, canViewWarningRuleConfig, canViewWorkflowRecord, currentInstitution, getDefaultRouteForRole, getMajorEventActions, getMajorEventNodeRole, majorEventActionLabels, resolveStoredRole, roleLabels, scopeStateForRole } from './services/permissionService';
+import { can, canAccessRiskPreference, canApproveWarningRule, canCreateIndicator, canEditIndicator, canEditMajorEvent, canEditWarningRuleConfig, canExportConcentrationData, canHandleMajorEventNode, canHandleWarningNode, canHandleWorkflowNode, canManageIndicatorStatus, canManageMajorEventDefinitions, canMaintainLetterDeliveryMode, canMaintainWarningRule, canMaintainWarningRuleStatus, canManuallySendWarningLetter, canViewConcentrationMonitoring, canViewConcentrationWarning, canViewInstitution, canViewMajorEventOverview, canViewWarningOverview, canViewWarningRuleConfig, canViewWorkflowRecord, currentInstitution, getDefaultRouteForRole, getMajorEventActions, getMajorEventNodeRole, majorEventActionLabels, resolveStoredRole, roleLabels, scopeStateForRole } from './services/permissionService';
 import { riskPreferenceService } from './services/riskPreferenceService';
 import { warningRuleService } from './services/warningRuleService';
 import { indicatorService } from './services/indicatorService';
@@ -21,6 +21,7 @@ import { concentrationInstitutions, concentrationLightLabels, concentrationTypeL
 import { getWorkbenchDataByRole } from './services/workbenchService';
 import { downloadCSV, downloadText } from './utils/download';
 import SmartAssistant from './SmartAssistant';
+import DashboardCockpit from './dashboard/DashboardCockpit';
 
 export default App;
 
@@ -33,6 +34,8 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 type WorkspaceTone = 'indigo' | 'blue' | 'green' | 'orange' | 'red' | 'violet';
 type WorkspaceMetric = { label: string; value: string | number; unit: string; trend: string; note: string; path: string; tone: WorkspaceTone; icon: string };
+type WorkspaceTaskStatus = '待签收' | '办理中' | '已办' | '逾期';
+type WorkspaceTaskOverride = { status: WorkspaceTaskStatus; owner: string; updatedAt: string };
 
 function WorkspaceGlyph({ name }: { name: string }) {
   const common = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
@@ -55,78 +58,6 @@ function WorkspaceMetrics({ items, navigate }: { items: WorkspaceMetric[]; navig
 
 function WorkspacePanelTitle({ title, description }: { title: string; description?: string }) {
   return <div className="workspace-panel-heading"><div><i /><span><b>{title}</b>{description && <small>{description}</small>}</span></div></div>;
-}
-
-function DashboardNew({ state, role, navigate, update, toast }: PageProps) {
-  const latest = useMemo(() => indicatorPeriodService.latest(state.indicatorPeriodRecords), [state.indicatorPeriodRecords]);
-  const defaults = latest.slice(0, 6).map(record => record.id);
-  const configuredIds = state.dashboardIndicatorConfig?.[role] || [];
-  const visibleIds = configuredIds.filter(id => latest.some(record => record.id === id));
-  const selectedIds = visibleIds.length >= 3 ? visibleIds : defaults;
-  const selected = selectedIds.map(id => latest.find(record => record.id === id)).filter((record): record is IndicatorPeriodRecord => !!record);
-  const [configOpen, setConfigOpen] = useState(false);
-  const [typeFilter, setTypeFilter] = useState('');
-  const [draftIds, setDraftIds] = useState<string[]>(selectedIds);
-  const completedWarnings = state.warningDisposals.filter(item => /已解除|已关闭|已办结/.test(item.status));
-  const handlingWarnings = state.warningDisposals.filter(item => !completedWarnings.includes(item) && /处置|跟踪|执行|反馈|方案|审核|处理中/.test(item.status));
-  const triggeredWarnings = state.warningDisposals.filter(item => !completedWarnings.includes(item) && !handlingWarnings.includes(item));
-  const red = state.warningDisposals.filter(item => item.level === '红灯').length;
-  const capitalRecords = latest.filter(item => /资本/.test(`${item.indicatorType}${item.indicatorName}`));
-  const capitalDisplay = capitalRecords.length ? capitalRecords : selected.slice(0, 4);
-  const overviewMetrics: WorkspaceMetric[] = [
-    { label: '风险并表总体情况', value: latest.length, unit: '项', trend: red ? `${red} 项红灯` : '运行平稳', note: '核心指标持续监测', path: '/indicators/query', tone: 'indigo', icon: 'chart' },
-    { label: '资本并表总体情况', value: capitalDisplay.length, unit: '项', trend: '较上期稳定', note: '资本指标纳入监测', path: '/indicators/query', tone: 'blue', icon: 'capital' },
-    { label: '预警处置进展', value: state.warningDisposals.length, unit: '项', trend: `${completedWarnings.length} 项办结`, note: '全流程处置跟踪', path: '/warning/disposal', tone: 'orange', icon: 'warning' },
-    { label: '重大风险事件', value: state.majorEvents.length, unit: '起', trend: `${state.majorEvents.filter(item => /已归档|已关闭/.test(item.status)).length} 起归档`, note: '重大事项持续跟踪', path: '/major-events', tone: 'red', icon: 'report' },
-  ];
-  const managementLinks = [
-    { label: '纳入机构数', value: state.institutions.filter(item => item.status === '已纳入').length, hint: '当前并表范围机构', path: '/institutions' },
-    { label: '风险偏好指标', value: state.riskPreferences.reduce((count, item) => count + item.indicators.length, 0), hint: '指标运行中', path: '/warning/risk-preference' },
-    { label: '预警规则', value: state.warningRules.length, hint: '规则持续监测', path: '/warning/rules' },
-    { label: '重大风险事件', value: state.majorEvents.length, hint: '当前事件台账', path: '/major-events' },
-    { label: '专项风险事项', value: state.specialRisks.length, hint: '提示函及反馈', path: '/special-risks/manage' },
-    { label: '指标查询', value: state.indicatorPeriodRecords.length, hint: '最新及历史期次记录', path: '/indicators/query' },
-  ].filter(item => canAccessDashboardLink(role, item.path));
-  const candidateRecords = latest.filter(record => !typeFilter || record.indicatorType === typeFilter);
-  const toggle = (id: string) => {
-    if (draftIds.includes(id)) return setDraftIds(current => current.filter(value => value !== id));
-    if (draftIds.length >= 8) return toast('驾驶舱最多展示 8 项指标');
-    setDraftIds(current => [...current, id]);
-  };
-  const saveConfig = () => {
-    if (draftIds.length < 3) return toast('驾驶舱至少需要展示 3 项指标');
-    update(current => { current.dashboardIndicatorConfig = { ...current.dashboardIndicatorConfig, [role]: draftIds }; });
-    setConfigOpen(false);
-    toast('指标展示配置已保存');
-  };
-  const resetConfig = () => {
-    setDraftIds(defaults);
-    update(current => { current.dashboardIndicatorConfig = { ...current.dashboardIndicatorConfig, [role]: defaults }; });
-    toast('已恢复默认指标展示');
-  };
-  return <Page title="并表管理驾驶舱" breadcrumb={['并表驾驶舱']} hidePageTitle>
-    <div className="cockpit-shell workspace-shell">
-      <div className="workspace-hero cockpit-hero"><div><span className="workspace-role-chip">集团管理层总览</span><h1>并表管理驾驶舱</h1><p>集中呈现风险、资本、预警处置与重大风险事件运行态势</p></div><div className="workspace-hero-actions"><Button variant="secondary" onClick={() => navigate('/workbench')}>进入工作台</Button><Button onClick={() => navigate('/warning/disposal')}>查看预警事项</Button></div></div>
-      <WorkspaceMetrics items={overviewMetrics} navigate={navigate} />
-
-      <div className="cockpit-management-strip">{managementLinks.map((item, index) => <button key={item.label} onClick={() => navigate(item.path)}><span className={`mini-icon tone-${(['indigo', 'blue', 'green', 'orange', 'red', 'violet'] as WorkspaceTone[])[index]}`}><WorkspaceGlyph name={index === 0 ? 'building' : index === 3 ? 'report' : index === 5 ? 'chart' : 'check'} /></span><span><b>{item.value}</b><small>{item.label}</small></span><em>{item.hint}</em></button>)}</div>
-
-      <div className="cockpit-core-grid">
-        <section className="workspace-card cockpit-risk-card"><div className="workspace-card-head"><WorkspacePanelTitle title="风险并表核心指标" description="核心指标运行与亮灯情况" />{canConfigureDashboard(role) && <Button variant="secondary" onClick={() => { setDraftIds(selectedIds); setConfigOpen(true); }}>指标展示配置</Button>}</div><div className="cockpit-indicator-list">{selected.slice(0, 5).map(record => <button key={record.id} onClick={() => navigate(`/indicators/query/${record.id}`)}><span><b>{record.indicatorName}</b><small>{record.period} · {record.monitoringFrequency}</small></span><strong>{record.indicatorValue}<em>{record.indicatorUnit}</em></strong><StatusTag value={record.currentLightStatus} /></button>)}</div></section>
-        <section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="资本并表核心指标" description="资本水平与指标区间" /><TextAction onClick={() => navigate('/indicators/query')}>查看全部</TextAction></div><div className="cockpit-capital-list">{capitalDisplay.slice(0, 5).map((record, index) => { const value = Number.parseFloat(record.indicatorValue) || 62 + index * 7; const width = Math.max(18, Math.min(100, value)); return <button key={record.id} onClick={() => navigate(`/indicators/query/${record.id}`)}><div><b>{record.indicatorName}</b><span>{record.indicatorValue}{record.indicatorUnit}</span></div><div className="cockpit-progress"><i style={{ width: `${width}%` }} /></div><small>{record.forecastRange || '处于合理监测区间'}</small></button>; })}</div></section>
-      </div>
-
-      <div className="cockpit-tracking-grid">
-        <section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="预警处置跟踪" description="统一按三个阶段呈现处置进度" /><TextAction onClick={() => navigate('/warning/disposal')}>查看全部</TextAction></div><div className="cockpit-stage-flow">{[
-          { label: '预警触发', value: triggeredWarnings.length, note: '待响应事项', tone: 'red' },
-          { label: '处置中', value: handlingWarnings.length, note: '正在办理', tone: 'orange' },
-          { label: '已办结', value: completedWarnings.length, note: '完成闭环', tone: 'green' },
-        ].map((item, index) => <button className={`stage-${item.tone}`} key={item.label} onClick={() => navigate('/warning/disposal')}><span>{index + 1}</span><div><b>{item.label}</b><small>{item.note}</small></div><strong>{item.value}<em>项</em></strong></button>)}</div><div className="cockpit-warning-list">{state.warningDisposals.slice(0, 4).map(item => <button key={item.id} onClick={() => navigate(`/warning/disposal/${item.id}/overview`)}><i className={item.level === '红灯' ? 'red' : 'orange'} /><span><b>{item.indicator}</b><small>{item.institution} · {item.triggerDate}</small></span><StatusTag value={item.status} /></button>)}</div></section>
-        <section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="重大风险事件" description="事件报告与处置进展" /><TextAction onClick={() => navigate('/major-events')}>进入台账</TextAction></div><div className="cockpit-event-summary"><span><b>{state.majorEvents.length}</b><small>事件总数</small></span><span><b>{state.majorEvents.filter(item => /处理|跟踪|审核/.test(item.status)).length}</b><small>持续跟踪</small></span><span><b>{state.majorEvents.filter(item => /已归档|已关闭/.test(item.status)).length}</b><small>已归档</small></span></div><div className="cockpit-event-list">{state.majorEvents.slice(0, 4).map(item => <button key={item.id} onClick={() => navigate(`/major-events/${item.id}/overview`)}><span><b>{item.name}</b><small>{item.institution} · {item.currentStage}</small></span><StatusTag value={item.status} /></button>)}</div></section>
-      </div>
-    </div>
-    {configOpen && <Modal title="指标展示配置" onClose={() => setConfigOpen(false)} footer={<><Button variant="secondary" onClick={resetConfig}>恢复默认</Button><Button variant="secondary" onClick={() => setConfigOpen(false)}>取消</Button><Button onClick={saveConfig}>保存</Button></>}><div className="dashboard-config-panel"><div className="form-grid"><Field label="按指标类型筛选"><Select value={typeFilter} onChange={setTypeFilter} options={[...new Set(latest.map(record => record.indicatorType))]} /></Field><Field label="已选择"><Input value={`${draftIds.length} 项（3—8 项）`} disabled /></Field></div><div className="dashboard-config-list">{candidateRecords.map(record => <label key={record.id} className={draftIds.includes(record.id) ? 'selected' : ''}><input type="checkbox" checked={draftIds.includes(record.id)} onChange={() => toggle(record.id)} /><span><b>{record.indicatorName}</b><small>{record.indicatorCode} · {record.institution} · {record.monitoringFrequency}</small></span><StatusTag value={record.currentLightStatus} /></label>)}</div></div></Modal>}
-  </Page>;
 }
 
 function useAppState() {
@@ -257,7 +188,7 @@ const menus: MenuItem[] = [
   { label: '工作台', icon: '⌂', path: '/workbench' },
   { label: '预警管理', icon: '★', children: [{ label: '风险偏好及目标', path: '/warning/risk-preference', roles: ['集团', '金控公司'] }, { label: '风险预警规则管理', path: '/warning/rules' }, { label: '预警提示与处置', path: '/warning/disposal' }, { label: '集中度风险监测', path: '/concentration-monitoring' }] },
   { label: '指标管理', icon: '▤', children: [{ label: '指标新增与维护', path: '/indicators/maintenance' }, { label: '指标版本管理', path: '/indicators/versions' }, { label: '指标查询', path: '/indicators/query' }] },
-  { label: '风险报告', icon: '▧', children: [{ label: '重大风险事件报告', path: '/major-events' }, { label: '定期风险报告', path: '/periodic-reports' }, { label: '专项风险报告', path: '/special-risks/manage' }] },
+  { label: '报告管理', icon: '▧', children: [{ label: '重大风险事件报告', path: '/major-events' }, { label: '定期报告', path: '/periodic-reports' }] },
   { label: '报表与分析中心', icon: '▨', path: '/reports' },
   { label: '资本规划与预算', icon: '◫', path: '/empty/capital' },
   { label: '会计并表管理', icon: '▧', path: '/empty/accounting' },
@@ -265,7 +196,7 @@ const menus: MenuItem[] = [
   { label: '知识库管理', icon: '▣', path: '/empty/knowledge' },
   { label: '系统管理', icon: '⚙', path: '/empty/system' },
 ];
-function Sidebar({ path, role, navigate }: { path: string; role: Role; navigate: (path: string) => void }) { const [open, setOpen] = useState<string[]>(['预警管理', '指标管理', '风险报告']); return <aside className="sidebar">{menus.map(menu => { const children = menu.children?.filter(child => !child.roles || child.roles.includes(role)); const reportPathActive = (childPath: string) => childPath === '/major-events' ? path.startsWith('/major-events') : childPath === '/periodic-reports' ? path.startsWith('/periodic-reports') : childPath === '/special-risks/manage' ? path.startsWith('/special-risks') : false; const active = menu.path === path || children?.some(x => path === x.path || path.startsWith(x.path + '/') || reportPathActive(x.path)); const expanded = open.includes(menu.label); return <div key={menu.label}><button className={`menu-root ${active ? 'active-root' : ''}`} onClick={() => children ? setOpen(value => value.includes(menu.label) ? value.filter(x => x !== menu.label) : [...value, menu.label]) : menu.path && navigate(menu.path)}><Icon>{menu.icon}</Icon><span>{menu.label}</span>{children && <em>{expanded ? '⌃' : '⌄'}</em>}</button>{children && expanded && <div className="menu-children">{children.map(child => <button className={path === child.path || path.startsWith(child.path + '/') || reportPathActive(child.path) ? 'active-child' : ''} key={child.path} onClick={() => navigate(child.path)}>{child.label}</button>)}</div>}</div>; })}</aside>; }
+function Sidebar({ path, role, navigate }: { path: string; role: Role; navigate: (path: string) => void }) { const [open, setOpen] = useState<string[]>(['预警管理', '指标管理', '报告管理']); return <aside className="sidebar">{menus.map(menu => { const children = menu.children?.filter(child => !child.roles || child.roles.includes(role)); const reportPathActive = (childPath: string) => childPath === '/major-events' ? path.startsWith('/major-events') : childPath === '/periodic-reports' ? path.startsWith('/periodic-reports') : false; const active = menu.path === path || children?.some(x => path === x.path || path.startsWith(x.path + '/') || reportPathActive(x.path)); const expanded = open.includes(menu.label); return <div key={menu.label}><button className={`menu-root ${active ? 'active-root' : ''}`} onClick={() => children ? setOpen(value => value.includes(menu.label) ? value.filter(x => x !== menu.label) : [...value, menu.label]) : menu.path && navigate(menu.path)}><Icon>{menu.icon}</Icon><span>{menu.label}</span>{children && <em>{expanded ? '⌃' : '⌄'}</em>}</button>{children && expanded && <div className="menu-children">{children.map(child => <button className={path === child.path || path.startsWith(child.path + '/') || reportPathActive(child.path) ? 'active-child' : ''} key={child.path} onClick={() => navigate(child.path)}>{child.label}</button>)}</div>}</div>; })}</aside>; }
 
 const authStorageKey = 'demo-authenticated';
 const roleStorageKey = 'demo-role';
@@ -339,8 +270,8 @@ function App() {
   };
   const goBack = () => navigate('/warning/risk-preference');
   const render = () => {
-    if (path === '/dashboard') return <DashboardNew state={state} role={role} navigate={navigate} update={update} toast={toast} />;
-    if (path === '/workbench') return <RoleWorkbench state={state} role={role} navigate={navigate} />;
+    if (path === '/dashboard') return <DashboardCockpit state={state} role={role} navigate={navigate} update={update} toast={toast} />;
+    if (path === '/workbench') return <RoleWorkbench state={state} role={role} navigate={navigate} toast={toast} />;
     if (path === '/institutions') return <InstitutionList state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path.startsWith('/institutions/')) return <InstitutionDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path.includes('/empty/')) return <EmptyModulePage title={menus.flatMap(x => [x, ...(x.children || [])]).find((x: any) => x.path === path)?.label || '模块占位页'} />;
@@ -394,14 +325,27 @@ type PageProps = { state: DemoState; role: Role; navigate: (path: string) => voi
 const TextAction = ({ children, onClick, disabled = false }: { children: ReactNode; onClick?: () => void; disabled?: boolean }) => <button className="text-action" disabled={disabled} onClick={onClick}>{children}</button>;
 const permitted = (role: Role, action: string) => can(role, action);
 
-function Dashboard({ state, navigate }: { state: DemoState; navigate: (path: string) => void }) { const red = state.warningDisposals.filter(x => x.level === '红灯').length; const yellow = state.warningDisposals.filter(x => x.level === '黄灯').length; const green = Math.max(0, state.warningRules.length * 18 - red - yellow); const metrics = [['纳入机构数', String(state.institutions.filter(item => item.status === '已纳入').length), '当前并表范围机构'], ['风险偏好指标', String(state.riskPreferences.reduce((n, x) => n + x.indicators.length, 0)), '指标运行中'], ['预警规则总数', String(state.warningRules.length), '规则持续监测'], ['重大风险事件', String(state.majorEvents.length), '当前台账'], ['专项风险事项', String(state.specialRisks.length), '提示函及反馈'], ['报表报送总数', String(state.reports.reduce((n, x) => n + x.submissions.length, 0)), '历次报送记录']] as const; const capital = [19.16, 18.73, 17.82, 16.25, 22.31]; const riskRows = [['信用风险', 72], ['流动性风险', 48], ['市场风险', 36], ['操作风险', 24], ['集中度风险', 42]] as const; return <Page title="并表管理驾驶舱" breadcrumb={['并表驾驶舱']}><div className="cockpit-banner"><div><span className="cockpit-kicker">GROUP CONSOLIDATED RISK MANAGEMENT</span><h2>并表管理驾驶舱</h2><p>风险、资本、预警、事件与报送运行态势 · 更新时间 2024-06-30 13:22:45</p></div><div className="cockpit-banner-actions"><Button variant="secondary" onClick={() => navigate('/workbench')}>进入工作台</Button><Button onClick={() => navigate('/warning/disposal')}>查看风险事项</Button></div></div><div className="cockpit-kpis">{metrics.map(([label, value, hint]) => <button className="cockpit-kpi" key={label} onClick={() => label === '纳入机构数' ? navigate('/institutions') : label === '重大风险事件' ? navigate('/major-events') : label === '专项风险事项' ? navigate('/special-risks/manage') : label === '报表报送总数' ? navigate('/reports') : navigate('/warning/risk-preference')}><span>{label}</span><b>{value}</b><small>{hint}　›</small></button>)}</div><div className="cockpit-main-grid"><Section title="资本充足率"><div className="cockpit-line-head"><div><small>当前水平</small><strong>19.16%</strong><em>较上月 +0.42%</em></div><StatusTag value="运行良好" /></div><div className="cockpit-line-chart"><div className="line-grid"><i /><i /><i /><i /></div><svg viewBox="0 0 640 170" preserveAspectRatio="none"><polyline points="0,124 58,113 116,125 175,92 234,108 292,73 350,92 408,66 466,88 524,44 582,59 640,27" fill="none" stroke="#5aa8ff" strokeWidth="4" /><polygon points="0,124 58,113 116,125 175,92 234,108 292,73 350,92 408,66 466,88 524,44 582,59 640,27 640,170 0,170" fill="rgba(75,145,248,.18)" /></svg><div className="line-months">{['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'].map(x => <span key={x}>{x}</span>)}</div></div></Section><Section title="机构资本充足率对比"><div className="cockpit-bars">{institutions.map((name, i) => <div className="cockpit-bar-row" key={name}><span>{name}</span><div><i style={{ height: String(Math.max(24, capital[i] * 3.3)) + 'px' }} /><b>{capital[i].toFixed(2)}%</b></div></div>)}</div><div className="cockpit-axis"><span>0%</span><span>10%</span><span>20%</span><span>30%</span></div></Section></div><div className="cockpit-three-grid"><Section title="预警灯号概览" extra={<TextAction onClick={() => navigate('/warning/disposal')}>查看全部</TextAction>}><div className="lamp-grid"><button className="lamp-card red" onClick={() => navigate('/warning/disposal')}><i /><b>{red}</b><span>红灯预警</span><small>立即处置</small></button><button className="lamp-card yellow" onClick={() => navigate('/warning/disposal')}><i /><b>{yellow}</b><span>黄灯预警</span><small>持续跟踪</small></button><button className="lamp-card green" onClick={() => navigate('/warning/rules')}><i /><b>{green}</b><span>绿灯</span><small>不预警</small></button></div></Section><Section title="风险类别分布"><div className="risk-bars cockpit-risk-bars">{riskRows.map(([name, value], i) => <div key={name}><span>{name}</span><div><i className={i < 1 ? 'red' : i < 3 ? 'orange' : 'green'} style={{ width: String(value) + '%' }} /></div><b>{value}%</b></div>)}</div><div className="cockpit-risk-note">风险类别按当前监测规则分布</div></Section><Section title="重大风险事件概览" extra={<TextAction onClick={() => navigate('/major-events')}>进入台账</TextAction>}><div className="mini-summary"><button onClick={() => navigate('/major-events')}><b>{state.majorEvents.length}</b><span>事件总数</span></button><button onClick={() => navigate('/major-events')}><b>{state.majorEvents.filter(x => x.status === '处理中').length}</b><span>处理中</span></button><button onClick={() => navigate('/major-events')}><b>{state.majorEvents.filter(x => x.latestReport === '续报').length}</b><span>续报跟踪</span></button><button onClick={() => navigate('/major-events')}><b>{state.majorEvents.filter(x => x.status === '已归档').length}</b><span>已归档</span></button></div></Section></div><div className="cockpit-two-grid"><Section title="专项风险提示概览" extra={<TextAction onClick={() => navigate('/special-risks/manage')}>查看详情</TextAction>}><div className="summary-strip"><button onClick={() => navigate('/special-risks/manage')}><b>{state.specialRisks.length}</b><span>提示总数</span></button><button onClick={() => navigate('/special-risks/feedback')}><b>{state.specialRisks.flatMap(x => x.workOrders).filter(x => x.status === '已下发专项风险提示函').length}</b><span>待答复</span></button><button onClick={() => navigate('/special-risks/feedback')}><b>{state.specialRisks.flatMap(x => x.workOrders).filter(x => x.status === '已答复专项风险提示函').length}</b><span>待审阅</span></button><button onClick={() => navigate('/special-risks/manage')}><b>{state.specialRisks.flatMap(x => x.workOrders).filter(x => x.status === '已审阅答复函').length}</b><span>已审阅</span></button></div></Section><Section title="报表报送概览" extra={<TextAction onClick={() => navigate('/reports')}>查看报表</TextAction>}><div className="summary-strip"><button onClick={() => navigate('/reports')}><b>{state.reports.length}</b><span>报表项目</span></button><button onClick={() => navigate('/reports')}><b>{state.reports.reduce((n, x) => n + x.submissions.length, 0)}</b><span>报送次数</span></button><button onClick={() => navigate('/periodic-reports')}><b>{state.periodicReports.length}</b><span>定期报告</span></button><button onClick={() => navigate('/reports/upload')}><b>＋</b><span>上传报表</span></button></div></Section></div><Section title="关键指标监测" extra={<TextAction onClick={() => navigate('/indicators/maintenance')}>进入指标管理</TextAction>}><div className="key-metrics">{[['资本充足率', '19.16%', '+0.42%', 'green'], ['存款集中度', '72.7%', '-2.1%', 'green'], ['净稳定资金率', '92.4%', '+3.2%', 'orange'], ['合格资本充足率', '121.5%', '+1.8%', 'green'], ['不良资产率', '1.14%', '-0.23%', 'green']].map(x => <button className="key-metric" key={x[0]} onClick={() => navigate('/indicators/maintenance')}><span>{x[0]}</span><b>{x[1]}</b><em className={x[3]}>{x[2]}</em><div className="metric-spark"><i /><i /><i /><i /><i /></div></button>)}</div></Section></Page>; }
-
-function RoleWorkbench({ state, role, navigate }: { state: DemoState; role: Role; navigate: (path: string) => void }) {
+function RoleWorkbench({ state, role, navigate, toast }: { state: DemoState; role: Role; navigate: (path: string) => void; toast: (message: string) => void }) {
   const data = useMemo(() => getWorkbenchDataByRole(state, role, loadConcentrationData()), [state, role]);
   const latest = useMemo(() => indicatorPeriodService.latest(state.indicatorPeriodRecords), [state.indicatorPeriodRecords]);
   const categories = ['全部', ...new Set(data.tasks.map(item => item.category))];
   const [category, setCategory] = useState('全部');
-  const tasks = category === '全部' ? data.tasks : data.tasks.filter(item => item.category === category);
+  const [taskStatus, setTaskStatus] = useState('待办');
+  const [taskOverrides, setTaskOverrides] = useState<Record<string, WorkspaceTaskOverride>>({});
+  const [transferTaskId, setTransferTaskId] = useState<string | null>(null);
+  const [transferTarget, setTransferTarget] = useState('');
+  const [transferNote, setTransferNote] = useState('');
+  const [readMessages, setReadMessages] = useState<string[]>([]);
+  const resolveTaskStatus = (item: (typeof data.tasks)[number]): WorkspaceTaskStatus => taskOverrides[item.id]?.status || (/已完成|已办结|已报送|已归档|已关闭/.test(item.status) ? '已办' : /逾期|退回/.test(item.status) ? '逾期' : '待签收');
+  const matchesTaskStatus = (item: (typeof data.tasks)[number]) => {
+    const status = resolveTaskStatus(item);
+    return taskStatus === '全部' || (taskStatus === '待办' ? status === '待签收' || status === '办理中' : taskStatus === status);
+  };
+  const tasks = data.tasks.filter(item => (category === '全部' || item.category === category) && matchesTaskStatus(item));
+  const taskStatusCounts = { 待办: data.tasks.filter(item => ['待签收', '办理中'].includes(resolveTaskStatus(item))).length, 已办: data.tasks.filter(item => resolveTaskStatus(item) === '已办').length, 逾期: data.tasks.filter(item => resolveTaskStatus(item) === '逾期').length };
+  const transferringTask = data.tasks.find(item => item.id === transferTaskId);
+  const signTask = (id: string) => { setTaskOverrides(current => ({ ...current, [id]: { status: '办理中', owner: role === '各金融机构' ? currentInstitution : role, updatedAt: '刚刚签收' } })); toast('任务已签收，已进入办理中'); };
+  const remindTask = (title: string) => toast(`已向责任人发送催办提醒：${title}`);
   const variant = role === '集团' ? 'group' : role === '金控公司' ? 'holding' : 'institution';
   const warningPending = state.warningDisposals.filter(item => !/已解除|已关闭|已办结/.test(item.status)).length;
   const warningCompleted = state.warningDisposals.length - warningPending;
@@ -436,7 +380,8 @@ function RoleWorkbench({ state, role, navigate }: { state: DemoState; role: Role
     { label: '整改中事项数', value: state.warningDisposals.filter(item => /跟踪|执行|整改/.test(item.status)).length, unit: '项', trend: '持续跟踪', note: '整改任务', path: '/warning/disposal', tone: 'orange', icon: 'check' },
     { label: '已完成任务数', value: data.recent.length + warningCompleted, unit: '项', trend: '本期累计', note: '办理记录可追溯', path: '/workbench', tone: 'green', icon: 'check' },
   ];
-  const taskTable = <><div className="workspace-tabs"><Tabs items={categories} active={category} onChange={setCategory} /></div><Table><thead><tr><th>任务事项</th><th>任务类型</th><th>所属机构</th><th>办理时限</th><th>状态</th><th>操作</th></tr></thead><tbody>{tasks.slice(0, 6).map(item => <tr key={item.id}><td><b className="workspace-table-title">{item.title}</b></td><td>{item.category}</td><td>{item.institution}</td><td>{item.deadline}</td><td><StatusTag value={item.status} /></td><td><TextAction onClick={() => navigate(item.path)}>{item.action}</TextAction></td></tr>)}</tbody></Table>{!tasks.length && <div className="empty-state compact"><p>当前暂无此类待办事项</p></div>}</>;
+  const taskTable = <><div className="workspace-task-toolbar"><div className="workspace-task-status"><Tabs items={['待办', '已办', '逾期', '全部']} active={taskStatus} onChange={setTaskStatus} /><span>待办 <b>{taskStatusCounts.待办}</b></span><span>已办 <b>{taskStatusCounts.已办}</b></span><span>逾期 <b>{taskStatusCounts.逾期}</b></span></div><label>任务类型<Select value={category} onChange={setCategory} options={categories} /></label></div><Table><thead><tr><th>任务事项</th><th>任务类型</th><th>责任范围</th><th>办理时限</th><th>进度</th><th>状态</th><th>操作</th></tr></thead><tbody>{tasks.slice(0, 8).map(item => { const workflowStatus = resolveTaskStatus(item); const progress = workflowStatus === '已办' ? 100 : workflowStatus === '办理中' ? 55 : workflowStatus === '逾期' ? 72 : 18; const owner = taskOverrides[item.id]?.owner; return <tr key={item.id}><td><b className="workspace-table-title">{item.title}</b><small className="workspace-task-update">{taskOverrides[item.id]?.updatedAt || '等待接收处理'}</small></td><td>{item.category}</td><td>{owner || item.institution}</td><td>{item.deadline}</td><td><div className="workspace-task-progress"><i className={workflowStatus === '逾期' ? 'overdue' : workflowStatus === '已办' ? 'done' : ''} style={{ width: `${progress}%` }} /><span>{progress}%</span></div></td><td><span className={`workspace-task-tag status-${workflowStatus}`}>{workflowStatus}</span></td><td><div className="workspace-row-actions">{workflowStatus === '待签收' ? <TextAction onClick={() => signTask(item.id)}>签收</TextAction> : workflowStatus !== '已办' && <TextAction onClick={() => navigate(item.path)}>办理</TextAction>}<TextAction onClick={() => navigate(item.path)}>详情</TextAction>{workflowStatus !== '已办' && <TextAction onClick={() => { setTransferTaskId(item.id); setTransferTarget(''); setTransferNote(''); }}>转办</TextAction>}{variant !== 'institution' && workflowStatus !== '已办' && <TextAction onClick={() => remindTask(item.title)}>催办</TextAction>}</div></td></tr>; })}</tbody></Table>{!tasks.length && <div className="empty-state compact"><p>当前筛选条件下暂无任务</p></div>}</>;
+  const messageCenter = <section className="workspace-message-center"><div className="workspace-message-title"><span><WorkspaceGlyph name="task" /></span><div><b>消息与提醒</b><small>{Math.max(0, data.focus.length - readMessages.length)} 条未读 · 审核结果、风险提示和任务动态</small></div></div><div className="workspace-message-items">{data.focus.slice(0, 3).map(item => <button className={readMessages.includes(item.id) ? 'read' : ''} key={item.id} onClick={() => { setReadMessages(current => current.includes(item.id) ? current : [...current, item.id]); navigate(item.path); }}><i /><span><b>{item.title}</b><small>{item.detail}</small></span><StatusTag value={item.status} /></button>)}{!data.focus.length && <span className="workspace-no-message">当前没有新的风险提醒</span>}</div>{data.focus.length > 0 && <TextAction onClick={() => { setReadMessages(data.focus.map(item => item.id)); toast('工作台消息已全部标记为已读'); }}>全部已读</TextAction>}</section>;
   const focusList = <div className="workspace-focus-list">{data.focus.slice(0, 5).map(item => <button key={item.id} onClick={() => navigate(item.path)}><span><b>{item.title}</b><small>{item.detail}</small></span><StatusTag value={item.status} /></button>)}{!data.focus.length && <div className="empty-state compact"><p>暂无风险提示事项</p></div>}</div>;
   const mergeOverview = <div className="workspace-merge-grid">{[
     { name: '风险并表', value: Math.max(0, 100 - Math.min(30, state.warningDisposals.length * 3)), status: '持续监测', path: '/warning/disposal', tone: 'indigo' },
@@ -459,6 +404,7 @@ function RoleWorkbench({ state, role, navigate }: { state: DemoState; role: Role
     <div className={`workspace-shell workspace-${variant}`}>
       <div className="workspace-hero"><div><span className="workspace-role-chip">{variant === 'group' ? '集团本部 / 统筹监督' : variant === 'holding' ? '金控公司 / 国资公司' : '金融机构 / 报送反馈'}</span><h1>{workbenchTitle}</h1><p>{workbenchDescription}</p></div><div className="workspace-hero-actions"><Button variant="secondary" onClick={() => navigate('/concentration-monitoring')}>集中度风险监测</Button><Button onClick={() => navigate('/dashboard')}>进入驾驶舱</Button></div></div>
       <WorkspaceMetrics items={metrics} navigate={navigate} />
+      {messageCenter}
 
       {variant === 'group' && <>
         <div className="workspace-grid workspace-group-main"><section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="三类并表总览" description="风险、资本、会计运行概况" /></div>{mergeOverview}</section><section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="重点预警与重大事项" description="高优先级事项集中呈现" /><TextAction onClick={() => navigate('/warning/disposal')}>查看全部</TextAction></div>{focusList}</section><section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="集团待办与审阅" description="待处理、待审阅事项" /></div>{taskTable}</section></div>
@@ -477,6 +423,7 @@ function RoleWorkbench({ state, role, navigate }: { state: DemoState; role: Role
         <div className="workspace-grid workspace-support-four"><section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="机构报送质量排名" description="按完成率和问题数综合呈现" /></div><div className="workspace-ranking-list">{data.institutions.slice().sort((a, b) => a.pending - b.pending).slice(0, 5).map((item, index) => <button key={item.institution} onClick={() => navigate('/reports')}><i>{index + 1}</i><span><b>{item.institution}</b><small>{item.reportStatus}</small></span><strong>{Math.max(60, 98 - item.pending * 6)}<em>分</em></strong></button>)}</div></section><section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="超期待办清单" description="需优先协调事项" /></div>{focusList}</section><section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="报告编制区" description="定期报告编制进度" /></div><div className="workspace-report-progress"><b>{periodicRate}%</b><div><i style={{ width: `${periodicRate}%` }} /></div><span>本期报告编制整体进度</span><Button variant="secondary" onClick={() => navigate('/periodic-reports')}>进入报告管理</Button></div></section><section className="workspace-card"><div className="workspace-card-head"><WorkspacePanelTitle title="规则配置与常用功能" description="管理入口快速直达" /></div>{quickActionGrid}</section></div>
       </>}
     </div>
+    {transferringTask && <Modal title="任务转办" onClose={() => setTransferTaskId(null)} footer={<><Button variant="secondary" onClick={() => setTransferTaskId(null)}>取消</Button><Button disabled={!transferTarget} onClick={() => { setTaskOverrides(current => ({ ...current, [transferringTask.id]: { status: '办理中', owner: transferTarget, updatedAt: '刚刚转办' } })); setTransferTaskId(null); toast(`任务已转办至${transferTarget}`); }}>确认转办</Button></>}><div className="form-grid"><Field label="任务事项"><Input value={transferringTask.title} disabled /></Field><Field label="当前责任范围"><Input value={taskOverrides[transferringTask.id]?.owner || transferringTask.institution} disabled /></Field><Field label="转办至" required><Select value={transferTarget} onChange={setTransferTarget} options={departments} /></Field><Field label="转办说明" span={2}><Textarea value={transferNote} onChange={setTransferNote} placeholder="请输入转办原因和办理要求" maxLength={200} showCount /></Field></div></Modal>}
   </Page>;
 }
 
