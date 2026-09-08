@@ -1,0 +1,7 @@
+
+> group-consolidation-risk-demo@1.0.0 preview
+> vite preview --host 0.0.0.0 --port 4175
+
+  ➜  Local:   http://localhost:4175/
+  ➜  Network: http://192.168.0.6:4175/  WLAN
+  ➜  press h + enter to show help

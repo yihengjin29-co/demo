@@ -1,0 +1,82 @@
+{
+   "checksum": "e7abdb95a94ac106b38b8eb5a2ca2523",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "children": [ {
+               "date_added": "13244346210805193",
+               "date_last_used": "0",
+               "guid": "02086bb4-8e76-4d3e-836e-46bce88148fc",
+               "id": "8",
+               "name": "Alienware Support",
+               "show_icon": false,
+               "source": "import_fre",
+               "type": "url",
+               "url": "http://www.dell.com/support/home",
+               "visit_count": 0
+            }, {
+               "date_added": "13244346210768317",
+               "date_last_used": "0",
+               "guid": "02ee2a36-aa8b-4285-8854-1a64fe9f60b3",
+               "id": "9",
+               "name": "Alienware",
+               "show_icon": false,
+               "source": "import_fre",
+               "type": "url",
+               "url": "http://www.alienwarearena.com/welcome-cn",
+               "visit_count": 0
+            } ],
+            "date_added": "13433295335580112",
+            "date_last_used": "0",
+            "date_modified": "0",
+            "guid": "2c3de5ea-e148-48b6-b938-c28c110ab2ff",
+            "id": "7",
+            "name": "Alienware",
+            "source": "import_fre",
+            "type": "folder"
+         } ],
+         "date_added": "13433295332319755",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "收藏夹栏",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "other": {
+         "children": [  ],
+         "date_added": "13433295332319755",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "其他收藏夹",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13433295332319755",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "移动收藏夹",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "workspaces_v2": {
+         "children": [  ],
+         "date_added": "13433295332319755",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "75aa6670-344f-549d-b742-660f029506ab",
+         "id": "5",
+         "name": "工作区",
+         "source": "unknown",
+         "type": "folder"
+      }
+   },
+   "version": 1
+}
