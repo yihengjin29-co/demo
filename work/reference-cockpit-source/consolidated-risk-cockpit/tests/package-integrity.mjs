@@ -1,0 +1,20 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import { buildHtml, root, scriptFiles, styleFiles } from '../scripts/build.mjs';
+
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+assert.equal(buildHtml(), html, 'Rebuilt HTML must match the shipped standalone page');
+assert.equal(scriptFiles.length, 8);
+assert.equal(styleFiles.length, 7);
+assert.equal((html.match(/<script>/g) || []).length, 1);
+assert.equal((html.match(/<style>/g) || []).length, 1);
+assert(!/<script\b[^>]*\bsrc\s*=|<link\b[^>]*rel=["']stylesheet/i.test(html));
+assert(!/file:\/\/\/|\/Users\/coke\//.test(html), 'No machine-specific paths');
+assert(!/COCKPIT_STYLES|COCKPIT_SCRIPT/.test(html), 'All placeholders resolved');
+const source = html.slice(html.indexOf('<script>') + 8, html.lastIndexOf('</script>'));
+new vm.Script(source);
+assert(source.includes('function clock()'), 'VM test boundary must remain present');
+assert(html.includes('<h1>并表风险驾驶舱</h1>'));
+console.log('PASS: reproducible build, standalone dependencies, title and script syntax');

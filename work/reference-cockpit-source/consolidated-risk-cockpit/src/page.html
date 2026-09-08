@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>并表风险驾驶舱 · 上海国际集团</title><style>/* COCKPIT_STYLES */</style></head>
+<body><div class="screen" id="screen">
+<header class="screen-header">
+ <div class="screen-brand"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i></span><span><b>上海国际集团</b><small>SHANGHAI INTERNATIONAL GROUP</small></span></div>
+ <div class="screen-title"><span class="title-track left-track"></span><div><h1>并表风险驾驶舱</h1><p>CONSOLIDATED RISK DASHBOARD</p></div><span class="title-track right-track"></span></div>
+ <div class="screen-clock"><span id="clock"></span><small>集团 / 国资公司共用视图</small></div>
+</header>
+<div class="screen-context"><span class="demo-note"><i></i>交互演示 · 所有数值与事项均为模拟</span><div class="screen-tools"><label for="period">观察月份</label><select id="period"><option value="2026-08">2026年08月</option><option value="2026-07">2026年07月</option><option value="2026-06">2026年06月</option></select><button class="bare" data-action="scope">范围与口径</button><button class="bare" data-action="fullscreen" aria-label="切换全屏展示">全屏展示 ⛶</button></div></div>
+<main id="main" class="screen-main"></main>
+<footer class="screen-footer"><span>数据截止 <span id="asof"></span> · 金控数仓及机构报送（演示）</span><span>指标可下钻 · 事项可追踪 · 来源可回溯</span></footer>
+</div><div id="modalRoot"></div><div id="toast" class="toast" role="status" hidden></div><div id="chartTip" class="chart-tooltip" hidden></div>
+<script>/* COCKPIT_SCRIPT */</script></body></html>

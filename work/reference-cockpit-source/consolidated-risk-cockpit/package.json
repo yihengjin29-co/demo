@@ -1,0 +1,12 @@
+{
+  "name": "consolidated-risk-cockpit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Consolidated risk cockpit interactive prototype with simulated data",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node tests/package-integrity.mjs && node tests/qa-warning-classification.cjs && node tests/qa-event-org-details.cjs",
+    "check": "node scripts/check.mjs"
+  }
+}

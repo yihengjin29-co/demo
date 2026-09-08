@@ -1,0 +1,53 @@
+/* An open signal matrix: only alerts carry visual weight. */
+.heat-panel .flag-matrix{grid-template-columns:122px repeat(9,minmax(0,1fr));grid-template-rows:33px repeat(var(--org-count,4),minmax(0,1fr));gap:0;padding:0}
+.flag-matrix .flag-axis{border-bottom:1px solid #28516c;font-size:13px;position:relative;padding-bottom:8px;color:#a4c0d8}
+.flag-matrix .flag-axis:not(.corner):after{content:"";position:absolute;bottom:0;left:50%;height:5px;width:1px;background:#48768c}
+.flag-matrix .flag-axis.corner{font-size:10px;color:#6489a8}
+.flag-matrix .institution-label{border-bottom:1px solid #21405a80;align-self:stretch;transition:color .2s}
+.flag-matrix .institution-label:hover{background:transparent}
+.flag-matrix .institution-label b{font-size:16px;white-space:nowrap;display:flex;align-items:center;gap:9px}
+.flag-matrix .institution-label b>span{font-size:13px;color:#508fa9}
+.heat-panel .heat-cell.flag-cell{border:0;border-bottom:1px solid #21405a80;border-radius:0;background:transparent;background-image:none;box-shadow:none;padding:0;gap:0;color:inherit;filter:none;transform:none}
+.heat-panel .heat-cell.flag-cell:before{display:none}
+.heat-panel .heat-cell.flag-cell:hover{background:radial-gradient(ellipse at center,#19476a55,transparent 70%);filter:none;transform:none}
+.heat-panel .heat-cell.flag-cell:focus-visible{outline:1px solid #70d5ed;outline-offset:-4px;background:#12314b55}
+.flag-cluster{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0}
+.risk-flag{display:block;width:36px;height:42px;flex-shrink:0;color:#ff647e;transition:transform .18s}
+.risk-flag svg{display:block;width:100%;height:100%;overflow:visible}
+.risk-flag.flag-yellow{color:#ffd078}
+.flag-cloth{fill:currentColor;stroke:currentColor;stroke-width:.6}
+.flag-mast{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.flag-anchor{fill:currentColor;opacity:.22}
+.risk-flag text{fill:#10243a;font:600 13px var(--mono)}
+.flag-red .flag-cloth{filter:drop-shadow(0 0 4px #fa557532)}
+.flag-yellow .flag-cloth{filter:drop-shadow(0 0 4px #ffc35c20)}
+.flag-cell:hover .risk-flag{transform:translateY(-2px)}
+.flag-idle{display:grid;place-items:center;width:20px;height:20px;color:#6b89a5;flex-shrink:0}
+.flag-idle svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+.flag-idle.signal-green i{width:5px;height:5px;border-radius:50%;background:#529b9f;box-shadow:0 0 0 4px #24485230}
+.flag-idle.signal-none i{width:13px;height:1px;background:#3b5874}
+.flag-idle.signal-overdue{color:#7499ba}
+.flag-quality-mark{position:absolute;right:5px;bottom:6px;font-size:9px;color:#92a9bc}
+.heat-panel .flag-legend{gap:21px;min-height:42px;align-items:center}
+.flag-legend>span{gap:6px}
+.flag-legend .risk-flag{width:19px;height:23px}
+.flag-legend .flag-idle{width:16px;height:18px}
+.flag-legend .flag-idle svg{width:15px;height:15px}
+.flag-legend .signal-green i{width:4px;height:4px}
+.flag-legend .signal-none i{width:10px}
+.heat-panel .heat-foot{border-top:0;margin-top:5px}
+@media(max-width:1550px),(max-height:900px){
+ .heat-panel .flag-matrix{grid-template-columns:98px repeat(9,minmax(0,1fr));grid-template-rows:26px repeat(var(--org-count,4),minmax(0,1fr))}
+ .flag-matrix .flag-axis{font-size:11px;padding-bottom:6px}
+ .flag-matrix .flag-axis.corner{font-size:9px}
+ .flag-matrix .institution-label b{font-size:13px;gap:6px}
+ .flag-matrix .institution-label b>span{font-size:11px}
+ .risk-flag{width:27px;height:32px}
+ .flag-cluster{gap:3px}
+ .flag-idle{width:17px;height:17px}
+ .flag-idle svg{width:16px;height:16px}
+ .heat-panel .flag-legend{min-height:29px;gap:17px;font-size:9px}
+ .flag-legend .risk-flag{width:17px;height:20px}
+ .flag-legend .flag-idle{width:14px;height:16px}
+ .flag-legend .flag-idle svg{width:14px;height:14px}
+}

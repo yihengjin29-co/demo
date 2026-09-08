@@ -1,0 +1,90 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const source=html.slice(html.indexOf('<script>')+8,html.lastIndexOf('</script>'));
+const listeners={},elements={},saved=[];
+const context=vm.createContext({console,structuredClone,localStorage:{getItem:()=>null,setItem:()=>{}},document:{addEventListener:(type,fn)=>(listeners[type]??=[]).push(fn),querySelector:selector=>elements[selector]||null,querySelectorAll:()=>[],hidden:false},window:{addEventListener:()=>{}},matchMedia:()=>({matches:true,addEventListener:()=>{}}),history:{replaceState:value=>saved.push(value),pushState:value=>saved.push(value)},location:{pathname:'/cockpit.html',search:''},setTimeout:()=>{},clearTimeout:()=>{},queueMicrotask:fn=>fn()});
+new vm.Script(source);
+new vm.Script(source.slice(0,source.indexOf('function clock()'))).runInContext(context);
+const run=expression=>vm.runInContext(expression,context),data=expression=>JSON.parse(run(`JSON.stringify(${expression})`));
+const columns=['机构','风险类型','事件名称','发生日期','上报日期','关注等级','当前流程环节','处置状态','操作'];
+let markup=run("dialogContent('events',{}).body"),last=-1;
+for(const label of columns){const index=markup.indexOf(`<th scope="col">${label}</th>`);assert(index>last,`Missing event column: ${label}`);last=index}
+const baseline=data("snapshot('2026-08')");
+for(const period of ['2026-06','2026-07','2026-08']){
+ run(`state.period='${period}'`);
+ const events=data('eventsData()');
+ assert.equal(data('eventListItems({}).length'),events.length);
+ assert.equal(run("dialogContent('events',{}).body").split('data-event-row=').length-1,events.length);
+ for(const e of events){
+  const report=data(`eventReport(eventsData().find(e=>e.id==='${e.id}'))`),body=run(`eventDetail({id:'${e.id}'}).body`);
+  for(const section of ['基本信息','事件经过与原因','影响评估与风险关联','处置方案','当前处置流程','续报与执行进展','复核与办结','报告附件'])assert(body.includes(section),`Missing report section ${section}: ${e.id}`);
+  assert.equal(report.currentStage,data(`eventProcessNodes[${e.stage}]`));
+  assert.equal(report.timeline.length,6);assert.equal(report.timeline.filter(t=>t.state==='current').length,1);
+  assert.equal(report.timeline.filter(t=>t.state==='done').length,e.stage);
+  assert(report.timeline.filter(t=>t.state==='pending').every(t=>t.time==='—'));
+  assert(report.measures.length>=3);assert(report.measures.every(m=>m.owner&&m.due&&m.status&&m.evidence));
+  assert(body.includes(e.summary));assert(body.includes('尚未办结'));assert(!body.includes('undefined'));
+  assert(report.attachments.length>=3);for(const a of report.attachments){assert(body.includes(`data-event-material="${a.id}"`));assert(run(`eventMaterialDetail({id:'${e.id}',material:'${a.id}'}).body`).includes(a.content))}
+  assert(report.timeline.filter(t=>t.time!=='—').every(t=>t.time.slice(0,10)<=data('END()')));
+ }
+ for(const org of data('activeOrgs()')){
+  const stats=data(`orgRiskSummary('${org}')`),all=data(`indicators.filter(i=>i.org==='${org}'&&i.cat!=='efficiency')`);
+  assert.equal(stats.length,9);assert.equal(stats.reduce((n,s)=>n+s.total,0),all.length);
+  for(const s of stats)assert.equal(s.total,s.red+s.yellow+s.green+s.no_data+s.overdue+s.none);
+  const risk=data(`indicators.filter(i=>i.org==='${org}'&&i.cat!=='efficiency'&&i.cat!=='adequacy')`);
+  assert.equal(stats.filter(s=>s.monitoring==='risk').reduce((n,s)=>n+s.total,0),risk.length);
+  const body=run(`orgDetail('org',{org:'${org}',category:'all',page:0}).body`);
+  assert(body.indexOf('本月资本与风险指标概览')<body.indexOf('id="orgResults"'));
+  assert.equal(body.split('data-org-summary-row=').length-1,9);
+  const allItems=data(`orgItems('org',{org:'${org}'})`);assert.equal(allItems.length,data(`indicators.filter(i=>i.org==='${org}').length`));
+  for(const status of ['red','yellow','green','no_data','overdue'])assert(data(`orgItems('org',{org:'${org}',status:'${status}'}).every(i=>evaluate(i)==='${status}')`));
+  for(const [cat] of data('riskCats'))assert(data(`orgItems('cell',{org:'${org}',cat:'${cat}'}).every(i=>i.cat==='${cat}'&&['red','yellow'].includes(evaluate(i)))`));
+ }
+}
+run("state.period='2026-08'");
+assert.equal(data("eventListItems({org:'ht'}).length"),3);assert.equal(data("eventListItems({org:'srcb'}).length"),2);
+assert.equal(data("eventListItems({org:'ht',category:'market'}).length"),1);
+assert.equal(data("eventListItems({status:'复核验证中'}).length"),1);
+assert.equal(data("eventListItems({query:'不存在的事项'}).length"),0);
+assert(run("eventListDetail({query:'不存在的事项'}).body").includes('暂无符合条件的重大风险事件'));
+assert.equal(data("orgRiskSummary('amc').find(s=>s.category==='concentration').monthly"),2);
+assert.equal(data("orgRiskSummary('amc').find(s=>s.category==='concentration').yellow"),1);
+assert.equal(data("orgRiskSummary('amc').find(s=>s.category==='liquidity').monthly"),2);
+assert.equal(data("orgRiskSummary('amc').find(s=>s.category==='liquidity').yellow"),1);
+assert.equal(data("orgRiskSummary('amc').find(s=>s.category==='liquidity').green"),1);
+assert.equal(data("orgRiskSummary('amc').find(s=>s.category==='other').no_data"),1);
+assert.equal(data("orgRiskSummary('ht').find(s=>s.category==='strategic').overdue"),1);
+assert(data("orgItems('org',{org:'amc',monitoring:'capital'}).every(i=>i.cat==='adequacy')"));
+assert(data("orgItems('org',{org:'amc',category:'other'}).every(i=>['compliance','it'].includes(i.cat))"));
+assert(data("orgItems('org',{org:'amc',periodWarnings:true}).some(i=>i.id==='a-debt')"));
+assert(run("orgResults('org',{org:'amc',category:'all'})").includes('data-warning="W-2026-08-recovered"'));
+for(const id of ['#eventResults','#orgResults','#orgMonitoring','#orgCategory','#orgStatus','#orgWarningScope','#orgSearch'])elements[id]={innerHTML:'',value:'all',scrollIntoView:()=>{},focus:()=>{}};
+run("dialogStack=[{type:'events',args:{}}]");
+for(const fn of listeners.change)fn({target:{id:'eventOrg',value:'ht',dataset:{}}});
+assert.equal(elements['#eventResults'].innerHTML.split('data-event-row=').length-1,3);
+assert.equal(saved.at(-1).stack[0].args.org,'ht');
+for(const fn of listeners.input)fn({target:{id:'eventSearch',value:'市场',dataset:{}}});
+assert.equal(elements['#eventResults'].innerHTML.split('data-event-row=').length-1,1);
+run("dialogStack=[{type:'org',args:{org:'amc',page:0,category:'all'}}]");
+for(const fn of listeners.change)fn({target:{id:'orgMonitoring',value:'capital',dataset:{}}});
+assert.equal(data('dialogStack[0].args.monitoring'),'capital');
+assert.equal(elements['#orgResults'].innerHTML.split('data-org-indicator=').length-1,data("indicators.filter(i=>i.org==='amc'&&i.cat==='adequacy').length"));
+for(const fn of listeners.click)fn({target:{closest:()=>({dataset:{orgSummary:'risk:concentration:yellow'}})}});
+assert.equal(data('dialogStack[0].args.category'),'concentration');assert.equal(data('dialogStack[0].args.status'),'yellow');
+assert.equal(elements['#orgResults'].innerHTML.split('data-org-indicator=').length-1,1);
+elements['#screen']={inert:false};elements['.dialog-content']={scrollTop:0};elements['#modalRoot']={innerHTML:'',querySelector:()=>({focus:()=>{}})};
+run("dialogStack=[];openDialog('events',{})");assert(elements['#modalRoot'].innerHTML.includes('event-list-dialog'));
+const eventId=data('eventsData()[0].id');
+for(const fn of listeners.click)fn({target:{closest:()=>({dataset:{event:eventId}})}});
+assert(elements['#modalRoot'].innerHTML.includes('event-report-dialog'));assert.equal(data('dialogStack.at(-1).type'),'event');
+elements['.dialog-content'].scrollTop=1400;
+for(const fn of listeners.click)fn({target:{closest:()=>({dataset:{eventMaterial:'plan',reportId:eventId}})}});
+assert.equal(data('dialogStack.at(-1).type'),'eventMaterial');assert.equal(data('dialogStack.at(-2).scrollTop'),1400);
+assert(elements['#modalRoot'].innerHTML.includes('风险事件处置方案（示例）'));assert.equal(elements['.dialog-content'].scrollTop,0);
+run("dialogStack.pop();openDialog('event',dialogStack.at(-1).args,false)");assert.equal(elements['.dialog-content'].scrollTop,1400);
+for(const fn of listeners.click)fn({target:{closest:()=>({dataset:{org:'amc'}})}});
+assert(elements['#modalRoot'].innerHTML.includes('org-monitoring-dialog'));assert.equal(data('dialogStack.at(-1).type'),'org');
+assert(elements['#screen'].inert);
+assert.deepEqual(data("snapshot('2026-08')"),baseline);
+const report={result:'PASS',method:'Node VM, built HTML markup and real event handlers; no live browser rendering',checks:['classified event columns and filters','cross-institution events deduplicated','complete report sections and actionable attachment previews','stage-specific timelines and measures','capital plus eight risk summary categories','monthly triggers distinguished from current lights','missing and overdue not marked normal','summary counts drill down to matching indicator rows','warning and metric drill links retained','actual open-dialog and material click handlers','report scroll location retained on return','three observation months and four institutions','unchanged homepage counts'],snapshot:baseline};
+fs.writeFileSync(path.join(__dirname,'qa-event-org-details.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

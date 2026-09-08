@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { DemoState, Institution, MajorEvent, Role } from '../types';
 import { indicatorPeriodService } from '../services/indicatorPeriodService';
+import { currentInstitution } from '../services/permissionService';
 
 type Navigate = (path: string) => void;
 type Update = (fn: (state: DemoState) => void) => void;
@@ -243,7 +244,7 @@ function DetailDrawer({ drawer, onClose, navigate }: { drawer: DrawerState; onCl
 }
 
 export default function DashboardCockpit({ state, role, institutionId, navigate, update: _update, toast }: DashboardCockpitProps) {
-  const institution = state.institutions.find(item => item.id === institutionId) || (role === '各金融机构' ? state.institutions[0] : undefined);
+  const institution = state.institutions.find(item => item.id === institutionId) || (role === '各金融机构' ? state.institutions.find(item => item.name === currentInstitution || item.shortName === currentInstitution) || state.institutions[0] : undefined);
   const institutionType = typeOfInstitution(institution); const config = institutionConfig[institutionType];
   const scopeKey = institution ? `institution-${institution.id}` : 'group';
   const storageKey = `dashboard-v14-filters-${scopeKey}`;
@@ -281,7 +282,29 @@ export default function DashboardCockpit({ state, role, institutionId, navigate,
   const selectedCapitalRows = institution ? capitalRows.map((item, index) => ({ ...item, name: config.riskMetrics[index] || item.name })).slice(0, 4) : capitalRows;
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   const modeLabel = viewMode === 'decision' ? '决策视图' : '管理视图';
-  if (!institution) return <ExecutiveCockpit state={state} navigate={navigate} toast={toast} />;
+  if (!institution) {
+    return <div className="reference-cockpit-host">
+      <iframe
+        className="reference-cockpit-frame"
+        src="/group-cockpit/index.html"
+        title="集团及国资公司并表风险驾驶舱"
+        loading="eager"
+        allowFullScreen
+      />
+    </div>;
+  }
+  const useStandaloneInstitutionCockpit = role === '各金融机构' || Boolean(institutionId);
+  if (useStandaloneInstitutionCockpit) {
+    return <div className="reference-cockpit-host institution-cockpit-host">
+      <iframe
+        className="reference-cockpit-frame"
+        src={`/institution-cockpit/index.html?name=${encodeURIComponent(institution.shortName)}`}
+        title={`${institution.shortName}金融机构风险驾驶舱`}
+        loading="eager"
+        allowFullScreen
+      />
+    </div>;
+  }
   return <div className={`dashboard-cockpit v14-cockpit ${viewMode === 'management' ? 'is-management' : ''} ${institution ? 'is-institution' : 'is-group'}`}>
     <div className="v14-grid-bg" /><div className="v14-scanline" />
     <header className="v14-topbar"><div className="v14-title-lockup">{institution && <button className="v14-back" onClick={() => navigate('/dashboard')}>‹ 返回集团驾驶舱</button>}<span>{institution ? `${config.label.toUpperCase()} INSTITUTION COCKPIT` : role === '集团' ? 'GROUP CONSOLIDATED RISK CENTER' : 'FINANCIAL HOLDING CONTROL CENTER'}</span><h1>{institution ? `${institution.shortName}驾驶舱` : '金控并表管理驾驶舱'}</h1><small>{institution ? `${config.label}业态 · ${config.frequency}监测口径 · 当前机构数据权限` : '集团金融风险全景监测与穿透管理'}</small></div><div className="v14-top-actions"><ViewSwitcher value={viewMode} onChange={setViewMode} /><div className="v14-update"><small>最近数据更新时间</small><b>2024-06-30 13:22:45</b></div><button className="v14-ai-shortcut" onClick={() => document.querySelector<HTMLButtonElement>('.smart-assistant-launcher')?.click()}><i>AI</i><span>问数</span></button></div></header>

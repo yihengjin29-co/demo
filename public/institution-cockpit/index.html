@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>金融机构风险驾驶舱 · 上海国际集团</title>
+  <link rel="stylesheet" href="./styles/base.css">
+  <link rel="stylesheet" href="./styles/screen-layout.css">
+  <link rel="stylesheet" href="./styles/executive-view.css">
+  <link rel="stylesheet" href="./styles/detail-layout.css">
+  <link rel="stylesheet" href="./institution.css">
+</head>
+<body>
+  <div class="screen institution-screen" id="screen">
+    <header class="screen-header">
+      <div class="screen-brand">
+        <span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><b>上海国际集团</b><small>SHANGHAI INTERNATIONAL GROUP</small></span>
+      </div>
+      <div class="screen-title">
+        <span class="title-track left-track"></span>
+        <div><h1>金融机构风险驾驶舱</h1><p>FINANCIAL INSTITUTION RISK DASHBOARD</p></div>
+        <span class="title-track right-track"></span>
+      </div>
+      <div class="screen-clock"><span id="clock"></span><small>当前机构：<b id="institutionName">浦发银行</b></small></div>
+    </header>
+
+    <div class="screen-context">
+      <span class="demo-note"><i></i>交互演示 · 所有数值与事项均为模拟</span>
+      <div class="screen-tools">
+        <label for="period">观察月份</label>
+        <select id="period">
+          <option value="2026-08">2026年08月</option>
+          <option value="2026-07">2026年07月</option>
+          <option value="2026-06">2026年06月</option>
+        </select>
+        <button class="bare" data-action="scope">范围与口径</button>
+        <button class="bare" data-action="fullscreen" aria-label="切换全屏展示">全屏展示 ⛶</button>
+      </div>
+    </div>
+
+    <main class="screen-main institution-main">
+      <section class="tier overview-tier institution-overview" aria-label="本机构风险纵览">
+        <button class="summary-metric" style="--metric-color:var(--yellow)" data-detail="本月预警黄灯" data-detail-text="本月共触发3项黄灯预警，主要涉及集中度风险与流动性风险，均已进入跟踪处置。">
+          <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 3 29 27H3Z M16 11v8m0 4v1"/></svg></span>
+          <span class="metric-content"><span class="metric-label">本月预警黄灯数量</span><span class="metric-number"><b data-kpi="yellow">03</b><small>项</small></span><span class="metric-note">较上月 <strong class="yellow">↑ 新增 1项</strong></span></span><span class="summary-arrow">↗</span>
+        </button>
+        <button class="summary-metric" style="--metric-color:var(--red)" data-detail="本月预警红灯" data-detail-text="本月共触发1项红灯预警，已启动专项核查并纳入管理层跟踪。">
+          <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 2 28 9v11l-12 9L4 20V9Z M16 9v10m0 4v1"/></svg></span>
+          <span class="metric-content"><span class="metric-label">本月预警红灯数量</span><span class="metric-number"><b data-kpi="red">01</b><small>项</small></span><span class="metric-note">较上月 <strong class="green">持平 0项</strong></span></span><span class="summary-arrow">↗</span>
+        </button>
+        <button class="summary-metric" style="--metric-color:var(--blue)" data-detail="本月重大风险事件" data-detail-text="本月新增2件重大风险事件，1件处置中，1件已完成复核。">
+          <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M8 3h13l5 5v21H6V3Zm13 0v6h5M11 15h10m-10 5h10m-10 5h7"/></svg></span>
+          <span class="metric-content"><span class="metric-label">本月重大风险事件数量</span><span class="metric-number"><b data-kpi="events">02</b><small>件</small></span><span class="metric-note">较上月 <strong class="yellow">↑ 新增 1件</strong></span></span><span class="summary-arrow">↗</span>
+        </button>
+      </section>
+
+      <section class="tier institution-middle" aria-label="集中度、经营雷达与战略目标">
+        <section class="screen-panel concentration-panel">
+          <div class="panel-heading"><h2><i class="heading-mark"></i>集中度情况</h2><div class="heading-tools"><small>本机构 · 月度</small></div></div>
+          <div class="concentration-grid">
+            <button class="concentration-item" data-detail="单一客户集中度" data-detail-text="单一客户授信余额占资本净额的比例，本期为44.2%，较上年末上升3.36个百分点。">
+              <span class="concentration-name">单一客户集中度</span>
+              <span class="concentration-ring"><svg viewBox="0 0 120 120"><circle class="ring-track" cx="60" cy="60" r="47"/><circle class="ring-fill" cx="60" cy="60" r="47" pathLength="100" stroke-dasharray="44.2 100"/></svg><b>44.2<small>%</small></b></span>
+              <span class="concentration-change">较上年末 <strong class="red">↑ 3.36%</strong></span>
+            </button>
+            <button class="concentration-item" data-detail="行业集中度" data-detail-text="前五大行业风险敞口占比为40.8%，较上年末上升1.28个百分点。">
+              <span class="concentration-name">行业集中度</span>
+              <span class="concentration-ring"><svg viewBox="0 0 120 120"><circle class="ring-track" cx="60" cy="60" r="47"/><circle class="ring-fill second" cx="60" cy="60" r="47" pathLength="100" stroke-dasharray="40.8 100"/></svg><b>40.8<small>%</small></b></span>
+              <span class="concentration-change">较上年末 <strong class="yellow">↑ 1.28%</strong></span>
+            </button>
+          </div>
+          <p class="panel-footnote">集中度指标按本机构授权口径展示，点击可查看指标说明。</p>
+        </section>
+
+        <section class="screen-panel radar-core-panel">
+          <div class="panel-heading"><h2><i class="heading-mark"></i>核心经营指标雷达图</h2><div class="heading-tools"><small>多月份实际值对比</small></div></div>
+          <div class="radar-period-picker" id="radarPeriodPicker" aria-label="选择雷达图对比月份"></div>
+          <div class="radar-chart-wrap">
+            <svg id="operationRadar" class="operation-radar" viewBox="0 0 640 360" role="img" aria-label="ROE、ROA、净利润、风险覆盖率、资产负债率、资本杠杆率、负债依存度、营业现金比率八维雷达图"></svg>
+          </div>
+          <div class="radar-legend" id="radarLegend"><div></div><small>图形按各指标量纲比例绘制，标签与悬浮提示展示实际值</small></div>
+        </section>
+
+        <section class="screen-panel strategy-panel">
+          <div class="panel-heading"><h2><i class="heading-mark"></i>战略目标达成</h2><div class="heading-tools"><small>年度预算执行</small></div></div>
+          <div class="strategy-gauges">
+            <button class="strategy-gauge" data-detail="营业收入目标" data-detail-text="年度预算500.0亿元，本期累计实现350.6亿元，预算进度70.1%。">
+              <strong>营业收入<small>（亿元）</small></strong>
+              <svg viewBox="0 0 140 82"><path class="gauge-track" d="M18 70A52 52 0 0 1 122 70" pathLength="100"/><path class="gauge-value cyan-gauge" d="M18 70A52 52 0 0 1 122 70" pathLength="100" stroke-dasharray="70.1 100"/><line x1="70" y1="70" x2="88" y2="39"/><circle cx="70" cy="70" r="4"/></svg>
+              <span>预算值：500.0</span><b>350.6亿元</b><em class="green">进度 70.1% · 达标</em>
+            </button>
+            <button class="strategy-gauge" data-detail="归母净利润目标" data-detail-text="年度预算500.0亿元，本期累计实现245.5亿元，预算进度49.1%，当前未达序时目标。">
+              <strong>归母净利润<small>（亿元）</small></strong>
+              <svg viewBox="0 0 140 82"><path class="gauge-track" d="M18 70A52 52 0 0 1 122 70" pathLength="100"/><path class="gauge-value red-gauge" d="M18 70A52 52 0 0 1 122 70" pathLength="100" stroke-dasharray="49.1 100"/><line x1="70" y1="70" x2="69" y2="34"/><circle cx="70" cy="70" r="4"/></svg>
+              <span>预算值：500.0</span><b>245.5亿元</b><em class="red">进度 49.1% · 未达标</em>
+            </button>
+            <button class="strategy-gauge" data-detail="年化ROE目标" data-detail-text="年度目标7.2%，本期年化ROE为7.6%，已达到年度目标要求。">
+              <strong>年化ROE<small>（%）</small></strong>
+              <svg viewBox="0 0 140 82"><path class="gauge-track" d="M18 70A52 52 0 0 1 122 70" pathLength="100"/><path class="gauge-value cyan-gauge" d="M18 70A52 52 0 0 1 122 70" pathLength="100" stroke-dasharray="86 100"/><line x1="70" y1="70" x2="98" y2="43"/><circle cx="70" cy="70" r="4"/></svg>
+              <span>目标值：7.2%</span><b>7.6%</b><em class="green">目标达成 · 达标</em>
+            </button>
+          </div>
+        </section>
+      </section>
+
+      <section class="tier institution-bottom" aria-label="舆情、经营指标与重大事件">
+        <section class="screen-panel compact-feed-panel" id="sentimentPanel">
+          <div class="panel-heading"><h2><i class="heading-mark"></i>舆情监测</h2><div class="heading-tools"><div class="feed-controls"><button data-feed="news:-1" aria-label="上一条舆情">‹</button><button data-pause="news" aria-label="暂停舆情轮播">Ⅱ</button><button data-feed="news:1" aria-label="下一条舆情">›</button></div><button class="bare" data-all="news">全部 ↗</button></div></div>
+          <div class="compact-columns news-columns"><span>舆情信息</span><span>重要程度</span><span>等级</span><span>发布时间</span></div>
+          <div class="compact-stream" id="newsStream"></div>
+        </section>
+
+        <section class="screen-panel operating-panel">
+          <div class="panel-heading"><h2><i class="heading-mark"></i>经营指标</h2><div class="heading-tools"><small>本期值 / 同比 / 排名</small></div></div>
+          <div class="operating-cards">
+            <button class="operating-card" data-detail="ROE" data-detail-text="本期ROE为7.6%，同比上升3.36BP，同业排名由第3位升至第2位。"><span>ROE<small>（%）</small></span><div><b>7.6</b><svg viewBox="0 0 90 34" preserveAspectRatio="none"><polyline points="0,12 10,18 20,15 30,25 42,20 54,22 66,15 77,17 90,3"/></svg></div><small>同比 <em class="red">↑ 3.36BP</em></small><small>排名 <em class="green">3 → 2</em></small></button>
+            <button class="operating-card" data-detail="投资收益率" data-detail-text="本期投资收益率为7.8%，同比下降14.23BP，同业排名由第2位降至第3位。"><span>投资收益率<small>（%）</small></span><div><b>7.8</b><svg viewBox="0 0 90 34" preserveAspectRatio="none"><polyline points="0,9 10,14 20,11 30,23 42,17 54,19 66,13 77,15 90,4"/></svg></div><small>同比 <em class="green">↓ 14.23BP</em></small><small>排名 <em class="red">2 → 3</em></small></button>
+            <button class="operating-card" data-detail="营业收入" data-detail-text="本期累计营业收入350.6亿元，同比增长3.36%，同业排名由第3位升至第2位。"><span>营业收入<small>（亿元）</small></span><div><b>350.6</b><svg viewBox="0 0 90 34" preserveAspectRatio="none"><polyline points="0,18 10,13 20,17 30,20 42,14 54,16 66,10 77,14 90,2"/></svg></div><small>同比 <em class="red">↑ 3.36%</em></small><small>排名 <em class="green">3 → 2</em></small></button>
+            <button class="operating-card" data-detail="风险覆盖率" data-detail-text="本期风险覆盖率160.0%，同比上升3.36BP，同业排名由第3位升至第2位。"><span>风险覆盖率<small>（%）</small></span><div><b>160.0</b><svg viewBox="0 0 90 34" preserveAspectRatio="none"><polyline points="0,18 10,21 20,14 30,17 42,11 54,15 66,12 77,14 90,2"/></svg></div><small>同比 <em class="red">↑ 3.36BP</em></small><small>排名 <em class="green">3 → 2</em></small></button>
+          </div>
+        </section>
+
+        <section class="screen-panel compact-feed-panel" id="eventPanel">
+          <div class="panel-heading"><h2><i class="heading-mark"></i>重大风险事件</h2><div class="heading-tools"><div class="feed-controls"><button data-feed="events:-1" aria-label="上一条事件">‹</button><button data-pause="events" aria-label="暂停事件轮播">Ⅱ</button><button data-feed="events:1" aria-label="下一条事件">›</button></div><button class="bare" data-all="events">全部 ↗</button></div></div>
+          <div class="compact-columns event-columns"><span>风险事项</span><span>处置状态</span><span>关注等级</span><span>上报时间</span></div>
+          <div class="compact-stream" id="eventStream"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="screen-footer"><span>数据截止 <span id="asof">2026-08-31</span> · 本机构报送及风险数据服务（演示）</span><span>指标可下钻 · 事项可追踪 · 来源可回溯</span></footer>
+  </div>
+  <div id="modalRoot"></div>
+  <div id="radarTip" class="chart-tooltip" hidden></div>
+  <script src="./institution.js"></script>
+</body>
+</html>
