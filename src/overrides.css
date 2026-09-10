@@ -588,6 +588,15 @@ body { font-size: 13px; }
   border-radius: 12px 4px 12px 12px;
   background: #216fe0;
 }
+.smart-assistant-quick { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 37px; }
+.smart-assistant-quick button { padding: 8px 11px; border: 1px solid #cddcf0; border-radius: 8px; color: #31577f; background: #fff; font-size: 12px; text-align: left; }
+.smart-assistant-quick button:hover { border-color: #78a5e4; color: #155eef; background: #f2f7ff; }
+.smart-assistant-stats { display: grid; grid-template-columns: repeat(3, minmax(86px, 1fr)); gap: 8px; margin-top: 10px; }
+.smart-assistant-stats b { display: grid; gap: 2px; padding: 8px 9px; border-radius: 7px; color: #225dba; background: #eef5ff; font-size: 15px; }
+.smart-assistant-stats b.red { color: #c43f4e; background: #fff0f2; }.smart-assistant-stats b.yellow { color: #9f6a0b; background: #fff7df; }.smart-assistant-stats b.green { color: #21804d; background: #eaf8ef; }
+.smart-assistant-stats small { color: #75869c; font-size: 10px; font-weight: 500; }
+.smart-assistant-chart { display: flex; height: 72px; align-items: flex-end; gap: 7px; margin-top: 12px; padding: 8px 10px 0; border-bottom: 1px solid #cdd9e8; background: linear-gradient(180deg, #f8fbff, #fff); }
+.smart-assistant-chart i { flex: 1; min-width: 8px; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, #64a1ef, #216fe0); }
 
 .smart-assistant-input-area { padding: 12px 13px 10px; border-top: 1px solid #e2e9f3; background: #fff; }
 .smart-assistant-composer {
@@ -629,6 +638,45 @@ body { font-size: 13px; }
 .smart-assistant-composer button:hover { background: #175fc8; }
 .smart-assistant-composer button:disabled { background: #b9c8dd; opacity: 1; }
 .smart-assistant-input-area > small { display: block; margin-top: 7px; color: #8794a7; font-size: 10px; text-align: right; }
+
+/* AI应用：保留系统导航，将问答助手扩展为主内容区。 */
+.ai-application-page { height: calc(100vh - 190px); min-height: 560px; }
+.smart-assistant-panel.embedded {
+  position: relative;
+  inset: auto;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(20, 54, 96, .10);
+  animation: none;
+}
+.smart-assistant-panel.embedded .smart-assistant-header { min-height: 78px; padding: 15px 22px; }
+.smart-assistant-panel.embedded .smart-assistant-avatar { width: 46px; height: 46px; }
+.smart-assistant-panel.embedded .smart-assistant-avatar svg { width: 23px; height: 23px; }
+.smart-assistant-panel.embedded .smart-assistant-header strong { font-size: 20px; }
+.smart-assistant-panel.embedded .smart-assistant-header small { font-size: 12px; }
+.smart-assistant-panel.embedded .smart-assistant-messages { gap: 18px; padding: 26px 30px; }
+.smart-assistant-panel.embedded .smart-assistant-message { max-width: min(78%, 900px); gap: 11px; }
+.smart-assistant-panel.embedded .smart-assistant-message-avatar { width: 36px; height: 36px; }
+.smart-assistant-panel.embedded .smart-assistant-message-avatar svg { width: 19px; height: 19px; }
+.smart-assistant-panel.embedded .smart-assistant-message > div { padding: 13px 16px; border-radius: 5px 14px 14px 14px; font-size: 15px; line-height: 1.75; }
+.smart-assistant-panel.embedded .smart-assistant-message.user > div { border-radius: 14px 5px 14px 14px; }
+.smart-assistant-panel.embedded .smart-assistant-quick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 1000px; padding-left: 47px; }
+.smart-assistant-panel.embedded .smart-assistant-quick button { min-height: 44px; padding: 10px 14px; font-size: 13px; }
+.smart-assistant-panel.embedded .smart-assistant-input-area { padding: 15px 22px 13px; }
+.smart-assistant-panel.embedded .smart-assistant-composer { padding: 11px 11px 11px 15px; border-radius: 10px; }
+.smart-assistant-panel.embedded .smart-assistant-composer textarea { min-height: 72px; max-height: 160px; font-size: 14px; }
+.smart-assistant-panel.embedded .smart-assistant-composer button { width: 40px; height: 40px; }
+.smart-assistant-panel.embedded .smart-assistant-input-area > small { font-size: 11px; }
+
+@media (max-width: 900px) {
+  .ai-application-page { height: calc(100vh - 220px); min-height: 520px; }
+  .smart-assistant-panel.embedded .smart-assistant-quick { grid-template-columns: 1fr; }
+  .smart-assistant-panel.embedded .smart-assistant-message { max-width: 92%; }
+}
 
 @media (max-width: 600px) {
   .smart-assistant-panel { right: 12px; bottom: 76px; width: calc(100vw - 24px); height: min(590px, calc(100vh - 94px)); }

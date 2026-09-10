@@ -10,7 +10,7 @@ const groupDashboardCss = fs.readFileSync('src/dashboard/group-dashboard.css', '
 const overrides = fs.readFileSync('src/overrides.css', 'utf8');
 
 const checks = {
-  topLevelOrder: ['首页', '驾驶舱', '风险偏好管理', '风险限额管理', '风险指标管理', '风险预警与处置', '风险报告管理', '知识库管理', '数据管理', 'AI应用助手', '基础与系统管理']
+  topLevelOrder: ['首页', '驾驶舱', '风险偏好管理', '风险限额管理', '风险指标管理', '风险预警与处置', '风险报告管理', '知识库管理', '数据管理', 'AI应用', '基础与系统管理']
     .every((label, index, labels) => index === 0 || app.indexOf(`label: '${labels[index - 1]}'`) < app.indexOf(`label: '${label}'`)),
   nestedReportMenu: app.includes("{ label: '报表管理', children:") && ['报表中心', '风险看板', '资本看板'].every(label => app.includes(`label: '${label}'`)),
   riskBoardGroupOnly: app.includes("{ label: '风险看板', path: '/dashboard', roles: ['集团'] }") && app.includes("return role === '集团';"),
@@ -21,6 +21,7 @@ const checks = {
   ownershipFontsRaised: groupDashboardCss.includes('.gd-ownership-root b,.gd-ownership-holding b { font-size:16px;') && groupDashboardCss.includes('.gd-ownership-institutions button b { font-size:16px;'),
   thirdLevelStyled: overrides.includes('.menu-children.level-2') && overrides.includes('.menu-child.active-child'),
   cockpitFrameStyled: overrides.includes('.app:has(.institution-cockpit-host)') && overrides.includes('.institution-cockpit-back'),
+  embeddedAiStyled: overrides.includes('.smart-assistant-panel.embedded') && overrides.includes('.ai-application-page'),
 };
 
 const storage = new Map();
@@ -53,9 +54,11 @@ try {
   const institutionIndicatorMenu = render('各金融机构', '/indicators/maintenance');
   const institutionCockpit = render('各金融机构', '/cockpit');
   const groupCockpit = render('集团', '/cockpit');
+  const aiApplication = render('集团', '/ai-assistant');
   checks.renderedRoleMenus = groupMenu.includes('风险看板') && !holdingMenu.includes('风险看板') && !institutionPreferenceMenu.includes('风险看板') && institutionPreferenceMenu.includes('仅查询') && institutionIndicatorMenu.includes('仅查询');
   checks.renderedInstitutionCockpit = institutionCockpit.includes('institution-cockpit-host') && institutionCockpit.includes('institution-cockpit/index.html?name=');
   checks.renderedGroupCockpit = groupCockpit.includes('集团及国资公司驾驶舱') && !groupCockpit.includes('市属国企') && !groupCockpit.includes('集团控股平台');
+  checks.renderedAiApplication = aiApplication.includes('AI应用 · 智能问答') && aiApplication.includes('smart-assistant-panel embedded') && !aiApplication.includes('smart-assistant-launcher');
 } finally {
   await vite.close();
 }

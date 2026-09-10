@@ -219,7 +219,7 @@ const menus: MenuItem[] = [
     { label: '数据收集', path: '/empty/data-collection' },
     { label: '数据质量管理', path: '/empty/data-quality' },
   ] },
-  { label: 'AI应用助手', icon: 'AI', path: '/ai-assistant' },
+  { label: 'AI应用', icon: 'AI', path: '/ai-assistant' },
   { label: '基础与系统管理', icon: '⚙', path: '/empty/system', roles: ['集团', '金控公司'] },
 ];
 const visibleMenuItems = (items: MenuItem[], role: Role): MenuItem[] => items
@@ -341,7 +341,7 @@ function App() {
     if (path.startsWith('/institutions/')) return <InstitutionDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/limits/schemes') return <EmptyModulePage title="风险限额方案管理" />;
     if (path === '/limits/backtrack') return <IndicatorQuery state={state} role={role} navigate={navigate} update={update} toast={toast} title="风险限额倒查" />;
-    if (path === '/ai-assistant') return <AiAssistantPage />;
+    if (path === '/ai-assistant') return <AiApplicationPage role={role} path={path} />;
     if (path.includes('/empty/')) return <EmptyModulePage title={flattenMenus(menus).find(item => item.path === path)?.label || '模块占位页'} />;
     if (path === '/warning/risk-preference') return <RiskPreferenceList state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path.endsWith('/new') && path.startsWith('/warning/risk-preference')) return <RiskPreferenceEditor state={state} role={role} navigate={navigate} update={update} toast={toast} />;
@@ -386,7 +386,7 @@ function App() {
   };
   if (!authenticated) return <><LoginPage initialRole={loginRole} onLogin={login} /><SmartAssistant role={role} path={path} /></>;
   if (path === '/' || path === '/login') return <SmartAssistant role={role} path={path} />;
-  return <div className="app"><Header path={path} role={role} setRole={changeRole} onReset={() => { reset(); toast('演示数据已恢复'); }} onLogout={logout} /><Sidebar path={path} role={role} navigate={navigate} /><main className="content">{render()}</main>{notice && <Modal title="操作提示" onClose={() => setNotice(null)} footer={<Button variant="secondary" onClick={() => setNotice(null)}>关闭</Button>}><div className="modal-note">{notice}</div></Modal>}<SmartAssistant role={role} path={path} /></div>;
+  return <div className="app"><Header path={path} role={role} setRole={changeRole} onReset={() => { reset(); toast('演示数据已恢复'); }} onLogout={logout} /><Sidebar path={path} role={role} navigate={navigate} /><main className="content">{render()}</main>{notice && <Modal title="操作提示" onClose={() => setNotice(null)} footer={<Button variant="secondary" onClick={() => setNotice(null)}>关闭</Button>}><div className="modal-note">{notice}</div></Modal>}{path !== '/ai-assistant' && <SmartAssistant role={role} path={path} />}</div>;
 }
 
 function InstitutionCockpit({ navigate }: { navigate: (path: string) => void }) {
@@ -394,12 +394,8 @@ function InstitutionCockpit({ navigate }: { navigate: (path: string) => void }) 
   return <div className="institution-cockpit-host"><iframe title={`${currentInstitution}金融机构驾驶舱`} src={source} /><button className="institution-cockpit-back" onClick={() => navigate('/workbench')}>‹ 返回工作台</button></div>;
 }
 
-function AiAssistantPage() {
-  useEffect(() => {
-    const timer = window.setTimeout(() => document.querySelector<HTMLButtonElement>('.smart-assistant-launcher')?.click(), 0);
-    return () => window.clearTimeout(timer);
-  }, []);
-  return <Page title="AI应用助手" breadcrumb={['AI应用助手']}><div className="empty-state"><div className="empty-icon">AI</div><h2>AI应用助手已打开</h2><p>可通过右下角入口再次打开问数、填表和报告辅助能力。</p></div></Page>;
+function AiApplicationPage({ role, path }: { role: Role; path: string }) {
+  return <Page title="AI应用" breadcrumb={['AI应用']}><div className="ai-application-page"><SmartAssistant role={role} path={path} embedded /></div></Page>;
 }
 
 type PageProps = { state: DemoState; role: Role; navigate: (path: string) => void; update: (fn: (state: DemoState) => void) => void; toast: (message: string) => void };

@@ -92,12 +92,12 @@ function SendIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 17-7-7 17-2.5-7.5L3 11Zm7.5 2.5L20 4" /></svg>;
 }
 
-export default function SmartAssistant({ role, path }: { role?: string; path?: string }) {
+export default function SmartAssistant({ role, path, embedded = false }: { role?: string; path?: string; embedded?: boolean }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const messageEndRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ pointerId: number; start: Point; origin: Point } | null>(null);
   const draggedRef = useRef(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(embedded);
   const [position, setPosition] = useState<Point | null>(null);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<AssistantMessage[]>(() => [createMessage('assistant', WELCOME_MESSAGE)]);
@@ -115,6 +115,7 @@ export default function SmartAssistant({ role, path }: { role?: string; path?: s
   };
 
   useEffect(() => {
+    if (embedded) return;
     const rect = buttonRef.current?.getBoundingClientRect();
     setPosition({
       x: Math.max(VIEWPORT_GAP, window.innerWidth - (rect?.width || 132) - 24),
@@ -123,14 +124,15 @@ export default function SmartAssistant({ role, path }: { role?: string; path?: s
   }, []);
 
   useEffect(() => {
+    if (embedded) return;
     const handleResize = () => setPosition(current => current ? clampPosition(current) : current);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
-    if (open) messageEndRef.current?.scrollIntoView({ block: 'nearest' });
-  }, [messages, open]);
+    if (open || embedded) messageEndRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [messages, open, embedded]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
@@ -183,7 +185,7 @@ export default function SmartAssistant({ role, path }: { role?: string; path?: s
   };
 
   return <>
-    <button
+    {!embedded && <button
       ref={buttonRef}
       type="button"
       className="smart-assistant-launcher"
@@ -197,15 +199,15 @@ export default function SmartAssistant({ role, path }: { role?: string; path?: s
     >
       <span className="smart-assistant-launcher-icon"><RobotIcon /></span>
       <span>AI问数</span>
-    </button>
+    </button>}
 
-    {open && <section className="smart-assistant-panel" role="dialog" aria-label="并表AI助手对话面板">
+    {(open || embedded) && <section className={`smart-assistant-panel ${embedded ? 'embedded' : ''}`} role={embedded ? 'region' : 'dialog'} aria-label={embedded ? 'AI应用智能问答' : '并表AI助手对话面板'}>
       <header className="smart-assistant-header">
         <span className="smart-assistant-avatar"><RobotIcon /></span>
-        <div><strong>并表AI助手</strong><small>跟随当前权限与筛选口径</small></div>
+        <div><strong>{embedded ? 'AI应用 · 智能问答' : '并表AI助手'}</strong><small>跟随当前权限与筛选口径</small></div>
         <div className="smart-assistant-header-actions">
           <button type="button" onClick={startNewConversation} title="新建会话" aria-label="新建会话"><PlusIcon /></button>
-          <button type="button" onClick={() => setOpen(false)} title="关闭" aria-label="关闭智能助手"><CloseIcon /></button>
+          {!embedded && <button type="button" onClick={() => setOpen(false)} title="关闭" aria-label="关闭智能助手"><CloseIcon /></button>}
         </div>
       </header>
 
