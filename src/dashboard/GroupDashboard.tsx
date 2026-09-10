@@ -144,7 +144,7 @@ function BusinessStrip() {
 
 function HeatSignal({ cell }: { cell: HeatCell }) {
   const status = cell.red ? 'red' : cell.yellow ? 'yellow' : cell.status || 'none';
-  if (cell.red || cell.yellow) return <span className={`gd-heat-flags ${status}`}><i className="red">{cell.red || ''}</i><i className="yellow">{cell.yellow || ''}</i></span>;
+  if (cell.red || cell.yellow) return <span className={`gd-heat-flags ${status}`}>{cell.red ? <i className="red" aria-label={`${cell.red} 项红灯`} /> : null}{cell.yellow ? <i className="yellow" aria-label={`${cell.yellow} 项黄灯`} /> : null}</span>;
   const labels: Record<RiskStatus, string> = { red: '红灯', yellow: '黄灯', green: '正常', 'no-data': '缺数', overdue: '超期', none: '未配置' };
   return <span className={`gd-heat-state ${status}`}><i />{labels[status]}</span>;
 }
@@ -175,7 +175,7 @@ function RiskHeatmapPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) {
         {riskCategories.map(risk => { const cell = org.cells[risk.id] || { status: 'none' as const }; return <button className="gd-heat-cell" key={risk.id} aria-label={`${org.name} ${risk.label}风险`} onClick={() => openRiskBoard(`entry=cell&org=${org.id}&cat=${risk.id}`, `${org.name} · ${risk.label}风险`)}><HeatSignal cell={cell} /></button>; })}
       </div>)}
     </div>
-    <div className="gd-heatmap-foot"><span>旗上数字为当前预警指标数；点击后弹出风险看板原下钻页面</span><button onClick={() => openRiskBoard('entry=quality', '数据状态核对')}>数据状态 ↗</button></div>
+    <div className="gd-heatmap-foot"><span>旗帜颜色表示当前预警状态；点击后弹出风险看板原下钻页面</span><button onClick={() => openRiskBoard('entry=quality', '数据状态核对')}>数据状态 ↗</button></div>
   </Panel>;
 }
 

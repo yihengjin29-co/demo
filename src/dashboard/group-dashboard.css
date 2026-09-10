@@ -398,7 +398,7 @@
 .gd-heat-flags { position:relative; display:flex; width:39px; height:31px; align-items:flex-start; justify-content:center; gap:3px; }
 .gd-heat-flags:after { content:''; position:absolute; left:6px; right:6px; bottom:2px; height:3px; border:1px solid #2f7192; border-radius:50%; background:#123d5a; }
 .gd-heat-flags i { position:relative; z-index:1; display:grid; place-items:center; width:16px; height:22px; clip-path:polygon(18% 0,100% 12%,82% 84%,18% 72%,18% 100%,0 100%,0 0); color:#fff; font:700 10px Arial; font-style:normal; text-shadow:0 1px 2px #0008; }
-.gd-heat-flags i.red:empty,.gd-heat-flags i.yellow:empty { display:none; }.gd-heat-flags i.red { background:#f04d63; box-shadow:0 0 8px #ff5368; }.gd-heat-flags i.yellow { background:#e7ad25; box-shadow:0 0 8px #fac63e; }
+.gd-heat-flags i.red { background:#f04d63; box-shadow:0 0 8px #ff5368; }.gd-heat-flags i.yellow { background:#e7ad25; box-shadow:0 0 8px #fac63e; }
 .gd-heat-state { display:flex; align-items:center; gap:5px; color:#7895a9; font-size:9px; }.gd-heat-state i { width:9px; height:9px; border:1px solid currentColor; border-radius:50%; }
 .gd-heat-state.green { color:#4be1a6; }.gd-heat-state.green i { background:#29a985; box-shadow:0 0 7px #4be1a6; }.gd-heat-state.no-data,.gd-heat-state.overdue,.gd-heat-state.none { color:#748da1; }.gd-heat-state.no-data i { border-radius:1px; transform:rotate(45deg); }.gd-heat-state.overdue i { border-style:dashed; }.gd-heat-state.none i { border-color:#526d80; }
 .gd-heatmap-foot { display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(66,217,255,.16); color:#7298b2; font-size:9px; }
