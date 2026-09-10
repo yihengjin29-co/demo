@@ -67,7 +67,7 @@ const answerFor = (question: string, institutionWorkbench = false): AssistantMes
   if (/重大风险事件|新增/.test(question)) return createMessage('assistant', '本月新增重大风险事件1起，来自国际AMC，当前处于执行跟踪阶段；浦发银行的信息科技系统故障事件已完成终报并归档。', {
     stats: [{ label: '本月新增', value: '1起', tone: 'red' }, { label: '处置中', value: '1起', tone: 'yellow' }, { label: '已办结', value: '1起', tone: 'green' }],
   });
-  if (activeInstitution !== '全部机构') return createMessage('assistant', `当前查询范围已限定为${activeInstitution}。本期重点关注指标、预警及重大风险事项均按该机构权限口径返回；如需集团对比，请先返回集团驾驶舱。`, {
+  if (activeInstitution !== '全部机构') return createMessage('assistant', `当前查询范围已限定为${activeInstitution}。本期重点关注指标、预警及重大风险事项均按该机构权限口径返回；如需集团对比，请先返回风险专题看板。`, {
     stats: [{ label: '查询范围', value: activeInstitution, tone: 'blue' }, { label: '数据期次', value: '2024年6月', tone: 'green' }],
   });
   return createMessage('assistant', '当前集团共有2项红灯预警、3项黄灯预警，红灯主要集中于国际AMC的集中度风险和国泰海通的流动性风险。较上期红灯增加2项。', {

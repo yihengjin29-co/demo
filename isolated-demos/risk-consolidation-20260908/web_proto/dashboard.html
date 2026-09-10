@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>集团风险驾驶舱 - 上海国际金控</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root{--primary:#0a1628;--accent:#f0b429;--bg:#0a1628;--card-bg:#0f1d35;--card-border:#1a2d4a;--text:#e2e8f0;--text-light:#94a3b8;--text-muted:#64748b;--danger:#ef4444;--success:#22c55e;--warning:#f59e0b;--info:#3b82f6;--radius:16px;--shadow:0 4px 24px rgba(0,0,0,.3);--font:14px/1.5 -apple-system,"Microsoft YaHei","PingFang SC",sans-serif;--sidebar-width:232px;--transition:0.25s}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:var(--font);color:var(--text);background:var(--bg);display:flex;flex-direction:column;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{transparent}::-webkit-scrollbar-thumb{background:#1a2d4a;border-radius:4px}
+.header{height:60px;background:linear-gradient(135deg,#0a1628,#132244);color:#fff;display:flex;align-items:center;padding:0 24px;z-index:110;box-shadow:0 2px 20px rgba(0,0,0,.4);border-bottom:1px solid rgba(240,180,40,.15);flex-shrink:0}
+.header::after{content:'';position:absolute;bottom:0;left:10%;width:80%;height:1px;background:linear-gradient(90deg,transparent,rgba(240,180,40,.3),transparent)}
+.header h1{font-size:17px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#fff,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .sub{font-size:11px;opacity:.5;margin-left:10px;-webkit-text-fill-color:#94a3b8}
+.header .user{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:13px}
+.header .user .avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#d4941a);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;box-shadow:0 0 0 2px rgba(240,180,40,.2)}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;opacity:.7;margin-right:16px}
+.live-badge .dot{width:7px;height:7px;background:var(--success);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 8px rgba(34,197,94,.5)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.8)}}
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-width);background:linear-gradient(180deg,#0c1a2e,#0a1628);color:#8899b4;overflow-y:auto;flex-shrink:0;font-size:13px;border-right:1px solid rgba(255,255,255,.04)}
+.sidebar a{color:inherit;text-decoration:none}
+.sidebar-search{padding:12px 14px;position:sticky;top:0;background:#0c1a2e;z-index:2}
+.sidebar-search input{width:100%;height:34px;padding:6px 10px 6px 32px;border-radius:10px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none;font-family:inherit}
+.sidebar-search i{position:absolute;left:22px;top:21px;font-size:12px;opacity:.3}
+.main{flex:1;overflow-y:auto;padding:20px 24px}
+.menu-item{display:flex;align-items:center;padding:0 16px;height:40px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;gap:10px;font-size:13px;color:#8899b4}
+.menu-item:hover{background:rgba(255,255,255,.04);color:#e2e8f0}
+.menu-item.active{background:rgba(240,180,40,.08);color:var(--accent);border-left-color:var(--accent);font-weight:600}
+.menu-group-title{font-size:10px;padding:16px 16px 6px;opacity:.3;letter-spacing:2px;border-top:1px solid rgba(255,255,255,.04);margin-top:8px;cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none}
+.menu-group-title:hover{opacity:.6}
+.menu-group-title .fa-chevron-down{font-size:8px;transition:transform var(--transition);opacity:.5}
+.menu-group-title.collapsed .fa-chevron-down{transform:rotate(-90deg)}
+.menu-group-title.collapsed+.group-items{max-height:0;overflow:hidden;opacity:0}
+.group-items{max-height:600px;transition:all var(--transition)}
+.page-title{font-size:1.2rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.page-title small{font-weight:400;color:var(--text-muted);font-size:12px;font-weight:300}
+.breadcrumb{font-size:11px;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.breadcrumb a{color:var(--accent);text-decoration:none;opacity:.7}
+.breadcrumb a:hover{opacity:1}
+.dashboard{display:flex;flex-direction:column;gap:16px}
+.risk-overview{background:linear-gradient(135deg,var(--card-bg),#0f1d35);border-radius:var(--radius);padding:16px 20px;border:1px solid var(--card-border);box-shadow:var(--shadow);font-size:13px;line-height:1.8;color:var(--text-light);display:flex;align-items:flex-start;gap:4px}
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.kpi-card{background:linear-gradient(135deg,var(--card-bg),#0f1d35);border-radius:var(--radius);padding:16px 18px;border:1px solid var(--card-border);box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all .25s}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);border-color:rgba(240,180,40,.2)}
+.kpi-card .kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.kpi-card .kpi-label{font-size:11px;color:var(--text-muted);letter-spacing:.5px;font-weight:500}
+.kpi-card .kpi-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:.8}
+.kpi-card .kpi-value{font-size:26px;font-weight:800;line-height:1.1;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.kpi-card .kpi-sub{font-size:11px;display:flex;align-items:center;gap:4px}
+.kpi-card .kpi-sub.up{color:var(--success)}.kpi-card .kpi-sub.down{color:var(--danger)}.kpi-card .kpi-sub.neutral{color:var(--text-muted)}
+.kpi-card .kpi-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 0 var(--radius)}
+.subsidiary-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.sub-card{background:linear-gradient(135deg,var(--card-bg),#0f1d35);border-radius:var(--radius);padding:16px;border:1px solid var(--card-border);box-shadow:var(--shadow);cursor:pointer;transition:all .25s;position:relative;overflow:hidden;text-decoration:none;color:inherit}
+.sub-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);border-color:rgba(240,180,40,.2)}
+.sub-card .sub-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sub-card .sub-icon{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+.sub-card .sub-name{font-size:14px;font-weight:600}
+.sub-card .sub-type{font-size:10px;color:var(--text-muted);margin-top:1px}
+.sub-card .sub-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 0}
+.sub-card .sub-metric{padding:10px 6px}
+.sub-card .sub-metric{text-align:center;padding:6px;background:rgba(255,255,255,.03);border-radius:8px}
+.sub-card .sub-metric .m-value{font-size:16px;font-weight:700}
+.sub-card .sub-metric .m-label{font-size:9px;color:var(--text-muted);margin-top:2px;letter-spacing:.3px}
+.sub-card .sub-status{position:absolute;top:12px;right:12px;font-size:10px;padding:2px 8px;border-radius:8px;font-weight:600}
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;min-height:300px}
+.chart-card{background:linear-gradient(135deg,var(--card-bg),#0f1d35);border-radius:var(--radius);padding:18px;border:1px solid var(--card-border);box-shadow:var(--shadow)}
+.chart-card .chart-title{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text-light)}
+.chart-card .chart-title .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.chart-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chart-grid-2 .chart-card{min-height:380px}
+.chart-grid-full{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chart-grid-full .chart-card{min-height:380px}
+.alert-list{display:flex;flex-direction:column;gap:6px}
+.alert-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:10px;border-left:3px solid;transition:all .15s;cursor:pointer}
+.alert-item:hover{background:rgba(255,255,255,.04)}
+.alert-item .a-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.alert-item .a-info{flex:1;min-width:0}
+.alert-item .a-title{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.alert-item .a-desc{font-size:10px;color:var(--text-muted);margin-top:2px}
+.alert-item .a-value{font-size:14px;font-weight:700;text-align:right;flex-shrink:0}
+.alert-item .a-time{font-size:10px;color:var(--text-muted);text-align:right;flex-shrink:0;min-width:60px}
+.event-timeline{position:relative;padding:4px 0}
+.tl-item{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tl-item:last-child{border-bottom:none}
+.tl-item .tl-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.tl-item .tl-content{flex:1}
+.tl-item .tl-title{font-size:12px;font-weight:600}
+.tl-item .tl-desc{font-size:10px;color:var(--text-muted);margin-top:2px}
+.tl-item .tl-time{font-size:10px;color:var(--text-muted);flex-shrink:0}
+.echart-box{width:100%;height:260px}
+@media(max-width:1200px){.kpi-strip{grid-template-columns:repeat(3,1fr)}.subsidiary-grid{grid-template-columns:repeat(3,1fr)}.chart-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{width:52px}.sidebar .menu-item span:not(.fa){display:none}.sidebar .menu-group-title,.sidebar-search{display:none}.main{padding:12px}.kpi-strip{grid-template-columns:repeat(2,1fr)}.subsidiary-grid{grid-template-columns:repeat(2,1fr)}.chart-grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="header"><h1><i class="fas fa-shield-halved" style="color:var(--accent);-webkit-text-fill-color:var(--accent)"></i> 上海国际</h1><span class="sub">金控集团 · 风险驾驶舱 v1.0</span>
+<div class="live-badge"><span class="dot"></span>实时监控 <span id="clock">--</span></div>
+<div class="user"><span>张明远</span><div class="avatar">张</div></div></div>
+<div class="layout">
+  <div class="sidebar" id="sidebar"><div class="sidebar-search"><i class="fas fa-search"></i><input type="text" placeholder="搜索菜单..." oninput="filterMenu(this.value)"></div><div class="menu"><a class="menu-item" href="index.html"><i class="fas fa-home" style="width:16px"></i> 首页</a><div class="menu-group-title" onclick="this.classList.toggle('collapsed')"><i class="fas fa-gauge-high"></i> 门户与工作台<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item active" href="dashboard.html"><i class="fas fa-chart-pie" style="width:16px"></i> 驾驶舱</a><a class="menu-item" href="workbench.html"><i class="fas fa-list-check" style="width:16px"></i> 工作台</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-table"></i> 指标管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="pref-indicator.html"><i class="fas fa-table" style="width:16px"></i> 指标信息</a><a class="menu-item" href="indicator-query.html"><i class="fas fa-search" style="width:16px"></i> 指标数据查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bullseye"></i> 风险管理偏好及目标<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="pref-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 偏好方案管理</a><a class="menu-item" href="pref-target.html"><i class="fas fa-bullseye" style="width:16px"></i> 偏好指标查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-line"></i> 风险限额管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="limit-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 限额方案管理</a><a class="menu-item" href="limit-target.html"><i class="fas fa-sliders" style="width:16px"></i> 限额参数设置</a><a class="menu-item" href="limit-warning-model.html"><i class="fas fa-diagram-project" style="width:16px"></i> 限额预警模型</a><a class="menu-item" href="limit-check.html"><i class="fas fa-magnifying-glass" style="width:16px"></i> 限额预警回检</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bell"></i> 风险提示与处置<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="alert-prompt.html"><i class="fas fa-exclamation-triangle" style="width:16px"></i> 风险预警列表</a><a class="menu-item" href="alert-ledger.html"><i class="fas fa-book" style="width:16px"></i> 函件台账管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-file-alt"></i> 风险管理报告<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-event.html"><i class="fas fa-bolt" style="width:16px"></i> 重大风险事件报告</a><a class="menu-item" href="periodic-report.html"><i class="fas fa-calendar" style="width:16px"></i> 定期报告</a><a class="menu-item" href="report-template.html"><i class="fas fa-copy" style="width:16px"></i> 报告模板管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-bar"></i> 数据分析与看板<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-board.html"><i class="fas fa-triangle-exclamation" style="width:16px"></i> 风险看板</a><a class="menu-item" href="capital-board.html"><i class="fas fa-sack-dollar" style="width:16px"></i> 资本看板</a><a class="menu-item" href="theme-board.html"><i class="fas fa-chart-line" style="width:16px"></i> 专题分析看板</a><a class="menu-item" href="report-mgr.html"><i class="fas fa-file-excel" style="width:16px"></i> 报表管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-robot"></i> AI应用<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="ai-fill.html"><i class="fas fa-pen" style="width:16px"></i> AI辅助填报</a><a class="menu-item" href="ai-qa.html"><i class="fas fa-comments" style="width:16px"></i> AI智能问数</a><a class="menu-item" href="ai-collect.html"><i class="fas fa-satellite-dish" style="width:16px"></i> AI风险舆情预警</a><a class="menu-item" href="ai-report.html"><i class="fas fa-file-pen" style="width:16px"></i> AI风险报告生成</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-arrows-rotate"></i> 业务流程管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="process-def.html"><i class="fas fa-gear" style="width:16px"></i> 流程定义与配置</a><a class="menu-item" href="process-monitor.html"><i class="fas fa-eye" style="width:16px"></i> 流程监控</a><a class="menu-item" href="process-archive.html"><i class="fas fa-box-archive" style="width:16px"></i> 流程归档与查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-screwdriver-wrench"></i> 基础与系统管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="base-info.html"><i class="fas fa-database" style="width:16px"></i> 基础信息管理</a><a class="menu-item" href="user-auth.html"><i class="fas fa-users" style="width:16px"></i> 用户与权限管理</a><a class="menu-item" href="data-std.html"><i class="fas fa-ruler" style="width:16px"></i> 数据标准管理</a><a class="menu-item" href="log-mgr.html"><i class="fas fa-clock-rotate-left" style="width:16px"></i> 操作日志管理</a><a class="menu-item" href="param-config.html"><i class="fas fa-gears" style="width:16px"></i> 参数配置</a></div></div></div>
+  <div class="main">
+    <div class="breadcrumb"><a href="index.html">首页</a> / <span style="color:var(--accent)">集团风险驾驶舱</span></div>
+    <div class="page-title"><i class="fas fa-gauge-high" style="color:var(--accent)"></i> 上海国际 · 集团风险驾驶舱 <small>| 集团并表风险总览</small></div>
+
+    <div class="dashboard">
+      <div class="risk-overview"><i class="fas fa-quote-left" style="color:var(--accent);opacity:.4;font-size:18px;margin-right:8px;flex-shrink:0"></i> <span>截至2026年8月，上海国际金控集团整体运行平稳，并表资本充足率12.8%、杠杆率7.5%、流动性覆盖率145%均满足监管要求。集团综合风险指数68.5，处于中等可控区间。当前需重点关注：<span style="color:var(--danger)">国际AMC不良资产率5.2%超红色阈值</span>、<span style="color:var(--warning)">农商行拨备覆盖率142%接近预警线</span>、<span style="color:var(--warning)">国泰海通自营浮亏¥2.5亿有所扩大</span>。集团整体资产规模¥6,126亿，较上年增长5.2%，各子公司经营指标基本符合预期。</span></div>
+
+      <div class="kpi-strip">
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">集团综合风险指数</span><div class="kpi-icon" style="background:rgba(240,180,40,.15);color:var(--accent)"><i class="fas fa-chart-line"></i></div></div><div class="kpi-value" style="color:var(--accent)">68.5</div><div class="kpi-sub neutral"><i class="fas fa-minus"></i> 较上月持平 · 中等风险</div><div class="kpi-bar" style="width:68%;background:linear-gradient(90deg,var(--success),var(--accent),var(--danger))"></div></div>
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">并表资本充足率</span><div class="kpi-icon" style="background:rgba(34,197,94,.15);color:var(--success)"><i class="fas fa-percentage"></i></div></div><div class="kpi-value" style="color:var(--success)">12.8%</div><div class="kpi-sub down"><i class="fas fa-arrow-down"></i> 0.3% · 监管≥10.5%</div><div class="kpi-bar" style="width:82%;background:linear-gradient(90deg,var(--success),var(--success))"></div></div>
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">并表杠杆率</span><div class="kpi-icon" style="background:rgba(59,130,246,.15);color:var(--info)"><i class="fas fa-balance-scale"></i></div></div><div class="kpi-value" style="color:var(--info)">7.5%</div><div class="kpi-sub up"><i class="fas fa-arrow-up"></i> 0.2% · 监管≥6%</div><div class="kpi-bar" style="width:75%;background:linear-gradient(90deg,var(--info),var(--info))"></div></div>
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">风险加权资产</span><div class="kpi-icon" style="background:rgba(239,68,68,.15);color:var(--danger)"><i class="fas fa-building"></i></div></div><div class="kpi-value" style="font-size:22px;color:var(--text)">¥3,486亿</div><div class="kpi-sub up"><i class="fas fa-arrow-up"></i> 2.1% 较上月</div><div class="kpi-bar" style="width:55%;background:linear-gradient(90deg,var(--warning),var(--danger))"></div></div>
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">流动性覆盖率</span><div class="kpi-icon" style="background:rgba(34,197,94,.15);color:var(--success)"><i class="fas fa-water"></i></div></div><div class="kpi-value" style="color:var(--success)">145%</div><div class="kpi-sub up"><i class="fas fa-arrow-up"></i> 3% · 监管≥100%</div><div class="kpi-bar" style="width:90%;background:linear-gradient(90deg,var(--success),var(--success))"></div></div>
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">预警事件</span><div class="kpi-icon" style="background:rgba(239,68,68,.15);color:var(--danger)"><i class="fas fa-bell"></i></div></div><div class="kpi-value" style="color:var(--danger)">6</div><div class="kpi-sub up"><i class="fas fa-arrow-up"></i> 2 较上月 · 红色3/黄色3</div><div class="kpi-bar" style="width:30%;background:linear-gradient(90deg,var(--danger),var(--danger))"></div></div>
+      </div>
+
+      <div class="subsidiary-grid">
+        <a href="spdb.html" class="sub-card"><div class="sub-status" style="background:rgba(34,197,94,.15);color:var(--success)">● 稳健</div><div class="sub-header"><div class="sub-icon" style="background:linear-gradient(135deg,#1a3a6d,#2a5caa);color:#fff">浦</div><div><div class="sub-name">浦发银行</div><div class="sub-type">银行 · 持股65%</div></div></div><div class="sub-metrics"><div class="sub-metric"><div class="m-value" style="color:var(--success)">13.2%</div><div class="m-label">资本充足率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--info)">7.8%</div><div class="m-label">杠杆率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--success)">1.8%</div><div class="m-label">不良率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--success)">168%</div><div class="m-label">拨备覆盖率</div></div></div></a>
+        <a href="nsh.html" class="sub-card"><div class="sub-status" style="background:rgba(240,180,40,.15);color:var(--warning)">● 关注</div><div class="sub-header"><div class="sub-icon" style="background:linear-gradient(135deg,#1a3a6d,#2a5caa);color:#fff">农</div><div><div class="sub-name">农商行</div><div class="sub-type">银行 · 持股51%</div></div></div><div class="sub-metrics"><div class="sub-metric"><div class="m-value" style="color:var(--warning)">11.8%</div><div class="m-label">资本充足率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--info)">7.2%</div><div class="m-label">杠杆率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--warning)">2.5%</div><div class="m-label">不良率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--warning)">142%</div><div class="m-label">拨备覆盖率</div></div></div></a>
+        <a href="cpic.html" class="sub-card"><div class="sub-status" style="background:rgba(34,197,94,.15);color:var(--success)">● 稳健</div><div class="sub-header"><div class="sub-icon" style="background:linear-gradient(135deg,#6d1a3a,#ca2a5a);color:#fff">太</div><div><div class="sub-name">中国太保</div><div class="sub-type">保险 · 持股60%</div></div></div><div class="sub-metrics"><div class="sub-metric"><div class="m-value" style="color:var(--success)">210%</div><div class="m-label">偿付能力</div></div><div class="sub-metric"><div class="m-value" style="color:var(--success)">85%</div><div class="m-label">综合成本率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--info)">¥1,280亿</div><div class="m-label">总资产</div></div><div class="sub-metric"><div class="m-value" style="color:var(--success)">8.5%</div><div class="m-label">ROE</div></div></div></a>
+        <a href="amc.html" class="sub-card" style="border-color:rgba(239,68,68,.2)"><div class="sub-status" style="background:rgba(239,68,68,.15);color:var(--danger)">● 预警</div><div class="sub-header"><div class="sub-icon" style="background:linear-gradient(135deg,#6d5a1a,#caaa2a);color:#fff">资</div><div><div class="sub-name">国际AMC</div><div class="sub-type">AMC · 持股100%</div></div></div><div class="sub-metrics"><div class="sub-metric"><div class="m-value" style="color:var(--danger)">5.2%</div><div class="m-label">不良资产率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--warning)">9.8%</div><div class="m-label">集中度</div></div><div class="sub-metric"><div class="m-value" style="color:var(--info)">¥680亿</div><div class="m-label">总资产</div></div><div class="sub-metric"><div class="m-value" style="color:var(--warning)">6.2%</div><div class="m-label">ROE</div></div></div></a>
+        <a href="htsec.html" class="sub-card" style="border-color:rgba(240,180,40,.2)"><div class="sub-status" style="background:rgba(240,180,40,.15);color:var(--warning)">● 关注</div><div class="sub-header"><div class="sub-icon" style="background:linear-gradient(135deg,#2a6d3a,#4aca5a);color:#fff">证</div><div><div class="sub-name">国泰海通</div><div class="sub-type">证券 · 持股55%</div></div></div><div class="sub-metrics"><div class="sub-metric"><div class="m-value" style="color:var(--success)">18.5%</div><div class="m-label">净资本充足率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--info)">2.8%</div><div class="m-label">杠杆率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--warning)">¥2.5亿</div><div class="m-label">自营浮亏</div></div><div class="sub-metric"><div class="m-value" style="color:var(--success)">6.5%</div><div class="m-label">ROE</div></div></div></a>
+        <a href="shanghai-group.html" class="sub-card" style="border-color:rgba(240,180,40,.3)"><div class="sub-status" style="background:rgba(240,180,40,.15);color:var(--accent)">● 汇总</div><div class="sub-header"><div class="sub-icon" style="background:linear-gradient(135deg,var(--accent),#d4941a);color:#0a1628">集</div><div><div class="sub-name">上海国际(并表)</div><div class="sub-type">金控集团 · 合并</div></div></div><div class="sub-metrics"><div class="sub-metric"><div class="m-value" style="color:var(--accent)">12.8%</div><div class="m-label">并表资本充足率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--accent)">7.5%</div><div class="m-label">并表杠杆率</div></div><div class="sub-metric"><div class="m-value" style="color:var(--accent)">¥6,126亿</div><div class="m-label">并表总资产</div></div><div class="sub-metric"><div class="m-value" style="color:var(--accent)">2.2%</div><div class="m-label">并表ROA</div></div></div></a>
+      </div>
+
+      <div class="chart-grid-full">
+        <div class="chart-card"><div class="chart-title"><span class="dot" style="background:var(--info)"></span> 集团综合风险雷达图</div><div class="echart-box" id="radarChart" style="height:320px"></div></div>
+        <div class="chart-card"><div class="chart-title"><span class="dot" style="background:var(--danger)"></span> 各主体风险敞口分布</div><div class="echart-box" id="roseChart" style="height:320px"></div></div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card"><div class="chart-title"><span class="dot" style="background:var(--accent)"></span> 各主体资本充足率对比</div><div class="echart-box" id="barChart"></div></div>
+        <div class="chart-card"><div class="chart-title"><span class="dot" style="background:var(--info)"></span> 风险资产分布</div><div class="echart-box" id="pieChart"></div></div>
+      </div>
+
+      <div class="chart-grid-2">
+        <div class="chart-card"><div class="chart-title"><span class="dot" style="background:var(--danger)"></span> 实时预警 <span style="font-size:11px;font-weight:400;color:var(--text-muted)">| 红色3 · 黄色3</span></div><div class="alert-list">
+          <div class="alert-item" style="border-left-color:var(--danger)" onclick="showToast('国际AMC不良资产率超阈值')"><div class="a-icon" style="background:rgba(239,68,68,.15);color:var(--danger)"><i class="fas fa-exclamation"></i></div><div class="a-info"><div class="a-title">国际AMC · 不良资产率超阈值</div><div class="a-desc">不良资产率5.2%，红色预警阈值≤5%</div></div><div class="a-value" style="color:var(--danger)">5.2%</div><div class="a-time">10:15</div></div>
+          <div class="alert-item" style="border-left-color:var(--danger)" onclick="showToast('农商行拨备覆盖率接近阈值')"><div class="a-icon" style="background:rgba(239,68,68,.15);color:var(--danger)"><i class="fas fa-exclamation"></i></div><div class="a-info"><div class="a-title">农商行 · 拨备覆盖率接近阈值</div><div class="a-desc">拨备覆盖率142%，黄色预警阈值≤150%</div></div><div class="a-value" style="color:var(--warning)">142%</div><div class="a-time">09:30</div></div>
+          <div class="alert-item" style="border-left-color:var(--warning)" onclick="showToast('国际AMC单一客户集中度')"><div class="a-icon" style="background:rgba(240,180,40,.15);color:var(--warning)"><i class="fas fa-exclamation"></i></div><div class="a-info"><div class="a-title">国际AMC · 单一客户集中度预警</div><div class="a-desc">集中度9.8%，黄色预警阈值≤10%</div></div><div class="a-value" style="color:var(--warning)">9.8%</div><div class="a-time">08:45</div></div>
+          <div class="alert-item" style="border-left-color:var(--danger)" onclick="showToast('浦发银行房地产集中度')"><div class="a-icon" style="background:rgba(239,68,68,.15);color:var(--danger)"><i class="fas fa-exclamation"></i></div><div class="a-info"><div class="a-title">浦发银行 · 房地产行业集中度超限</div><div class="a-desc">房地产行业占比28.5%，内部限额≤25%</div></div><div class="a-value" style="color:var(--danger)">28.5%</div><div class="a-time">昨日</div></div>
+          <div class="alert-item" style="border-left-color:var(--warning)" onclick="showToast('国泰海通自营浮亏')"><div class="a-icon" style="background:rgba(240,180,40,.15);color:var(--warning)"><i class="fas fa-exclamation"></i></div><div class="a-info"><div class="a-title">国泰海通 · 自营业务浮亏扩大</div><div class="a-desc">自营浮亏¥2.5亿，较上日扩大0.5亿</div></div><div class="a-value" style="color:var(--warning)">¥2.5亿</div><div class="a-time">昨日</div></div>
+          <div class="alert-item" style="border-left-color:var(--warning)" onclick="showToast('中国太保权益投资占比')"><div class="a-icon" style="background:rgba(240,180,40,.15);color:var(--warning)"><i class="fas fa-exclamation"></i></div><div class="a-info"><div class="a-title">中国太保 · 权益投资占比上升</div><div class="a-desc">权益类投资占比32%，较上季上升5%</div></div><div class="a-value" style="color:var(--warning)">32%</div><div class="a-time">昨日</div></div>
+        </div></div>
+        <div class="chart-card"><div class="chart-title"><span class="dot" style="background:var(--accent)"></span> 重大风险事件动态</div><div class="event-timeline">
+          <div class="tl-item"><div class="tl-dot" style="background:var(--danger)"></div><div class="tl-content"><div class="tl-title">国际AMC · 某投资项目违约 <span style="font-size:10px;color:var(--danger);font-weight:400">(重大)</span></div><div class="tl-desc">涉及金额5,000万元，已启动处置流程</div></div><div class="tl-time">08-01</div></div>
+          <div class="tl-item"><div class="tl-dot" style="background:var(--warning)"></div><div class="tl-content"><div class="tl-title">农商行 · 某客户集中度超限 <span style="font-size:10px;color:var(--warning);font-weight:400">(较大)</span></div><div class="tl-desc">单一客户敞口超限，已下发整改通知</div></div><div class="tl-time">07-15</div></div>
+          <div class="tl-item"><div class="tl-dot" style="background:var(--info)"></div><div class="tl-content"><div class="tl-title">上海国际 · Q2风险报告已生成</div><div class="tl-desc">2026年Q2集团风险报告已编制完成</div></div><div class="tl-time">07-10</div></div>
+          <div class="tl-item"><div class="tl-dot" style="background:var(--success)"></div><div class="tl-content"><div class="tl-title">中国太保 · 偿付能力充足</div><div class="tl-desc">综合偿付能力210%，远高于监管要求</div></div><div class="tl-time">07-05</div></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function u(){document.getElementById('clock').textContent=new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});};u();setInterval(u,1000);
+function filterMenu(q){q=q.toLowerCase();document.querySelectorAll('.menu-item').forEach(function(m){var t=m.textContent.toLowerCase();m.style.display=q&&!t.includes(q)?'none':'flex';});}
+function showToast(msg){var c=document.getElementById('toastContainer');if(!c){c=document.createElement('div');c.id='toastContainer';c.style.cssText='position:fixed;top:70px;right:24px;z-index:2000';document.body.appendChild(c);}var t=document.createElement('div');t.style.cssText='background:#0f1d35;border:1px solid #1a2d4a;border-radius:10px;padding:12px 18px;box-shadow:0 10px 25px rgba(0,0,0,.5);color:#e2e8f0;font-size:13px;margin-bottom:8px;animation:slideIn .3s ease;border-left:3px solid var(--accent)';t.textContent=msg;c.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
+var barChart=echarts.init(document.getElementById('barChart'));
+barChart.setOption({
+  tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'rgba(15,29,53,.9)',borderColor:'#1a2d4a',textStyle:{color:'#e2e8f0',fontSize:12}},
+  grid:{left:50,right:20,top:20,bottom:30},
+  xAxis:{type:'category',data:['浦发银行','农商行','中国太保','国际AMC','国泰海通','上海国际'],axisLabel:{color:'#94a3b8',fontSize:10,interval:0,rotate:15},axisLine:{lineStyle:{color:'#1a2d4a'}}},
+  yAxis:{type:'value',name:'%',nameTextStyle:{color:'#64748b',fontSize:10},axisLabel:{color:'#94a3b8',fontSize:10},splitLine:{lineStyle:{color:'rgba(255,255,255,.04)',type:'dashed'}}},
+  series:[{
+    type:'bar',barWidth:28,data:[
+      {value:13.2,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#22c55e'},{offset:1,color:'#16a34a'}])}},
+      {value:11.8,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#f59e0b'},{offset:1,color:'#d97706'}])}},
+      {value:21.0,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#3b82f6'},{offset:1,color:'#2563eb'}])}},
+      {value:5.2,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#ef4444'},{offset:1,color:'#dc2626'}])}},
+      {value:18.5,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#8b5cf6'},{offset:1,color:'#7c3aed'}])}},
+      {value:12.8,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#f0b429'},{offset:1,color:'#d4941a'}])}}
+    ],label:{show:true,position:'top',color:'#e2e8f0',fontSize:11,formatter:'{c}%'}
+  }]
+});
+var pieChart=echarts.init(document.getElementById('pieChart'));
+pieChart.setOption({
+  tooltip:{trigger:'item',backgroundColor:'rgba(15,29,53,.9)',borderColor:'#1a2d4a',textStyle:{color:'#e2e8f0',fontSize:12},formatter:'{b}: {c}% ({d}%)'},
+  series:[{
+    type:'pie',radius:['45%','70%'],center:['50%','50%'],avoidLabelOverlap:true,
+    label:{color:'#94a3b8',fontSize:11,formatter:'{b}\n{d}%'},
+    labelLine:{lineStyle:{color:'rgba(255,255,255,.1)'}},
+    data:[
+      {value:32,name:'浦发银行',itemStyle:{color:'#22c55e'}},
+      {value:18,name:'农商行',itemStyle:{color:'#f59e0b'}},
+      {value:18,name:'中国太保',itemStyle:{color:'#3b82f6'}},
+      {value:12,name:'国际AMC',itemStyle:{color:'#ef4444'}},
+      {value:10,name:'国泰海通',itemStyle:{color:'#8b5cf6'}},
+      {value:10,name:'其他',itemStyle:{color:'#64748b'}}
+    ],emphasis:{itemStyle:{shadowBlur:10,shadowColor:'rgba(0,0,0,.5)'}}
+  }]
+});
+var radarChart=echarts.init(document.getElementById('radarChart'));
+radarChart.setOption({
+  tooltip:{backgroundColor:'rgba(15,29,53,.9)',borderColor:'#1a2d4a',textStyle:{color:'#e2e8f0',fontSize:12}},
+  legend:{data:['上海国际','行业平均'],textStyle:{color:'#94a3b8',fontSize:11},bottom:0},
+  radar:{
+    indicator:[
+      {name:'资本充足性',max:100,color:'#e2e8f0'},
+      {name:'资产质量',max:100,color:'#e2e8f0'},
+      {name:'流动性',max:100,color:'#e2e8f0'},
+      {name:'集中度控制',max:100,color:'#e2e8f0'},
+      {name:'盈利能力',max:100,color:'#e2e8f0'},
+      {name:'合规性',max:100,color:'#e2e8f0'}
+    ],
+    center:['50%','48%'],radius:'65%',
+    axisName:{color:'#94a3b8',fontSize:11},
+    splitArea:{areaStyle:{color:['rgba(240,180,40,.02)','rgba(240,180,40,.04)','rgba(240,180,40,.06)','rgba(240,180,40,.08)','rgba(240,180,40,.1)']}},
+    splitLine:{lineStyle:{color:'rgba(255,255,255,.06)'}},
+    axisLine:{lineStyle:{color:'rgba(255,255,255,.08)'}}
+  },
+  series:[{
+    type:'radar',data:[
+      {value:[85,72,90,78,68,82],name:'上海国际',areaStyle:{color:'rgba(240,180,40,.15)'},lineStyle:{color:'#f0b429',width:2},itemStyle:{color:'#f0b429'}},
+      {value:[75,68,85,70,65,78],name:'行业平均',areaStyle:{color:'rgba(59,130,246,.1)'},lineStyle:{color:'#3b82f6',width:1.5,type:'dashed'},itemStyle:{color:'#3b82f6'}}
+    ]
+  }]
+});
+var roseChart=echarts.init(document.getElementById('roseChart'));
+roseChart.setOption({
+  tooltip:{trigger:'item',backgroundColor:'rgba(15,29,53,.9)',borderColor:'#1a2d4a',textStyle:{color:'#e2e8f0',fontSize:12},formatter:'{b}: ¥{c}亿 ({d}%)'},
+  legend:{textStyle:{color:'#94a3b8',fontSize:10},bottom:0,itemWidth:10,itemHeight:10},
+  series:[{
+    type:'pie',radius:['20%','75%'],center:['50%','45%'],roseType:'area',
+    label:{color:'#94a3b8',fontSize:10,formatter:'{b}\\n{d}%'},
+    labelLine:{lineStyle:{color:'rgba(255,255,255,.1)'}},
+    itemStyle:{borderRadius:4},
+    data:[
+      {value:1280,name:'浦发银行',itemStyle:{color:'#22c55e'}},
+      {value:680,name:'农商行',itemStyle:{color:'#f59e0b'}},
+      {value:880,name:'中国太保',itemStyle:{color:'#3b82f6'}},
+      {value:520,name:'国际AMC',itemStyle:{color:'#ef4444'}},
+      {value:420,name:'国泰海通',itemStyle:{color:'#8b5cf6'}},
+      {value:200,name:'其他',itemStyle:{color:'#64748b'}}
+    ],emphasis:{itemStyle:{shadowBlur:10,shadowColor:'rgba(0,0,0,.5)'}}
+  }]
+});
+window.addEventListener('resize',function(){barChart.resize();pieChart.resize();radarChart.resize();roseChart.resize();});
+</script>
+</body>
+</html>

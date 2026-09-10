@@ -1,0 +1,601 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>限额预警回检测算 - 金控并表系统</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>:root{--primary:#1a3c6d;--primary-light:#2a5caa;--accent:#e8a838;--bg:#f0f2f6;--sidebar-bg:#1a2538;--sidebar-text:#b0bec5;--sidebar-active:#2a3f5f;--card-bg:#fff;--border:#d9e2ea;--text:#1e293b;--text-light:#5b6e8c;--text-muted:#94a3b8;--danger:#b91c1c;--success:#10b981;--warning:#f59e0b;--info:#3b82f6;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-hover:0 10px 25px -5px rgba(0,0,0,.1),0 4px 10px -2px rgba(0,0,0,.05);--font:14px/1.5 -apple-system,"Microsoft YaHei","PingFang SC",sans-serif;--sidebar-width:232px;--transition:0.18s cubic-bezier(0.4,0,0.2,1)}
+.dark{--bg:#0f172a;--card-bg:#1e293b;--border:#334155;--text:#e2e8f0;--text-light:#94a3b8;--text-muted:#64748b;--sidebar-bg:#0c1222;--sidebar-active:#1a2940;--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-hover:0 10px 25px -5px rgba(0,0,0,.5)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font:var(--font);color:var(--text);background:var(--bg);display:flex;flex-direction:column;min-height:100vh;transition:background var(--transition),color var(--transition)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:4px}
+.header{height:54px;background:linear-gradient(135deg,var(--primary) 0%,#0f2347 100%);color:#fff;display:flex;align-items:center;padding:0 22px;z-index:110;box-shadow:0 2px 10px rgba(0,0,0,.2);flex-shrink:0;position:relative;overflow:hidden}
+.header::after{content:'';position:absolute;top:0;right:0;width:300px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03));pointer-events:none}
+.header h1{font-size:16px;font-weight:600;letter-spacing:.3px;display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+.header .sub{font-size:11px;opacity:.6;margin-left:10px;position:relative;z-index:1}
+.header .user{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;position:relative;z-index:1}
+.header .user .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;box-shadow:0 0 0 2px rgba(255,255,255,.2)}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;opacity:.85;margin-right:14px;position:relative;z-index:1}
+.live-badge .dot{width:7px;height:7px;background:var(--success);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 6px rgba(16,185,129,.6)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.8)}}
+.theme-toggle{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;transition:all var(--transition);z-index:1;margin-right:8px}
+.theme-toggle:hover{background:rgba(255,255,255,.2)}
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);color:var(--sidebar-text);overflow-y:auto;flex-shrink:0;font-size:13px;transition:width var(--transition);position:relative;z-index:50}
+.sidebar a{color:inherit;text-decoration:none}
+.sidebar-search{padding:10px 14px;position:sticky;top:0;background:var(--sidebar-bg);z-index:2}
+.sidebar-search input{width:100%;height:32px;padding:6px 10px 6px 30px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none;font-family:inherit}
+.sidebar-search i{position:absolute;left:22px;top:19px;font-size:12px;opacity:.4}
+.main{flex:1;overflow-y:auto;padding:22px 26px;scroll-behavior:smooth}
+.menu-item{display:flex;align-items:center;padding:0 16px;height:38px;cursor:pointer;border-left:3px solid transparent;transition:all .12s;gap:8px;font-size:13px}
+.menu-item:hover{background:rgba(255,255,255,.04);color:#fff}
+.menu-item.active{background:var(--sidebar-active);color:#fff;border-left-color:var(--accent);font-weight:600}
+.menu-group-title{font-size:10px;padding:16px 16px 4px;opacity:.4;letter-spacing:2px;border-top:1px solid rgba(255,255,255,.04);margin-top:6px;cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none}
+.menu-group-title:hover{opacity:.7}
+.menu-group-title .fa-chevron-down{font-size:8px;transition:transform var(--transition);opacity:.5}
+.menu-group-title.collapsed .fa-chevron-down{transform:rotate(-90deg)}
+.menu-group-title.collapsed+.group-items{max-height:0;overflow:hidden;opacity:0}
+.group-items{max-height:600px;transition:all var(--transition)}
+.page-title{font-size:1.15rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.page-title small{font-weight:400;color:var(--text-muted);font-size:12px}
+.breadcrumb{font-size:11px;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.breadcrumb a{color:var(--info);text-decoration:none}.breadcrumb a:hover{text-decoration:underline}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:16px}
+.stat-card{background:var(--card-bg);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border);transition:all var(--transition);position:relative;overflow:hidden}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+.stat-card.accent-primary::before{background:var(--info)}.stat-card.accent-danger::before{background:var(--danger)}.stat-card.accent-success::before{background:var(--success)}.stat-card.accent-warning::before{background:var(--warning)}.stat-card.accent-accent::before{background:var(--accent)}.stat-card.accent-purple::before{background:#8b5cf6}
+.stat-title{font-size:11px;letter-spacing:.8px;font-weight:600;color:var(--text-light);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.stat-value{font-size:1.5rem;font-weight:800;color:var(--text);line-height:1.15;font-variant-numeric:tabular-nums}
+.stat-trend{font-size:11px;margin-top:6px;display:flex;align-items:center;gap:3px}
+.stat-trend.up{color:var(--danger)}.stat-trend.down{color:var(--success)}
+.filter-bar{background:var(--card-bg);border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.filter-group{display:flex;flex-direction:column;gap:4px;min-width:110px}
+.filter-group label{font-size:10px;font-weight:600;color:var(--text-light);letter-spacing:.5px}
+.filter-group input,.filter-group select{padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;transition:all .15s}
+.filter-group input:focus,.filter-group select:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.btn-group{display:flex;gap:7px;align-items:center;margin-left:auto}
+.btn{padding:7px 16px;border-radius:8px;font-weight:500;font-size:12px;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:var(--card-bg);color:var(--text);white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-family:inherit;text-decoration:none}
+.btn:hover{background:var(--bg);border-color:#cbd5e1}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light);border-color:var(--primary-light)}
+.btn-success{background:var(--success);border-color:var(--success);color:#fff}
+.btn-success:hover{background:#059669;border-color:#059669}
+.btn-warning{background:var(--warning);border-color:var(--warning);color:#fff}
+.btn-warning:hover{background:#d97706;border-color:#d97706}
+.btn-danger{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn-danger:hover{background:#991b1b;border-color:#991b1b}
+.btn-outline-info{background:transparent;border-color:var(--info);color:var(--info)}
+.btn-outline-info:hover{background:var(--info);color:#fff}
+.btn-outline-primary{background:transparent;border-color:var(--primary);color:var(--primary)}
+.btn-outline-primary:hover{background:var(--primary);color:#fff}
+.btn-sm{padding:5px 12px;font-size:11px;border-radius:6px}
+.btn-xs{padding:3px 8px;font-size:10px;border-radius:6px}
+.btn-lg{padding:9px 22px;font-size:13px;border-radius:10px}
+.table-wrapper{background:var(--card-bg);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border)}
+.table-wrapper .table-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);background:#fafbfc}
+.dark .table-wrapper .table-header{background:var(--card-bg)}
+.table-header .title{font-weight:600;font-size:13px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
+.data-table thead{position:sticky;top:0;z-index:5}
+.data-table th{padding:9px 12px;text-align:left;font-weight:600;background:#f8fafc;border-bottom:2px solid var(--border);white-space:nowrap;color:var(--text-light);font-size:11px;letter-spacing:.3px}
+.dark .data-table th{background:var(--sidebar-active)}
+.data-table td{padding:8px 12px;border-bottom:1px solid rgba(0,0,0,.04)}.dark .data-table td{border-color:rgba(255,255,255,.04)}
+.data-table tbody tr{transition:background .12s}.data-table tbody tr:hover{background:rgba(59,130,246,.04)}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:600;letter-spacing:.2px}
+.tag-success{background:rgba(16,185,129,.1);color:var(--success)}
+.tag-danger{background:rgba(185,28,28,.08);color:var(--danger)}
+.tag-info{background:rgba(59,130,246,.1);color:var(--info)}
+.tag-warning{background:rgba(245,158,11,.1);color:var(--warning)}
+.tag-primary{background:rgba(26,60,109,.1);color:var(--primary)}
+.pagination-area{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid var(--border);background:var(--card-bg);font-size:12px}
+.page-info{color:var(--text-light)}.page-btn{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--card-bg);color:var(--text);cursor:pointer;font-size:11px;font-family:inherit}.page-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}.page-btn:hover:not(.active){background:var(--bg)}
+.section-divider{grid-column:1/-1;padding:10px 14px;margin:6px 0 4px;background:rgba(26,60,109,.04);border-radius:8px;font-weight:700;font-size:13px;color:var(--primary);display:flex;align-items:center;gap:8px;border-left:3px solid var(--primary)}
+.dark .section-divider{background:rgba(255,255,255,.03)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid .full-width{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11px;font-weight:600;color:var(--text-light);letter-spacing:.3px}
+.form-group .form-control{padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;transition:all .15s}
+.form-group .form-control:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.form-group .form-control:disabled,.form-group .form-control[readonly]{background:var(--bg);opacity:.7;cursor:not-allowed}
+.form-group textarea.form-control{min-height:70px;resize:vertical}
+.form-group .form-hint{font-size:10px;color:var(--text-muted);margin-top:2px}
+.form-group .char-count{font-size:10px;color:var(--text-muted);text-align:right;margin-top:2px}
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card-bg);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.2);width:860px;max-width:94vw;max-height:92vh;overflow-y:auto;animation:slideUp .25s ease}
+.modal-wide{width:860px}.modal-xl{width:960px}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px;position:sticky;top:0;background:var(--card-bg);z-index:2}
+.modal-close{width:28px;height:28px;border:none;background:none;cursor:pointer;font-size:18px;color:var(--text-muted);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--bg);color:var(--text)}
+.modal-body{padding:18px}
+.modal-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.modal-footer .left{display:flex;gap:8px;margin-right:auto}
+/* Icon card */
+.icon-card{display:flex;align-items:center;gap:14px;background:var(--card-bg);border-radius:var(--radius);padding:16px 20px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.icon-card .icon-circle{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+/* Threshold comparison */
+.threshold-card{display:flex;gap:20px;flex-wrap:wrap;background:var(--card-bg);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:14px}
+.threshold-group{flex:1;min-width:200px;padding:12px 16px;border-radius:10px;border:1px solid var(--border);position:relative}
+.threshold-group.old{background:rgba(59,130,246,.03)}.threshold-group.new{background:rgba(245,158,11,.04);border-color:rgba(245,158,11,.2)}
+.threshold-group .group-label{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.threshold-group .version-badge{font-size:10px;padding:1px 8px;border-radius:10px;background:var(--bg);color:var(--text-light)}
+.threshold-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px}
+.threshold-item .signal-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.threshold-item .arrow{font-size:11px;color:var(--text-muted);margin:0 4px}
+.threshold-item .delta{font-size:11px;font-weight:600;padding:1px 6px;border-radius:4px;background:rgba(185,28,28,.08);color:var(--danger)}
+/* Wizard steps */
+.wizard-steps{display:flex;gap:0;margin-bottom:20px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.wizard-step{flex:1;padding:10px 14px;text-align:center;font-size:12px;font-weight:600;color:var(--text-muted);background:var(--bg);border-right:1px solid var(--border);position:relative}
+.wizard-step:last-child{border-right:none}
+.wizard-step.active{background:var(--primary);color:#fff}
+.wizard-step.done{background:rgba(16,185,129,.1);color:var(--success)}
+.wizard-step .step-num{display:inline-block;width:20px;height:20px;line-height:20px;border-radius:50%;text-align:center;font-size:10px;margin-right:6px;background:var(--border);color:var(--text-muted)}
+.wizard-step.active .step-num{background:rgba(255,255,255,.2);color:#fff}
+.wizard-step.done .step-num{background:var(--success);color:#fff}
+/* View toggle */
+.view-toggle{display:flex;background:var(--bg);border-radius:8px;border:1px solid var(--border);overflow:hidden}
+.view-toggle button{padding:6px 14px;border:none;background:transparent;font-size:12px;cursor:pointer;color:var(--text-light);font-family:inherit;transition:all .12s}
+.view-toggle button.active{background:var(--primary);color:#fff;border-radius:6px}
+.view-toggle button:hover:not(.active){color:var(--text)}
+/* Tab */
+.tab-bar{display:flex;border-bottom:2px solid var(--border);margin-bottom:16px;gap:0}
+.tab-item{padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s;font-family:inherit}
+.tab-item:hover{color:var(--text)}
+.tab-item.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab-content{display:none}.tab-content.active{display:block}
+/* Progress bar */
+.progress-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:4px}
+.progress-bar .fill{height:100%;border-radius:3px;transition:width .4s ease}
+/* Severity badge */
+.severity{display:inline-flex;align-items:center;gap:3px;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.severity-high{background:rgba(185,28,28,.1);color:var(--danger)}
+.severity-mid{background:rgba(245,158,11,.1);color:var(--warning)}
+.severity-low{background:rgba(59,130,246,.1);color:var(--info)}
+/* Insight card */
+.insight-card{background:rgba(59,130,246,.04);border:1px solid rgba(59,130,246,.15);border-radius:10px;padding:14px 16px;margin-top:12px;font-size:12px;line-height:1.6;color:var(--text-light)}
+.insight-card .insight-title{font-weight:700;color:var(--info);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+/* Compare table */
+.compare-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+.compare-table th{padding:8px 10px;text-align:left;font-weight:600;background:#f8fafc;border-bottom:2px solid var(--border);font-size:11px;color:var(--text-light)}
+.dark .compare-table th{background:var(--sidebar-active)}
+.compare-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.compare-table td .readonly-val{color:var(--text-muted);background:var(--bg);padding:5px 8px;border-radius:4px;display:block;font-size:11px}
+.compare-table td input,.compare-table td select{width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:11px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit}
+.compare-table td input:focus,.compare-table td select:focus{border-color:var(--info);box-shadow:0 0 0 2px rgba(59,130,246,.1)}
+.compare-table .changed{background:rgba(245,158,11,.06)}
+.compare-table .changed-badge{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;color:var(--danger);background:rgba(185,28,28,.06)}
+/* Detail grid */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.detail-item{display:flex;flex-direction:column;gap:6px;padding:12px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.detail-item .detail-label{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:.5px}
+.detail-item .detail-value{font-size:14px;font-weight:700;color:var(--text)}
+/* Compare view grid */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+.compare-col{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.compare-col .col-header{padding:10px 14px;font-weight:600;font-size:12px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.compare-col .col-body{padding:14px}
+.compare-col .col-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.03)}
+.compare-col .col-row .label{color:var(--text-light)}.compare-col .col-row .val{font-weight:600}
+@media(max-width:768px){.sidebar{width:52px}.sidebar .menu-item span:not(.fa){display:none}.sidebar .menu-group-title,.sidebar-search{display:none}.main{padding:10px}.stats-grid{grid-template-columns:repeat(2,1fr)}.stat-value{font-size:1.3rem}.form-grid{grid-template-columns:1fr}.modal{width:100%!important;max-width:100vw;max-height:100vh;border-radius:0}.compare-grid{grid-template-columns:1fr}.threshold-card{flex-direction:column}}
+</style></head>
+<body>
+<div class="header"><h1><i class="fas fa-shield-halved" style="color:var(--accent)"></i> 金控并表系统</h1><span class="sub">v1.0</span>
+<button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+<div class="live-badge"><span class="dot"></span>实时 <span id="clock">--</span></div>
+<div class="user"><span>系统管理员</span><div class="avatar">管</div></div></div>
+<div class="layout"><div class="sidebar" id="sidebar"><div class="sidebar-search"><i class="fas fa-search"></i><input type="text" placeholder="搜索菜单..." oninput="filterMenu(this.value)"></div><div class="menu"><a class="menu-item" href="index.html"><i class="fas fa-home" style="width:16px"></i> 首页</a><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-gauge-high"></i> 门户与工作台<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="dashboard.html"><i class="fas fa-chart-pie" style="width:16px"></i> 驾驶舱</a><a class="menu-item" href="workbench.html"><i class="fas fa-list-check" style="width:16px"></i> 工作台</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-table"></i> 指标管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="pref-indicator.html"><i class="fas fa-table" style="width:16px"></i> 指标信息</a><a class="menu-item" href="indicator-query.html"><i class="fas fa-search" style="width:16px"></i> 指标数据查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bullseye"></i> 风险管理偏好及目标<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="pref-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 偏好方案管理</a><a class="menu-item" href="pref-target.html"><i class="fas fa-bullseye" style="width:16px"></i> 偏好指标查询</a></div><div class="menu-group-title" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-line"></i> 风险限额管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="limit-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 限额方案管理</a><a class="menu-item" href="limit-target.html"><i class="fas fa-sliders" style="width:16px"></i> 限额参数设置</a><a class="menu-item" href="limit-warning-model.html"><i class="fas fa-diagram-project" style="width:16px"></i> 限额预警模型</a><a class="menu-item" href="limit-check.html"><i class="fas fa-magnifying-glass" style="width:16px"></i> 限额预警回检</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bell"></i> 风险提示与处置<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="alert-prompt.html"><i class="fas fa-exclamation-triangle" style="width:16px"></i> 风险预警列表</a><a class="menu-item" href="alert-ledger.html"><i class="fas fa-book" style="width:16px"></i> 函件台账管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-file-alt"></i> 风险管理报告<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-event.html"><i class="fas fa-bolt" style="width:16px"></i> 重大风险事件报告</a><a class="menu-item" href="periodic-report.html"><i class="fas fa-calendar" style="width:16px"></i> 定期报告</a><a class="menu-item" href="report-template.html"><i class="fas fa-copy" style="width:16px"></i> 报告模板管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-bar"></i> 数据分析与看板<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-board.html"><i class="fas fa-triangle-exclamation" style="width:16px"></i> 风险看板</a><a class="menu-item" href="capital-board.html"><i class="fas fa-sack-dollar" style="width:16px"></i> 资本看板</a><a class="menu-item" href="theme-board.html"><i class="fas fa-chart-line" style="width:16px"></i> 专题分析看板</a><a class="menu-item" href="report-mgr.html"><i class="fas fa-file-excel" style="width:16px"></i> 报表管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-robot"></i> AI应用<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="ai-fill.html"><i class="fas fa-pen" style="width:16px"></i> AI辅助填报</a><a class="menu-item" href="ai-qa.html"><i class="fas fa-comments" style="width:16px"></i> AI智能问数</a><a class="menu-item" href="ai-collect.html"><i class="fas fa-satellite-dish" style="width:16px"></i> AI风险舆情预警</a><a class="menu-item" href="ai-report.html"><i class="fas fa-file-pen" style="width:16px"></i> AI风险报告生成</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-arrows-rotate"></i> 业务流程管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="process-def.html"><i class="fas fa-gear" style="width:16px"></i> 流程定义与配置</a><a class="menu-item" href="process-monitor.html"><i class="fas fa-eye" style="width:16px"></i> 流程监控</a><a class="menu-item" href="process-archive.html"><i class="fas fa-box-archive" style="width:16px"></i> 流程归档与查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-screwdriver-wrench"></i> 基础与系统管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="base-info.html"><i class="fas fa-database" style="width:16px"></i> 基础信息管理</a><a class="menu-item" href="user-auth.html"><i class="fas fa-users" style="width:16px"></i> 用户与权限管理</a><a class="menu-item" href="data-std.html"><i class="fas fa-ruler" style="width:16px"></i> 数据标准管理</a><a class="menu-item" href="log-mgr.html"><i class="fas fa-clock-rotate-left" style="width:16px"></i> 操作日志管理</a><a class="menu-item" href="param-config.html"><i class="fas fa-gears" style="width:16px"></i> 参数配置</a></div></div></div><div class="main">
+
+<div class="breadcrumb"><a href="index.html">首页</a> / 限额预警回检测算</div>
+<div class="page-title"><i class="fas fa-flask" style="color:var(--info)"></i> 限额预警回检测算 <small>| 阈值变更回溯测试 · 量化评估风险监测覆盖面变化</small></div>
+
+<!-- Indicator context card -->
+<div class="icon-card" style="margin-bottom:14px">
+  <div class="icon-circle" style="background:rgba(59,130,246,.1);color:var(--info)"><i class="fas fa-chart-line"></i></div>
+  <div style="flex:1">
+    <div style="font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      RPI-001 资本充足率 <span class="tag tag-info">资本充足性</span>
+      <span style="font-size:11px;font-weight:400;color:var(--text-muted)">上海资产管理有限公司</span>
+    </div>
+    <div style="font-size:12px;color:var(--text-light);margin-top:4px;display:flex;gap:20px;flex-wrap:wrap">
+      <span><i class="fas fa-ruler" style="color:var(--text-muted);width:14px"></i> 监管基线：≥12.5%</span>
+      <span><i class="fas fa-calendar" style="color:var(--text-muted);width:14px"></i> 评估周期：月度</span>
+      <span><i class="fas fa-building" style="color:var(--text-muted);width:14px"></i> 评估实体：12,847 个</span>
+    </div>
+  </div>
+</div>
+
+<!-- Threshold comparison -->
+<div class="threshold-card">
+  <div class="threshold-group old">
+    <div class="group-label"><i class="fas fa-check-circle" style="color:var(--success)"></i> 当前生效阈值配置 <span class="version-badge">v2.3.1</span></div>
+    <div class="threshold-item"><span class="signal-dot" style="background:var(--danger)"></span> 红灯预警线 <span style="color:var(--text-muted)">≤</span> <strong>10.5%</strong></div>
+    <div class="threshold-item"><span class="signal-dot" style="background:var(--warning)"></span> 黄灯关注线 <span style="color:var(--text-muted)">≤</span> <strong>8.5%</strong></div>
+    <div style="font-size:10px;color:var(--text-muted);margin-top:6px">生效日期：2025-01-01</div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--text-muted);flex-shrink:0"><i class="fas fa-arrow-right"></i></div>
+  <div class="threshold-group new">
+    <div class="group-label"><i class="fas fa-pen-ruler" style="color:var(--warning)"></i> 待测试阈值配置 <span class="version-badge" style="background:rgba(245,158,11,.15);color:var(--warning)">v2.4.0 草稿</span></div>
+    <div class="threshold-item"><span class="signal-dot" style="background:var(--danger)"></span> 红灯预警线 <span style="color:var(--text-muted)">≤</span> <strong>11.5%</strong> <span class="arrow"><i class="fas fa-long-arrow-alt-up" style="color:var(--danger)"></i></span> <span class="delta">▲ +1.0pp</span></div>
+    <div class="threshold-item"><span class="signal-dot" style="background:var(--warning)"></span> 黄灯关注线 <span style="color:var(--text-muted)">≤</span> <strong>9.5%</strong> <span class="arrow"><i class="fas fa-long-arrow-alt-up" style="color:var(--danger)"></i></span> <span class="delta">▲ +1.0pp</span></div>
+    <div style="font-size:10px;color:var(--text-muted);margin-top:6px">拟生效日期：2026-10-01</div>
+  </div>
+  <div style="width:100%;display:flex;gap:10px;justify-content:flex-end;padding-top:8px;border-top:1px solid var(--border)">
+    <button class="btn btn-success btn-sm" onclick="openCreateModal()"><i class="fas fa-plus"></i> 创建新回溯测试</button>
+    <button class="btn btn-sm btn-outline-info" onclick="showToast('导入功能开发中')"><i class="fas fa-upload"></i> 导入历史数据</button>
+  </div>
+</div>
+
+<!-- Stats cards -->
+<div class="stats-grid">
+  <div class="stat-card accent-danger"><div class="stat-title"><i class="fas fa-circle"></i> 红灯触发（新阈值）</div><div class="stat-value">6,727</div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> 较旧阈值 +45.8%</div></div>
+  <div class="stat-card accent-warning"><div class="stat-title"><i class="fas fa-circle"></i> 黄灯触发（新阈值）</div><div class="stat-value">3,894</div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> 较旧阈值 +32.1%</div></div>
+  <div class="stat-card accent-primary"><div class="stat-title"><i class="fas fa-plus-circle"></i> 新增影响实体</div><div class="stat-value">2,847</div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> 占评估总量 22.2%</div></div>
+  <div class="stat-card accent-purple"><div class="stat-title"><i class="fas fa-exclamation-triangle"></i> 极端超标（>3倍标准差）</div><div class="stat-value">31</div><div class="stat-trend" style="color:var(--warning)"><i class="fas fa-exclamation-circle"></i> 需人工复核</div></div>
+</div>
+
+<!-- View toggle + filter bar -->
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:14px">
+  <div class="view-toggle">
+    <button class="active" onclick="switchView(this,'list')"><i class="fas fa-list"></i> 列表视图</button>
+    <button onclick="switchView(this,'compare')"><i class="fas fa-columns"></i> 对比视图</button>
+  </div>
+  <span style="font-size:12px;color:var(--text-muted)">共 <b>8</b> 次测试记录</span>
+  <div class="btn-group" style="margin-left:auto">
+    <button class="btn btn-xs" onclick="showToast('请先勾选要对比的测试')"><i class="fas fa-not-equal"></i> 对比选中</button>
+    <button class="btn btn-xs" onclick="showToast('导出成功')"><i class="fas fa-download"></i> 导出报告</button>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-group"><label>时间范围</label><select><option>全部</option><option>最近7天</option><option>最近30天</option><option selected>最近90天</option><option>自定义</option></select></div>
+  <div class="filter-group"><label>变更方向</label><select><option>全部</option><option>仅收紧</option><option>仅放宽</option></select></div>
+  <div class="filter-group"><label>影响范围</label><select><option>全部</option><option>影响 &gt; 5%</option><option>影响 &gt; 10%</option><option>影响 &gt; 20%</option></select></div>
+  <div class="filter-group"><label>状态</label><select><option>全部</option><option>已完成</option><option>运行中</option><option>失败</option></select></div>
+  <div class="filter-group"><label>关键词</label><input placeholder="测试ID/执行人/备注"></div>
+  <button class="btn btn-primary btn-sm"><i class="fas fa-search"></i> 查询</button>
+</div>
+
+<!-- List View -->
+<div id="viewList">
+<div class="table-wrapper"><div class="table-header"><span class="title"><i class="fas fa-flask"></i> 测试记录列表</span><span style="font-size:11px;color:var(--text-muted)">勾选最多3条可进行对比</span></div>
+<table class="data-table"><thead><tr>
+<th style="width:32px"><input type="checkbox" id="chkAll" onchange="toggleAll(this)"></th>
+<th style="min-width:80px">测试ID</th>
+<th style="min-width:90px">执行时间</th>
+<th style="min-width:100px">回溯时间范围</th>
+<th style="min-width:90px">红灯变化</th>
+<th style="min-width:90px">黄灯变化</th>
+<th style="min-width:110px">影响面评估</th>
+<th style="min-width:70px">状态</th>
+<th style="min-width:130px">操作</th>
+</tr></thead><tbody>
+<tr><td><input type="checkbox" class="row-chk" onchange="updateCompareBtn()"></td>
+<td><a href="javascript:void(0)" onclick="openDetailModal()" style="color:var(--info);text-decoration:none;font-weight:600">BK-008</a></td>
+<td><span title="2026-09-05 14:30">3天前</span><br><span style="font-size:10px;color:var(--text-muted)">2026-09-05</span></td>
+<td>01-06月 <span style="font-size:10px;color:var(--text-muted)" title="181天">📅</span></td>
+<td><span style="color:var(--danger);font-weight:600">+2,847 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+21.3%</span></td>
+<td><span style="color:var(--warning);font-weight:600">+1,203 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+16.8%</span></td>
+<td><div style="display:flex;align-items:center;gap:6px"><span>11.2%</span><div class="progress-bar" style="flex:1;max-width:60px"><div class="fill" style="width:11.2%;background:var(--warning)"></div></div></div></td>
+<td><span class="tag tag-success"><i class="fas fa-check-circle"></i> 完成</span></td>
+<td><button class="btn btn-xs btn-outline-info" onclick="openDetailModal()">查看报告</button><button class="btn btn-xs" onclick="showToast('已克隆')">克隆</button><button class="btn btn-xs" style="color:var(--danger)" onclick="showToast('已删除')">删除</button></td></tr>
+<tr><td><input type="checkbox" class="row-chk" onchange="updateCompareBtn()"></td>
+<td><a href="javascript:void(0)" onclick="openDetailModal()" style="color:var(--info);text-decoration:none;font-weight:600">BK-007</a></td>
+<td><span title="2026-08-20 10:15">17天前</span><br><span style="font-size:10px;color:var(--text-muted)">2026-08-20</span></td>
+<td>01-04月 <span style="font-size:10px;color:var(--text-muted)" title="120天">📅</span></td>
+<td><span style="color:var(--danger);font-weight:600">+1,956 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+18.7%</span></td>
+<td><span style="color:var(--warning);font-weight:600">+892 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+14.1%</span></td>
+<td><div style="display:flex;align-items:center;gap:6px"><span>9.8%</span><div class="progress-bar" style="flex:1;max-width:60px"><div class="fill" style="width:9.8%;background:var(--success)"></div></div></div></td>
+<td><span class="tag tag-success"><i class="fas fa-check-circle"></i> 完成</span></td>
+<td><button class="btn btn-xs btn-outline-info" onclick="openDetailModal()">查看报告</button><button class="btn btn-xs" onclick="showToast('已克隆')">克隆</button><button class="btn btn-xs" style="color:var(--danger)" onclick="showToast('已删除')">删除</button></td></tr>
+<tr><td><input type="checkbox" class="row-chk" onchange="updateCompareBtn()"></td>
+<td><a href="javascript:void(0)" onclick="openDetailModal()" style="color:var(--info);text-decoration:none;font-weight:600">BK-006</a></td>
+<td><span title="2026-08-01 09:00">36天前</span><br><span style="font-size:10px;color:var(--text-muted)">2026-08-01</span></td>
+<td>2025全年 <span style="font-size:10px;color:var(--text-muted)" title="365天">📅</span></td>
+<td><span style="color:var(--danger);font-weight:600">+4,102 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+23.1%</span></td>
+<td><span style="color:var(--warning);font-weight:600">+1,876 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+15.2%</span></td>
+<td><div style="display:flex;align-items:center;gap:6px"><span>12.4%</span><div class="progress-bar" style="flex:1;max-width:60px"><div class="fill" style="width:12.4%;background:var(--warning)"></div></div></div></td>
+<td><span class="tag tag-success"><i class="fas fa-check-circle"></i> 完成</span></td>
+<td><button class="btn btn-xs btn-outline-info" onclick="openDetailModal()">查看报告</button><button class="btn btn-xs" onclick="showToast('已克隆')">克隆</button><button class="btn btn-xs" style="color:var(--danger)" onclick="showToast('已删除')">删除</button></td></tr>
+<tr><td><input type="checkbox" class="row-chk" onchange="updateCompareBtn()"></td>
+<td><a href="javascript:void(0)" onclick="openDetailModal()" style="color:var(--info);text-decoration:none;font-weight:600">BK-005</a></td>
+<td><span title="2026-07-15 16:45">53天前</span><br><span style="font-size:10px;color:var(--text-muted)">2026-07-15</span></td>
+<td>Q2 2026 <span style="font-size:10px;color:var(--text-muted)" title="91天">📅</span></td>
+<td><span style="color:var(--danger);font-weight:600">+1,534 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+16.2%</span></td>
+<td><span style="color:var(--warning);font-weight:600">+723 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+12.8%</span></td>
+<td><div style="display:flex;align-items:center;gap:6px"><span>8.2%</span><div class="progress-bar" style="flex:1;max-width:60px"><div class="fill" style="width:8.2%;background:var(--success)"></div></div></div></td>
+<td><span class="tag tag-success"><i class="fas fa-check-circle"></i> 完成</span></td>
+<td><button class="btn btn-xs btn-outline-info" onclick="openDetailModal()">查看报告</button><button class="btn btn-xs" onclick="showToast('已克隆')">克隆</button><button class="btn btn-xs" style="color:var(--danger)" onclick="showToast('已删除')">删除</button></td></tr>
+<tr><td><input type="checkbox" class="row-chk" onchange="updateCompareBtn()"></td>
+<td><a href="javascript:void(0)" onclick="openDetailModal()" style="color:var(--info);text-decoration:none;font-weight:600">BK-004</a></td>
+<td><span title="2026-06-20 11:30">78天前</span><br><span style="font-size:10px;color:var(--text-muted)">2026-06-20</span></td>
+<td>01-03月 <span style="font-size:10px;color:var(--text-muted)" title="90天">📅</span></td>
+<td><span style="color:var(--danger);font-weight:600">+1,102 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+14.5%</span></td>
+<td><span style="color:var(--warning);font-weight:600">+534 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+11.3%</span></td>
+<td><div style="display:flex;align-items:center;gap:6px"><span>6.7%</span><div class="progress-bar" style="flex:1;max-width:60px"><div class="fill" style="width:6.7%;background:var(--success)"></div></div></div></td>
+<td><span class="tag tag-success"><i class="fas fa-check-circle"></i> 完成</span></td>
+<td><button class="btn btn-xs btn-outline-info" onclick="openDetailModal()">查看报告</button><button class="btn btn-xs" onclick="showToast('已克隆')">克隆</button><button class="btn btn-xs" style="color:var(--danger)" onclick="showToast('已删除')">删除</button></td></tr>
+<tr><td><input type="checkbox" class="row-chk" onchange="updateCompareBtn()"></td>
+<td><a href="javascript:void(0)" onclick="openDetailModal()" style="color:var(--info);text-decoration:none;font-weight:600">BK-003</a></td>
+<td><span title="2026-06-01 08:30">97天前</span><br><span style="font-size:10px;color:var(--text-muted)">2026-06-01</span></td>
+<td>2025全年 <span style="font-size:10px;color:var(--text-muted)" title="365天">📅</span></td>
+<td><span style="color:var(--danger);font-weight:600">+3,876 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+22.8%</span></td>
+<td><span style="color:var(--warning);font-weight:600">+1,654 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+14.9%</span></td>
+<td><div style="display:flex;align-items:center;gap:6px"><span>11.8%</span><div class="progress-bar" style="flex:1;max-width:60px"><div class="fill" style="width:11.8%;background:var(--warning)"></div></div></div></td>
+<td><span class="tag tag-warning"><i class="fas fa-spinner"></i> 运行中</span></td>
+<td><button class="btn btn-xs" disabled style="opacity:.5">查看报告</button><button class="btn btn-xs" onclick="showToast('已克隆')">克隆</button></td></tr>
+<tr><td><input type="checkbox" class="row-chk" onchange="updateCompareBtn()"></td>
+<td><a href="javascript:void(0)" onclick="openDetailModal()" style="color:var(--info);text-decoration:none;font-weight:600">BK-002</a></td>
+<td><span title="2026-05-10 15:00">119天前</span><br><span style="font-size:10px;color:var(--text-muted)">2026-05-10</span></td>
+<td>01-04月 <span style="font-size:10px;color:var(--text-muted)" title="120天">📅</span></td>
+<td><span style="color:var(--danger);font-weight:600">+1,823 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+18.1%</span></td>
+<td><span style="color:var(--warning);font-weight:600">+834 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+13.7%</span></td>
+<td><div style="display:flex;align-items:center;gap:6px"><span>9.2%</span><div class="progress-bar" style="flex:1;max-width:60px"><div class="fill" style="width:9.2%;background:var(--success)"></div></div></div></td>
+<td><span class="tag tag-success"><i class="fas fa-check-circle"></i> 完成</span></td>
+<td><button class="btn btn-xs btn-outline-info" onclick="openDetailModal()">查看报告</button><button class="btn btn-xs" onclick="showToast('已克隆')">克隆</button><button class="btn btn-xs" style="color:var(--danger)" onclick="showToast('已删除')">删除</button></td></tr>
+<tr><td><input type="checkbox" class="row-chk" onchange="updateCompareBtn()"></td>
+<td><a href="javascript:void(0)" onclick="openDetailModal()" style="color:var(--info);text-decoration:none;font-weight:600">BK-001</a></td>
+<td><span title="2026-04-15 10:00">144天前</span><br><span style="font-size:10px;color:var(--text-muted)">2026-04-15</span></td>
+<td>Q1 2026 <span style="font-size:10px;color:var(--text-muted)" title="90天">📅</span></td>
+<td><span style="color:var(--danger);font-weight:600">+892 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+13.2%</span></td>
+<td><span style="color:var(--warning);font-weight:600">+412 ▲</span> <span style="font-size:10px;color:var(--text-muted)">+10.5%</span></td>
+<td><div style="display:flex;align-items:center;gap:6px"><span>5.6%</span><div class="progress-bar" style="flex:1;max-width:60px"><div class="fill" style="width:5.6%;background:var(--success)"></div></div></div></td>
+<td><span class="tag tag-danger"><i class="fas fa-times-circle"></i> 失败</span></td>
+<td><button class="btn btn-xs" onclick="showToast('重新执行')">重试</button><button class="btn btn-xs" onclick="showToast('已克隆')">克隆</button></td></tr>
+</tbody></table>
+<div class="pagination-area"><span class="page-info">共 <b>8</b> 条，第 1 / 1 页</span><div class="pagination-controls"><button class="page-btn active">1</button></div></div></div>
+</div>
+
+<!-- Compare View (hidden by default) -->
+<div id="viewCompare" style="display:none">
+<div class="compare-grid" id="compareGrid">
+  <div class="compare-col">
+    <div class="col-header"><i class="fas fa-flask" style="color:var(--info)"></i> BK-006 · 2025全年</div>
+    <div class="col-body">
+      <div class="col-row"><span class="label">红灯触发</span><span class="val" style="color:var(--danger)">+4,102 ▲ +23.1%</span></div>
+      <div class="col-row"><span class="label">黄灯触发</span><span class="val" style="color:var(--warning)">+1,876 ▲ +15.2%</span></div>
+      <div class="col-row"><span class="label">新增影响面</span><span class="val">12.4%</span></div>
+      <div class="col-row"><span class="label">极端超标</span><span class="val" style="color:var(--danger)">47 实体</span></div>
+      <div class="col-row"><span class="label">评估结论</span><span class="val" style="color:var(--warning)"><i class="fas fa-exclamation-triangle"></i> 影响较大</span></div>
+    </div>
+  </div>
+  <div class="compare-col">
+    <div class="col-header"><i class="fas fa-flask" style="color:var(--info)"></i> BK-007 · 01-04月</div>
+    <div class="col-body">
+      <div class="col-row"><span class="label">红灯触发</span><span class="val" style="color:var(--danger)">+1,956 ▲ +18.7%</span></div>
+      <div class="col-row"><span class="label">黄灯触发</span><span class="val" style="color:var(--warning)">+892 ▲ +14.1%</span></div>
+      <div class="col-row"><span class="label">新增影响面</span><span class="val">9.8%</span></div>
+      <div class="col-row"><span class="label">极端超标</span><span class="val" style="color:var(--text-light)">23 实体</span></div>
+      <div class="col-row"><span class="label">评估结论</span><span class="val" style="color:var(--success)"><i class="fas fa-check-circle"></i> 可接受</span></div>
+    </div>
+  </div>
+  <div class="compare-col">
+    <div class="col-header"><i class="fas fa-flask" style="color:var(--info)"></i> BK-008 · 01-06月</div>
+    <div class="col-body">
+      <div class="col-row"><span class="label">红灯触发</span><span class="val" style="color:var(--danger)">+2,847 ▲ +21.3%</span></div>
+      <div class="col-row"><span class="label">黄灯触发</span><span class="val" style="color:var(--warning)">+1,203 ▲ +16.8%</span></div>
+      <div class="col-row"><span class="label">新增影响面</span><span class="val">11.2%</span></div>
+      <div class="col-row"><span class="label">极端超标</span><span class="val" style="color:var(--text-light)">31 实体</span></div>
+      <div class="col-row"><span class="label">评估结论</span><span class="val" style="color:var(--warning)"><i class="fas fa-exclamation-triangle"></i> 需关注</span></div>
+    </div>
+  </div>
+</div>
+<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:12px;background:var(--card-bg);border-radius:var(--radius);border:1px solid var(--border)">
+  <i class="fas fa-info-circle"></i> 对比分析：三次测试均显示阈值收紧后红灯触发增加，其中 BK-006（2025全年）影响最大，建议重点关注。
+</div>
+</div>
+
+</div></div>
+
+<div id="toastContainer"></div>
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal modal-xl"><div class="modal-header"><span id="modalTitle"></span><button class="modal-close" onclick="closeModal()">&times;</button></div>
+<div class="modal-body" id="modalBody"></div>
+<div class="modal-footer" id="modalFooter"></div></div></div>
+
+<script>
+function u(){document.getElementById('clock').textContent=new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});};u();setInterval(u,1000);
+function toggleTheme(){document.body.classList.toggle('dark');var i=document.getElementById('themeIcon');if(i)i.className=document.body.classList.contains('dark')?'fas fa-sun':'fas fa-moon';localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');}
+if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');var ti=document.getElementById('themeIcon');if(ti)ti.className='fas fa-sun';}
+function filterMenu(q){q=q.toLowerCase();document.querySelectorAll('.menu-item').forEach(function(m){var t=m.textContent.toLowerCase();m.style.display=q&&!t.includes(q)?'none':'flex';});}
+
+function showToast(msg,type){var c=document.getElementById('toastContainer');if(!c)return;var t=document.createElement('div');t.style.cssText='background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:10px 16px;box-shadow:0 4px 12px rgba(0,0,0,.1);color:var(--text);font-size:13px;margin-bottom:8px;animation:slideUp .25s ease;display:flex;align-items:center;gap:8px';if(type==='error')t.style.borderLeft='3px solid var(--danger)';else t.style.borderLeft='3px solid var(--success)';t.innerHTML=(type==='error'?'<i class="fas fa-times-circle" style="color:var(--danger)"></i>':'<i class="fas fa-check-circle" style="color:var(--success)"></i>')+msg;c.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
+
+function openModal(title,html,footerHtml){
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalBody').innerHTML=html;
+  var f=document.getElementById('modalFooter');
+  if(footerHtml!==undefined){f.innerHTML=footerHtml;f.style.display='flex';}else{f.innerHTML='<button class="btn" onclick="closeModal()">关闭</button>';f.style.display='flex';}
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
+
+// View toggle
+function switchView(btn,view){
+  document.querySelectorAll('.view-toggle button').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('viewList').style.display=(view==='list'?'block':'none');
+  document.getElementById('viewCompare').style.display=(view==='compare'?'block':'none');
+}
+
+// Checkbox
+function toggleAll(chk){
+  document.querySelectorAll('.row-chk').forEach(function(cb){cb.checked=chk.checked;});
+  updateCompareBtn();
+}
+function updateCompareBtn(){
+  var n=document.querySelectorAll('.row-chk:checked').length;
+  var btn=document.querySelector('.btn-group .btn:first-child');
+  if(btn)btn.textContent=n>0?'对比选中 ('+n+')':'对比选中';
+}
+
+// Create new test modal
+function openCreateModal(){
+  var h = '<div class="form-grid">'+
+    '<div class="section-divider"><i class="fas fa-flask"></i> 新建回溯测试 · RPI-001 资本充足率</div>'+
+    '<div class="wizard-steps full-width"><div class="wizard-step active"><span class="step-num">1</span> 选择测试配置</div><div class="wizard-step"><span class="step-num">2</span> 设定时间范围</div><div class="wizard-step"><span class="step-num">3</span> 填写测试信息</div></div>'+
+    // Step 1: Config
+    '<div class="full-width" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+
+    '<div class="threshold-group old" style="border:2px solid var(--success)"><div class="group-label"><i class="fas fa-check-circle" style="color:var(--success)"></i> 对照组（当前生效）</div>'+
+    '<div class="threshold-item"><span class="signal-dot" style="background:var(--danger)"></span> 红灯 ≤10.5%</div>'+
+    '<div class="threshold-item"><span class="signal-dot" style="background:var(--warning)"></span> 黄灯 ≤8.5%</div>'+
+    '<div style="font-size:11px;color:var(--text-muted);margin-top:6px">版本：v2.3.1 · 生效：2025-01-01</div></div>'+
+    '<div class="threshold-group new" style="border:2px solid var(--warning)"><div class="group-label"><i class="fas fa-pen-ruler" style="color:var(--warning)"></i> 测试组（拟变更）</div>'+
+    '<div class="threshold-item"><span class="signal-dot" style="background:var(--danger)"></span> 红灯 ≤11.5% <span class="delta" style="margin-left:6px">▲ +1.0pp</span></div>'+
+    '<div class="threshold-item"><span class="signal-dot" style="background:var(--warning)"></span> 黄灯 ≤9.5% <span class="delta" style="margin-left:6px">▲ +1.0pp</span></div>'+
+    '<div style="font-size:11px;color:var(--text-muted);margin-top:6px">版本：v2.4.0 · 状态：<span class="tag tag-warning">草稿</span></div></div></div>'+
+    // Step 2: Date range
+    '<div class="full-width" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">'+
+    '<div class="form-group"><label>回溯数据起始日期</label><input class="form-control" type="date" value="2026-01-01"></div>'+
+    '<div class="form-group"><label>回溯数据结束日期</label><input class="form-control" type="date" value="2026-06-30"></div></div>'+
+    '<div class="form-group full-width"><label>机构名称 <span style="color:var(--danger)">*</span></label><select class="form-control"><option>AMC</option><option>国泰海通</option></select></div>'+
+    '<div class="detail-item full-width" style="flex-direction:row;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--text-light)">预计评估天数</span><span style="font-size:14px;font-weight:700;color:var(--text)">36 天</span></div>'+
+    // Step 3: Info
+    '<div class="full-width" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">'+
+    '<div class="form-group full-width"><label>测试名称 <span style="color:var(--danger)">*</span></label><input class="form-control" value="RPI-001 阈值收紧验证 - 2026年H1"></div>'+
+    '<div class="form-group full-width"><label>变更原因 <span style="color:var(--danger)">*</span></label><textarea class="form-control" style="min-height:60px">根据监管要求调整预警阈值，提升风险监测敏感性。</textarea></div>'+
+    '<div class="form-group full-width"><label>备注</label><textarea class="form-control" style="min-height:60px" placeholder="可选：计划分两阶段实施，本次验证Q1-Q2数据">计划分两阶段实施，本次验证Q1-Q2数据。</textarea></div></div>'+
+    '</div>';
+  var f = '<button class="btn" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="showToast(\'草稿已保存\')"><i class="fas fa-save"></i> 保存草稿</button><button class="btn btn-success" onclick="closeModal();showToast(\'测试已提交执行\')"><i class="fas fa-play"></i> 立即执行测试</button>';
+  openModal('新建回溯测试',h,f);
+}
+
+// Detail modal with tabs
+function openDetailModal(){
+  var h = '<div style="margin-bottom:16px">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">'+
+    '<div><div style="font-weight:700;font-size:15px">BK-008 回溯测试报告</div><div style="font-size:12px;color:var(--text-muted)">RPI-001 资本充足率 · 回溯区间：2026-01-01 ~ 2026-06-30</div></div>'+
+    '<div style="font-size:12px;color:var(--text-light)">执行：2026-09-05 14:30</div></div>'+
+    // Threshold change summary
+    '<div style="display:flex;gap:14px;flex-wrap:wrap;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin-top:10px">'+
+    '<div style="font-size:12px"><span class="signal-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--danger);margin-right:4px"></span> 红灯：≤10.5% → <strong>≤11.5%</strong> <span class="delta" style="font-size:10px">收紧 ↑1.0pp</span></div>'+
+    '<div style="font-size:12px"><span class="signal-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--warning);margin-right:4px"></span> 黄灯：≤8.5% → <strong>≤9.5%</strong> <span class="delta" style="font-size:10px">收紧 ↑1.0pp</span></div>'+
+    '<div style="font-size:12px;color:var(--text-muted)">评估周期：6个（月度） · 评估实体：12,847个</div></div></div>'+
+    // Tabs
+    '<div class="tab-bar"><button class="tab-item active" onclick="switchTab(this,\'tabOv\')">概览仪表板</button><button class="tab-item" onclick="switchTab(this,\'tabDeep\')">超阈值深度分析</button><button class="tab-item" onclick="switchTab(this,\'tabDetail\')">明细数据列表</button></div>'+
+    // Tab 1: Overview
+    '<div id="tabOv" class="tab-content active">'+
+    '<div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">'+
+    '<div class="stat-card accent-danger" style="padding:12px 14px"><div class="stat-title">红灯触发</div><div class="stat-value" style="font-size:1.3rem">6,727</div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> +45.8%</div></div>'+
+    '<div class="stat-card accent-warning" style="padding:12px 14px"><div class="stat-title">黄灯触发</div><div class="stat-value" style="font-size:1.3rem">3,894</div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> +32.1%</div></div>'+
+    '<div class="stat-card accent-primary" style="padding:12px 14px"><div class="stat-title">新增影响</div><div class="stat-value" style="font-size:1.3rem">2,847</div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> 占22.2%</div></div>'+
+    '<div class="stat-card" style="padding:12px 14px;--accent-color:#8b5cf6"><div class="stat-title">极端超标</div><div class="stat-value" style="font-size:1.3rem">31</div><div class="stat-trend" style="color:var(--warning)"><i class="fas fa-exclamation-circle"></i> 需关注</div></div></div>'+
+    // Chart placeholder
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px">'+
+    '<div style="font-weight:600;font-size:13px;margin-bottom:10px"><i class="fas fa-chart-bar" style="color:var(--info)"></i> 新旧阈值触发对比（按评估周期）</div>'+
+    '<div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding:10px 0;border-bottom:1px solid var(--border)">'+
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:10px;color:var(--text-muted)">1月</div><div style="width:100%;display:flex;gap:2px;height:80px;align-items:flex-end;justify-content:center">'+
+    '<div style="width:10px;height:36px;background:rgba(185,28,28,.3);border-radius:3px 3px 0 0" title="旧阈值红灯: 320"></div>'+
+    '<div style="width:10px;height:52px;background:var(--danger);border-radius:3px 3px 0 0" title="新阈值红灯: 468"></div>'+
+    '<div style="width:10px;height:20px;background:rgba(245,158,11,.3);border-radius:3px 3px 0 0" title="旧阈值黄灯: 180"></div>'+
+    '<div style="width:10px;height:30px;background:var(--warning);border-radius:3px 3px 0 0" title="新阈值黄灯: 268"></div></div></div>'+
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:10px;color:var(--text-muted)">2月</div><div style="width:100%;display:flex;gap:2px;height:80px;align-items:flex-end;justify-content:center">'+
+    '<div style="width:10px;height:30px;background:rgba(185,28,28,.3);border-radius:3px 3px 0 0" title="旧阈值红灯: 268"></div>'+
+    '<div style="width:10px;height:48px;background:var(--danger);border-radius:3px 3px 0 0" title="新阈值红灯: 432"></div>'+
+    '<div style="width:10px;height:18px;background:rgba(245,158,11,.3);border-radius:3px 3px 0 0" title="旧阈值黄灯: 156"></div>'+
+    '<div style="width:10px;height:28px;background:var(--warning);border-radius:3px 3px 0 0" title="新阈值黄灯: 248"></div></div></div>'+
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:10px;color:var(--text-muted)">3月</div><div style="width:100%;display:flex;gap:2px;height:80px;align-items:flex-end;justify-content:center">'+
+    '<div style="width:10px;height:52px;background:rgba(185,28,28,.3);border-radius:3px 3px 0 0" title="旧阈值红灯: 468"></div>'+
+    '<div style="width:10px;height:72px;background:var(--danger);border-radius:3px 3px 0 0" title="新阈值红灯: 648"></div>'+
+    '<div style="width:10px;height:30px;background:rgba(245,158,11,.3);border-radius:3px 3px 0 0" title="旧阈值黄灯: 270"></div>'+
+    '<div style="width:10px;height:42px;background:var(--warning);border-radius:3px 3px 0 0" title="新阈值黄灯: 378"></div></div></div>'+
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:10px;color:var(--text-muted)">4月</div><div style="width:100%;display:flex;gap:2px;height:80px;align-items:flex-end;justify-content:center">'+
+    '<div style="width:10px;height:40px;background:rgba(185,28,28,.3);border-radius:3px 3px 0 0" title="旧阈值红灯: 360"></div>'+
+    '<div style="width:10px;height:60px;background:var(--danger);border-radius:3px 3px 0 0" title="新阈值红灯: 540"></div>'+
+    '<div style="width:10px;height:22px;background:rgba(245,158,11,.3);border-radius:3px 3px 0 0" title="旧阈值黄灯: 200"></div>'+
+    '<div style="width:10px;height:34px;background:var(--warning);border-radius:3px 3px 0 0" title="新阈值黄灯: 306"></div></div></div>'+
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:10px;color:var(--text-muted)">5月</div><div style="width:100%;display:flex;gap:2px;height:80px;align-items:flex-end;justify-content:center">'+
+    '<div style="width:10px;height:44px;background:rgba(185,28,28,.3);border-radius:3px 3px 0 0" title="旧阈值红灯: 396"></div>'+
+    '<div style="width:10px;height:64px;background:var(--danger);border-radius:3px 3px 0 0" title="新阈值红灯: 576"></div>'+
+    '<div style="width:10px;height:26px;background:rgba(245,158,11,.3);border-radius:3px 3px 0 0" title="旧阈值黄灯: 234"></div>'+
+    '<div style="width:10px;height:38px;background:var(--warning);border-radius:3px 3px 0 0" title="新阈值黄灯: 342"></div></div></div>'+
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:10px;color:var(--text-muted)">6月</div><div style="width:100%;display:flex;gap:2px;height:80px;align-items:flex-end;justify-content:center">'+
+    '<div style="width:10px;height:48px;background:rgba(185,28,28,.3);border-radius:3px 3px 0 0" title="旧阈值红灯: 432"></div>'+
+    '<div style="width:10px;height:68px;background:var(--danger);border-radius:3px 3px 0 0" title="新阈值红灯: 612"></div>'+
+    '<div style="width:10px;height:28px;background:rgba(245,158,11,.3);border-radius:3px 3px 0 0" title="旧阈值黄灯: 252"></div>'+
+    '<div style="width:10px;height:40px;background:var(--warning);border-radius:3px 3px 0 0" title="新阈值黄灯: 360"></div></div></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:16px;font-size:11px;color:var(--text-muted);margin-top:8px"><span><span style="display:inline-block;width:12px;height:12px;background:rgba(185,28,28,.3);border-radius:2px;vertical-align:middle;margin-right:4px"></span> 旧阈值-红灯</span><span><span style="display:inline-block;width:12px;height:12px;background:var(--danger);border-radius:2px;vertical-align:middle;margin-right:4px"></span> 新阈值-红灯</span><span><span style="display:inline-block;width:12px;height:12px;background:rgba(245,158,11,.3);border-radius:2px;vertical-align:middle;margin-right:4px"></span> 旧阈值-黄灯</span><span><span style="display:inline-block;width:12px;height:12px;background:var(--warning);border-radius:2px;vertical-align:middle;margin-right:4px"></span> 新阈值-黄灯</span></div></div>'+
+    // Insight
+    '<div class="insight-card"><div class="insight-title"><i class="fas fa-lightbulb"></i> 智能分析结论</div>'+
+    '<div>• 红灯阈值收紧1个百分点后，新增28天触发红灯预警</div>'+
+    '<div>• 影响主要集中在Q2（4-6月），可能与季度资本补充节奏相关</div>'+
+    '<div>• 31个实体超标幅度超过3倍标准差，建议人工复核</div>'+
+    '<div>• <strong>综合评估：⚠️ 影响偏大，建议分阶段实施或设置过渡期</strong></div></div></div>'+
+    // Tab 2: Deep analysis
+    '<div id="tabDeep" class="tab-content">'+
+    // Dimension toggle
+    '<div style="display:flex;gap:10px;margin-bottom:14px"><span style="font-size:12px;color:var(--text-muted);font-weight:600">分析维度：</span>'+
+    '<button class="btn btn-xs btn-primary" onclick="showToast(\'红灯分析\')"><i class="fas fa-circle" style="color:var(--danger);font-size:8px"></i> 红灯</button>'+
+    '<button class="btn btn-xs" onclick="showToast(\'黄灯分析\')"><i class="fas fa-circle" style="color:var(--warning);font-size:8px"></i> 黄灯</button>'+
+    '<button class="btn btn-xs" onclick="showToast(\'综合分析\')"><i class="fas fa-circle" style="color:var(--info);font-size:8px"></i> 综合</button></div>'+
+    // Pareto
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px">'+
+    '<div style="font-weight:600;font-size:13px;margin-bottom:10px"><i class="fas fa-chart-pie" style="color:var(--warning)"></i> 超标幅度分布（帕累托分析）</div>'+
+    '<table class="compare-table"><thead><tr><th>超标幅度区间</th><th>0-1pp</th><th>1-2pp</th><th>2-3pp</th><th>3-5pp</th><th>&gt;5pp</th></tr></thead><tbody>'+
+    '<tr><td style="font-weight:600">超限天数</td><td><strong>28</strong></td><td><strong>18</strong></td><td><strong>9</strong></td><td><strong>4</strong></td><td><strong>2</strong></td></tr>'+
+    '<tr><td style="font-weight:600">累计占比</td><td>65.2%</td><td>87.5%</td><td>97.8%</td><td>99.2%</td><td>100%</td></tr>'+
+    '<tr><td style="font-weight:600">条形图</td><td><div class="progress-bar"><div class="fill" style="width:65.2%;background:var(--info)"></div></div></td><td><div class="progress-bar"><div class="fill" style="width:87.5%;background:var(--info)"></div></div></td><td><div class="progress-bar"><div class="fill" style="width:97.8%;background:var(--warning)"></div></div></td><td><div class="progress-bar"><div class="fill" style="width:99.2%;background:var(--danger)"></div></div></td><td><div class="progress-bar"><div class="fill" style="width:100%;background:var(--danger)"></div></div></td></tr>'+
+    '</tbody></table></div>'+
+    // Entity classification
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px">'+
+    '<div style="font-weight:600;font-size:13px;margin-bottom:10px"><i class="fas fa-table-cells" style="color:var(--info)"></i> 超标天数分类分析</div>'+
+    '<table class="compare-table"><thead><tr><th>分类</th><th>旧阈值下</th><th>新阈值下</th><th>变化</th></tr></thead><tbody>'+
+    '<tr><td style="font-weight:600">持续安全</td><td>38</td><td>28</td><td style="color:var(--danger)">-10 ▼</td></tr>'+
+    '<tr><td style="font-weight:600">持续超标</td><td>12</td><td>12</td><td style="color:var(--text-muted)">0</td></tr>'+
+    '<tr><td style="font-weight:600;color:var(--danger)">新增超标</td><td>0</td><td>28</td><td style="color:var(--danger);font-weight:600">+28 ▲</td></tr>'+
+    '<tr><td style="font-weight:600">改善（超标→安全）</td><td>0</td><td>0</td><td style="color:var(--text-muted)">0</td></tr>'+
+    '</tbody></table></div>'+
+    '<div class="insight-card"><div class="insight-title"><i class="fas fa-lightbulb"></i> 洞察</div>'+
+    '<div>• 65%的超标实体偏离度在1个百分点以内，影响可控</div>'+
+    '<div>• 极端超标（>5pp）仅33个实体（占比0.26%），但需重点监控</div>'+
+    '<div>• 3月出现峰值（春节后），6月次峰值（半年度考核），与资本补充周期高度相关</div></div></div>'+
+    // Tab 3: Detail data
+    '<div id="tabDetail" class="tab-content">'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">'+
+    '<div class="filter-group" style="min-width:100px"><select><option>全部类型</option><option>新增超标</option><option>持续超标</option></select></div>'+
+    '<div class="filter-group" style="min-width:100px"><select><option>全部幅度</option><option>0-1pp</option><option>1-2pp</option><option>2-3pp</option><option>3-5pp</option><option>&gt;5pp</option></select></div>'+
+    '<div class="filter-group" style="min-width:100px"><select><option>全部等级</option><option>严重</option><option>较高</option><option>中等</option></select></div>'+
+    '<div class="filter-group" style="min-width:120px"><input placeholder="搜索日期"></div>'+
+    '<button class="btn btn-sm btn-primary"><i class="fas fa-search"></i> 搜索</button>'+
+    '<button class="btn btn-sm" onclick="showToast(\'导出CSV\')"><i class="fas fa-file-csv"></i> 导出CSV</button>'+
+    '<button class="btn btn-sm" onclick="showToast(\'导出Excel\')"><i class="fas fa-file-excel"></i> 导出Excel</button></div>'+
+    '<div class="table-wrapper"><table class="data-table" style="min-width:700px"><thead><tr><th>日期</th><th>资本充足率</th><th>旧阈值结果</th><th>新阈值结果</th><th>超标幅度</th><th>严重等级</th></tr></thead><tbody>'+
+    '<tr><td style="font-weight:600">2026-06-30</td><td>10.2%</td><td><span class="tag tag-success">✅ 安全</span></td><td><span class="tag tag-danger">🔴 红灯</span></td><td>1.3 pp</td><td><span class="severity severity-mid">🟡 中等</span></td></tr>'+
+    '<tr><td style="font-weight:600">2026-06-23</td><td>9.1%</td><td><span class="tag tag-success">✅ 安全</span></td><td><span class="tag tag-danger">🔴 红灯</span></td><td>2.4 pp</td><td><span class="severity severity-high">🟠 较高</span></td></tr>'+
+    '<tr><td style="font-weight:600">2026-06-16</td><td>8.3%</td><td><span class="tag tag-warning">🟡 黄灯</span></td><td><span class="tag tag-danger">🔴 红灯</span></td><td>3.2 pp</td><td><span class="severity severity-high">🔴 严重</span></td></tr>'+
+    '<tr><td style="font-weight:600">2026-06-09</td><td>7.6%</td><td><span class="tag tag-danger">🔴 红灯</span></td><td><span class="tag tag-danger">🔴 红灯</span></td><td>3.9 pp</td><td><span class="severity severity-high">🔴 严重</span></td></tr>'+
+    '<tr><td style="font-weight:600">2026-06-02</td><td>10.8%</td><td><span class="tag tag-success">✅ 安全</span></td><td><span class="tag tag-danger">🔴 红灯</span></td><td>0.7 pp</td><td><span class="severity severity-low">🟡 中等</span></td></tr>'+
+    '<tr><td style="font-weight:600">2026-05-26</td><td>9.5%</td><td><span class="tag tag-success">✅ 安全</span></td><td><span class="tag tag-warning">🟡 黄灯</span></td><td>1.0 pp</td><td><span class="severity severity-low">🟡 中等</span></td></tr>'+
+    '<tr><td style="font-weight:600">2026-05-19</td><td>6.2%</td><td><span class="tag tag-danger">🔴 红灯</span></td><td><span class="tag tag-danger">🔴 红灯</span></td><td>5.3 pp</td><td><span class="severity severity-high">🔴 严重</span></td></tr>'+
+    '<tr><td style="font-weight:600">2026-05-12</td><td>10.4%</td><td><span class="tag tag-success">✅ 安全</span></td><td><span class="tag tag-danger">🔴 红灯</span></td><td>1.1 pp</td><td><span class="severity severity-mid">🟠 较高</span></td></tr>'+
+    '</tbody></table></div>'+
+    '<div class="pagination-area" style="border:none;padding:10px 0"><span class="page-info">共 12,847 条，第 1 / 257 页</span><div class="pagination-controls"><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><span style="margin:0 4px;color:var(--text-muted)">...</span><button class="page-btn">257</button></div></div></div>';
+  var f = '<button class="btn" onclick="closeModal()">关闭</button><button class="btn btn-primary" onclick="showToast(\'报告已导出\')"><i class="fas fa-download"></i> 导出报告</button><button class="btn btn-sm" onclick="showToast(\'打印中\')"><i class="fas fa-print"></i> 打印</button>';
+  openModal('测试结果详情',h,f);
+}
+
+function switchTab(btn,tabId){
+  document.querySelectorAll('.tab-item').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// Button handlers
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('button');
+  if(!btn||btn.closest('.modal-overlay')||btn.closest('.pagination-controls'))return;
+  var t=btn.textContent.trim();
+  if(t==='')return;
+  if(t.indexOf('查询')>=0||t.indexOf('搜索')>=0){showToast('查询完成');return;}
+  if(t.indexOf('导出')>=0||t.indexOf('下载')>=0){showToast('导出成功');return;}
+  if(t.indexOf('保存')>=0){showToast('保存成功');return;}
+  if(t.indexOf('删除')>=0){showToast('已删除');return;}
+  if(t.indexOf('克隆')>=0){showToast('已克隆，可编辑后重新执行');return;}
+  if(t.indexOf('重试')>=0){showToast('已重新提交执行');return;}
+});
+</script>
+</body>
+</html>

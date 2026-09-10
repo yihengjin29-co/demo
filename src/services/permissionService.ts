@@ -21,7 +21,7 @@ export const resolveStoredRole = (value: string | null | undefined): Role | null
 
 export const normalizeRole = (value: string | null | undefined): Role => resolveStoredRole(value) || '金控公司';
 
-export const getDefaultRouteForRole = (role: Role) => role === '集团' ? '/dashboard' : '/workbench';
+export const getDefaultRouteForRole = (_role: Role) => '/workbench';
 
 export type PermissionContext = {
   institution?: string;
@@ -138,7 +138,7 @@ export const canAccessDashboardLink = (role: Role, path: string) => {
   return true;
 };
 
-export const canAccessRiskPreference = (role: Role) => role === '集团' || role === '金控公司';
+export const canAccessRiskPreference = (role: Role) => roleLabels.includes(role);
 export const canViewIndicator = (role: Role, indicator: Pick<Indicator, 'institution'>) => canViewInstitution(role, indicator.institution);
 export const canCreateIndicator = (role: Role) => role === '金控公司';
 export const canEditIndicator = (role: Role, indicator?: Pick<Indicator, 'institution'>) => role === '金控公司' && (!indicator || canViewIndicator(role, indicator));

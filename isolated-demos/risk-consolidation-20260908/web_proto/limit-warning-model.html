@@ -1,0 +1,621 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>限额预警模型 - 金控并表系统</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+:root{--primary:#1a3c6d;--primary-light:#2a5caa;--accent:#e8a838;--bg:#f0f2f6;--sidebar-bg:#1a2538;--sidebar-text:#b0bec5;--sidebar-active:#2a3f5f;--card-bg:#fff;--border:#d9e2ea;--text:#1e293b;--text-light:#5b6e8c;--text-muted:#94a3b8;--danger:#b91c1c;--success:#10b981;--warning:#f59e0b;--info:#3b82f6;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-hover:0 10px 25px -5px rgba(0,0,0,.1),0 4px 10px -2px rgba(0,0,0,.05);--font:14px/1.5 -apple-system,"Microsoft YaHei","PingFang SC",sans-serif;--sidebar-width:232px;--transition:0.18s cubic-bezier(0.4,0,0.2,1);--red:#ef4444;--yellow:#eab308;--green:#22c55e;--blue:#3b82f6;--purple:#a855f7}
+.dark{--bg:#0f172a;--card-bg:#1e293b;--border:#334155;--text:#e2e8f0;--text-light:#94a3b8;--text-muted:#64748b;--sidebar-bg:#0c1222;--sidebar-active:#1a2940;--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-hover:0 10px 25px -5px rgba(0,0,0,.5)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font:var(--font);color:var(--text);background:var(--bg);display:flex;flex-direction:column;min-height:100vh;transition:background var(--transition),color var(--transition)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:4px}
+.header{height:54px;background:linear-gradient(135deg,var(--primary) 0%,#0f2347 100%);color:#fff;display:flex;align-items:center;padding:0 22px;z-index:110;box-shadow:0 2px 10px rgba(0,0,0,.2);flex-shrink:0;position:relative;overflow:hidden}
+.header::after{content:'';position:absolute;top:0;right:0;width:300px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03));pointer-events:none}
+.header h1{font-size:16px;font-weight:600;letter-spacing:.3px;display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+.header .sub{font-size:11px;opacity:.6;margin-left:10px;position:relative;z-index:1}
+.header .user{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;position:relative;z-index:1}
+.header .user .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;box-shadow:0 0 0 2px rgba(255,255,255,.2)}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;opacity:.85;margin-right:14px;position:relative;z-index:1}
+.live-badge .dot{width:7px;height:7px;background:var(--success);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 6px rgba(16,185,129,.6)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.8)}}
+.theme-toggle{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;transition:all var(--transition);z-index:1;margin-right:8px}
+.theme-toggle:hover{background:rgba(255,255,255,.2)}
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);color:var(--sidebar-text);overflow-y:auto;flex-shrink:0;font-size:13px;transition:width var(--transition);position:relative;z-index:50}
+.sidebar a{color:inherit;text-decoration:none}
+.sidebar-search{padding:10px 14px;position:sticky;top:0;background:var(--sidebar-bg);z-index:2}
+.sidebar-search input{width:100%;height:32px;padding:6px 10px 6px 30px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none;font-family:inherit}
+.sidebar-search i{position:absolute;left:22px;top:19px;font-size:12px;opacity:.4}
+.main{flex:1;overflow-y:auto;padding:22px 26px;scroll-behavior:smooth}
+.menu-item{display:flex;align-items:center;padding:0 16px;height:38px;cursor:pointer;border-left:3px solid transparent;transition:all .12s;gap:8px;font-size:13px;color:inherit;text-decoration:none}
+.menu-item:hover{background:rgba(255,255,255,.04);color:#fff}
+.menu-item.active{background:var(--sidebar-active);color:#fff;border-left-color:var(--accent);font-weight:600}
+.menu-group-title{font-size:10px;padding:16px 16px 4px;opacity:.4;letter-spacing:2px;border-top:1px solid rgba(255,255,255,.04);margin-top:6px;cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none}
+.menu-group-title:hover{opacity:.7}
+.menu-group-title .fa-chevron-down{font-size:8px;transition:transform var(--transition);opacity:.5}
+.menu-group-title.collapsed .fa-chevron-down{transform:rotate(-90deg)}
+.menu-group-title.collapsed+.group-items{max-height:0;overflow:hidden;opacity:0}
+.group-items{max-height:600px;transition:all var(--transition)}
+.page-title{font-size:1.15rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.page-title small{font-weight:400;color:var(--text-muted);font-size:12px}
+.breadcrumb{font-size:11px;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.breadcrumb a{color:var(--info);text-decoration:none}.breadcrumb a:hover{text-decoration:underline}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:var(--card-bg);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border);transition:all var(--transition);position:relative;overflow:hidden}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;opacity:0;transition:opacity var(--transition)}
+.stat-card:hover::before{opacity:1}
+.stat-card.accent-primary::before{background:var(--info)}.stat-card.accent-danger::before{background:var(--danger)}.stat-card.accent-success::before{background:var(--success)}.stat-card.accent-warning::before{background:var(--warning)}.stat-card.accent-purple::before{background:var(--purple)}
+.stat-title{font-size:11px;letter-spacing:.8px;font-weight:600;color:var(--text-light);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.stat-value{font-size:1.8rem;font-weight:800;color:var(--text);line-height:1.15;font-variant-numeric:tabular-nums}
+.filter-bar{background:var(--card-bg);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.filter-group{display:flex;flex-direction:column;gap:4px}
+.filter-group label{font-size:10px;font-weight:600;color:var(--text-light);letter-spacing:.5px}
+.filter-group input,.filter-group select{padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;transition:all .15s}
+.filter-group input:focus,.filter-group select:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.btn{padding:7px 16px;border-radius:8px;font-weight:500;font-size:12px;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:var(--card-bg);color:var(--text);white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-family:inherit;text-decoration:none}
+.btn:hover{background:var(--bg);border-color:#cbd5e1}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light);border-color:var(--primary-light)}
+.btn-success{background:var(--success);border-color:var(--success);color:#fff}
+.btn-danger{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn-danger:hover{background:#991b1b;border-color:#991b1b}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--text)}
+.btn-outline:hover{background:var(--bg)}
+.btn-xs{padding:3px 8px;font-size:10px;border-radius:6px}
+.btn-sm{padding:5px 12px;font-size:11px;border-radius:6px}
+.btn-group{display:flex;gap:7px;align-items:center;margin-left:auto}
+.table-wrapper{background:var(--card-bg);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border)}
+.table-wrapper .table-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);background:#fafbfc}
+.dark .table-wrapper .table-header{background:var(--card-bg)}
+.table-header .title{font-weight:600;font-size:13px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;min-width:650px}
+.data-table th{padding:10px 12px;text-align:left;font-weight:600;background:#f8fafc;border-bottom:2px solid var(--border);white-space:nowrap;color:var(--text-light);font-size:11px;letter-spacing:.3px}
+.dark .data-table th{background:var(--sidebar-active)}
+.data-table td{padding:9px 12px;border-bottom:1px solid rgba(0,0,0,.04)}.dark .data-table td{border-color:rgba(255,255,255,.04)}
+.data-table tbody tr{transition:background .12s}.data-table tbody tr:hover{background:rgba(59,130,246,.04)}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:600;letter-spacing:.2px}
+.tag-success{background:rgba(16,185,129,.1);color:var(--success)}
+.tag-danger{background:rgba(185,28,28,.08);color:var(--danger)}
+.tag-info{background:rgba(59,130,246,.1);color:var(--info)}
+.tag-warning{background:rgba(245,158,11,.1);color:var(--warning)}
+.tag-red{background:rgba(239,68,68,.12);color:var(--red)}
+.tag-yellow{background:rgba(234,179,8,.12);color:var(--yellow)}
+.tag-green{background:rgba(34,197,94,.12);color:var(--green)}
+.tag-blue{background:rgba(59,130,246,.12);color:var(--blue)}
+.tag-purple{background:rgba(168,85,247,.12);color:var(--purple)}
+.pagination-area{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid var(--border);background:var(--card-bg);font-size:12px}
+.page-info{color:var(--text-light)}
+.page-btn{width:28px;height:28px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit;transition:all .12s}
+.page-btn:hover{background:var(--bg);border-color:var(--info)}
+.page-btn.active{background:var(--info);border-color:var(--info);color:#fff}
+#toastContainer{position:fixed;top:12px;right:12px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;pointer-events:none}
+.toast{display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,.15);animation:slideUp .25s ease;margin-bottom:8px;pointer-events:auto;background:var(--card-bg);border:1px solid var(--border);color:var(--text)}
+.toast.success i{color:var(--success)}.toast.error i{color:var(--danger)}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-10px)}}
+.toast.fadeout{animation:fadeOut .3s ease forwards}
+/* Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999;align-items:flex-start;justify-content:center;backdrop-filter:blur(2px);padding:20px 0;overflow-y:auto}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card-bg);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.2);width:960px;max-width:94vw;margin:auto;display:flex;flex-direction:column;max-height:90vh;animation:slideUp .25s ease}
+.modal-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px;flex-shrink:0;background:var(--card-bg);z-index:2;border-radius:var(--radius) var(--radius) 0 0}
+.modal-close{width:28px;height:28px;border:none;background:none;cursor:pointer;font-size:18px;color:var(--text-muted);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--bg);color:var(--text)}
+.modal-body{padding:20px;overflow-y:auto;flex:1}
+.modal-footer{flex-shrink:0;padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--card-bg);border-radius:0 0 var(--radius) var(--radius)}
+/* Form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid .full-width{grid-column:1 / -1}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11px;font-weight:600;color:var(--text-light);letter-spacing:.3px}
+.form-group input,.form-group select{padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;transition:all .15s}
+.form-group input:focus,.form-group select:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.form-group textarea{padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;transition:all .15s;min-height:60px;resize:vertical}
+.form-group textarea:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+/* Strategy radio */
+.strategy-group{display:flex;gap:16px;padding:4px 0}
+.strategy-group label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:400;cursor:pointer;color:var(--text)}
+.strategy-group input[type=radio]{accent-color:var(--info)}
+/* Single indicator table */
+.single-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.single-table th{padding:8px 10px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);font-size:11px;color:var(--text-light);background:#f8fafc}
+.dark .single-table th{background:var(--sidebar-active)}
+.single-table td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.single-table select,.single-table input{padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;width:100%}
+.single-table select:focus,.single-table input:focus{border-color:var(--info)}
+/* Rule block */
+.rule-blocks-section{margin-top:16px}
+.rule-blocks-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.rule-blocks-header h3{font-size:13px;font-weight:600;color:var(--text)}
+.rule-block{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow);transition:box-shadow .2s}
+.rule-block:hover{box-shadow:var(--shadow-hover)}
+.rule-block-header{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:#fafbfc;flex-wrap:wrap}
+.dark .rule-block-header{background:var(--sidebar-active)}
+.rule-block-header .drag-handle{cursor:grab;color:var(--text-muted);font-size:14px}
+.rule-block-header .block-label{font-weight:600;font-size:12px;color:var(--text);min-width:38px}
+.rule-block-header .block-name-input{border:1px solid var(--border);border-radius:4px;padding:3px 6px;font-size:11px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;width:80px}
+.rule-block-header .block-name-input:focus{border-color:var(--info)}
+.rule-block-body{padding:14px}
+.rule-section-title{font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:8px;letter-spacing:.5px}
+.rule-section-title .fa{font-size:10px;margin-right:4px}
+/* Formula editor */
+.formula-editor{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;font-family:'Consolas','Courier New',monospace;min-height:38px;transition:all .15s;white-space:pre-wrap;word-break:break-word}
+.formula-editor:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.formula-editor[contenteditable="true"]:empty:before{content:attr(placeholder);color:var(--text-muted);pointer-events:none;font-family:var(--font)}
+.formula-tag{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;background:rgba(59,130,246,.1);color:var(--info);border-radius:3px;font-size:11px;font-weight:600;font-family:monospace;margin:1px}
+.formula-hint{font-size:10px;color:var(--text-muted);margin-top:4px}
+.formula-hint code{background:var(--bg);padding:1px 5px;border-radius:3px;font-size:10px;font-family:monospace}
+/* Action checkboxes */
+.action-checkbox{display:flex;align-items:center;gap:8px;padding:5px 0}
+.action-checkbox input[type=checkbox]{accent-color:var(--info);cursor:pointer}
+.action-checkbox label{font-size:12px;cursor:pointer;user-select:none;font-weight:400;color:var(--text)}
+.action-checkbox .action-param{padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;margin-left:4px;width:130px}
+.action-checkbox .action-param:focus{border-color:var(--info)}
+/* Level color indicators */
+.level-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+.level-dot.red{background:var(--red)}.level-dot.yellow{background:var(--yellow)}.level-dot.green{background:var(--green)}.level-dot.blue{background:var(--blue)}.level-dot.purple{background:var(--purple)}
+/* Indicator chip */
+	.indicator-chip{display:inline-flex;align-items:center;gap:2px;padding:1px 6px 1px 8px;background:rgba(59,130,246,.1);color:var(--info);border-radius:4px;font-size:12px;font-weight:600;font-family:monospace;margin:0 1px;cursor:default;user-select:all;-webkit-user-select:all;border:1px solid rgba(59,130,246,.15);white-space:nowrap}
+	.indicator-chip .chip-remove{cursor:pointer;margin-left:4px;font-size:13px;line-height:1;opacity:.5;display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;transition:all .12s;color:var(--info);font-weight:700}
+	.indicator-chip .chip-remove:hover{opacity:1;background:rgba(59,130,246,.15);color:var(--info)}
+	/* Indicator $ dropdown */
+.indicator-dropdown{position:fixed;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-height:240px;overflow-y:auto;z-index:9999}
+.indicator-dropdown .dd-search{position:sticky;top:0;background:var(--card-bg);z-index:1;border-radius:8px 8px 0 0}
+.indicator-dropdown .dd-group{padding:4px 10px;font-size:10px;font-weight:600;color:var(--text-muted);background:var(--bg);border-bottom:1px solid var(--border);letter-spacing:.5px}
+.dark .indicator-dropdown .dd-group{background:var(--sidebar-active)}
+.indicator-dropdown .dd-item{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;cursor:pointer;font-size:11px;transition:background .1s;border-bottom:1px solid rgba(0,0,0,.03)}
+.indicator-dropdown .dd-item:hover{background:rgba(59,130,246,.06)}
+.indicator-dropdown .dd-item .dd-name{font-weight:500;color:var(--text)}
+.indicator-dropdown .dd-item .dd-meta{font-size:10px;color:var(--text-muted);margin-left:4px}
+.indicator-dropdown .dd-item .dd-unit{font-size:10px;color:var(--text-muted);font-weight:500}
+/* SQL preview */
+.sql-preview{margin-top:16px}
+.sql-preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sql-preview-header h3{font-size:13px;font-weight:600;color:var(--text)}
+.sql-preview-box{background:#1e293b;color:#e2e8f0;border-radius:8px;padding:14px;font-family:'Consolas','Courier New',monospace;font-size:11px;line-height:1.6;overflow-x:auto;white-space:pre;min-height:100px;border:1px solid var(--border)}
+.sql-keyword{color:#93c5fd}.sql-comment{color:#6b7280;font-style:italic}.sql-string{color:#86efac}.sql-func{color:#c4b5fd}
+/* Model type switch */
+.model-type-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.model-type-badge.single{background:rgba(59,130,246,.1);color:var(--info)}
+.model-type-badge.multi{background:rgba(168,85,247,.1);color:var(--purple)}
+/* Responsive */
+@media(max-width:768px){.sidebar{width:52px}.sidebar .menu-item span:not(.fa){display:none}.sidebar .menu-group-title,.sidebar-search{display:none}.main{padding:10px}.stats-grid{grid-template-columns:repeat(2,1fr)}.stat-value{font-size:1.3rem}.form-grid{grid-template-columns:1fr}.modal{width:100vw;max-height:100vh;border-radius:0}.modal-footer{flex-direction:column}}
+</style></head>
+<body>
+<div class="header"><h1><i class="fas fa-shield-halved"></i> 金控并表系统</h1><span class="sub">v1.0</span>
+<button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+<div class="live-badge"><span class="dot"></span>实时 <span id="clock">--</span></div>
+<div class="user"><span>系统管理员</span><div class="avatar">管</div></div></div>
+<div class="layout"><div class="sidebar" id="sidebar"><div class="sidebar-search"><i class="fas fa-search"></i><input type="text" placeholder="搜索菜单..." oninput="filterMenu(this.value)"></div><div class="menu"><a class="menu-item" href="index.html"><i class="fas fa-home" style="width:16px"></i> 首页</a><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-gauge-high"></i> 门户与工作台<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="dashboard.html"><i class="fas fa-chart-pie" style="width:16px"></i> 驾驶舱</a><a class="menu-item" href="workbench.html"><i class="fas fa-list-check" style="width:16px"></i> 工作台</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-table"></i> 指标管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="pref-indicator.html"><i class="fas fa-table" style="width:16px"></i> 指标信息</a><a class="menu-item" href="indicator-query.html"><i class="fas fa-search" style="width:16px"></i> 指标数据查询</a></div><div class="menu-group-title" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bullseye"></i> 风险管理偏好及目标<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="pref-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 偏好方案管理</a><a class="menu-item" href="pref-target.html"><i class="fas fa-bullseye" style="width:16px"></i> 偏好指标查询</a></div><div class="menu-group-title" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-line"></i> 风险限额管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="limit-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 限额方案管理</a><a class="menu-item" href="limit-target.html"><i class="fas fa-sliders" style="width:16px"></i> 限额指标查询</a><a class="menu-item active" href="limit-warning-model.html"><i class="fas fa-diagram-project" style="width:16px"></i> 限额预警模型</a><a class="menu-item" href="limit-check.html"><i class="fas fa-magnifying-glass" style="width:16px"></i> 限额预警回检</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bell"></i> 风险提示与处置<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="alert-prompt.html"><i class="fas fa-exclamation-triangle" style="width:16px"></i> 风险预警列表</a><a class="menu-item" href="alert-ledger.html"><i class="fas fa-book" style="width:16px"></i> 函件台账管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-file-alt"></i> 风险管理报告<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-event.html"><i class="fas fa-bolt" style="width:16px"></i> 重大风险事件报告</a><a class="menu-item" href="periodic-report.html"><i class="fas fa-calendar" style="width:16px"></i> 定期报告</a><a class="menu-item" href="report-template.html"><i class="fas fa-copy" style="width:16px"></i> 报告模板管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-bar"></i> 数据分析与看板<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-board.html"><i class="fas fa-triangle-exclamation" style="width:16px"></i> 风险看板</a><a class="menu-item" href="capital-board.html"><i class="fas fa-sack-dollar" style="width:16px"></i> 资本看板</a><a class="menu-item" href="theme-board.html"><i class="fas fa-chart-line" style="width:16px"></i> 专题分析看板</a><a class="menu-item" href="report-mgr.html"><i class="fas fa-file-excel" style="width:16px"></i> 报表管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-robot"></i> AI应用<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="ai-fill.html"><i class="fas fa-pen" style="width:16px"></i> AI辅助填报</a><a class="menu-item" href="ai-qa.html"><i class="fas fa-comments" style="width:16px"></i> AI智能问数</a><a class="menu-item" href="ai-collect.html"><i class="fas fa-satellite-dish" style="width:16px"></i> AI风险舆情预警</a><a class="menu-item" href="ai-report.html"><i class="fas fa-file-pen" style="width:16px"></i> AI风险报告生成</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-arrows-rotate"></i> 业务流程管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="process-def.html"><i class="fas fa-gear" style="width:16px"></i> 流程定义与配置</a><a class="menu-item" href="process-monitor.html"><i class="fas fa-eye" style="width:16px"></i> 流程监控</a><a class="menu-item" href="process-archive.html"><i class="fas fa-box-archive" style="width:16px"></i> 流程归档与查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-screwdriver-wrench"></i> 基础与系统管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="base-info.html"><i class="fas fa-database" style="width:16px"></i> 基础信息管理</a><a class="menu-item" href="user-auth.html"><i class="fas fa-users" style="width:16px"></i> 用户与权限管理</a><a class="menu-item" href="data-std.html"><i class="fas fa-ruler" style="width:16px"></i> 数据标准管理</a><a class="menu-item" href="log-mgr.html"><i class="fas fa-clock-rotate-left" style="width:16px"></i> 操作日志管理</a><a class="menu-item" href="param-config.html"><i class="fas fa-gears" style="width:16px"></i> 参数配置</a></div></div></div><div class="main">
+<div class="breadcrumb"><a href="index.html">首页</a> / 限额预警模型</div>
+<div class="page-title"><i class="fas fa-diagram-project" style="color:var(--info)"></i> 限额预警模型 <small>| 预警规则配置与管理</small></div>
+
+<div class="stats-grid">
+<div class="stat-card accent-primary"><div class="stat-title">模型总数</div><div class="stat-value">4</div></div>
+<div class="stat-card accent-success"><div class="stat-title">已启用</div><div class="stat-value">3</div></div>
+<div class="stat-card accent-warning"><div class="stat-title">草稿</div><div class="stat-value">1</div></div>
+<div class="stat-card accent-danger"><div class="stat-title">今日触发</div><div class="stat-value">23</div></div>
+</div>
+
+<div class="filter-bar">
+<div class="filter-group" style="min-width:140px"><label>模型名称</label><input placeholder="请输入" style="width:140px"></div>
+<div class="filter-group" style="min-width:100px"><label>状态</label><select style="width:100px"><option>全部</option><option>已启用</option><option>已停用</option><option>草稿</option></select></div>
+<div class="filter-group" style="min-width:120px"><label>适用范围</label><select style="width:120px"><option>全部</option><option>集团总部</option><option>国泰海通</option><option>AMC子公司</option></select></div>
+<div class="filter-group" style="min-width:100px"><label>模型类型</label><select style="width:100px"><option>全部</option><option>单指标</option><option>多指标</option></select></div>
+<button class="btn btn-primary btn-xs" onclick="showToast('查询完成')">查询</button>
+<button class="btn btn-xs" onclick="showToast('已重置')">重置</button>
+<button class="btn btn-success btn-xs" style="margin-left:auto" onclick="openEditor()"><i class="fas fa-plus"></i> 新增模型</button>
+</div>
+
+<div class="table-wrapper"><div class="table-header"><span class="title"><i class="fas fa-table"></i> 预警模型列表</span></div>
+<table class="data-table"><thead><tr><th>模型名称</th><th>适用范围</th><th>模型类型</th><th>规则块数</th><th>生效策略</th><th>版本</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead><tbody>
+<tr><td><span style="font-weight:600;font-size:12px">融资业务综合预警模型</span></td><td>国泰海通</td><td><span class="model-type-badge multi">多指标</span></td><td>3</td><td><span style="font-size:10px;color:var(--text-muted)">按优先级触发</span></td><td>V2.0</td><td><span class="tag tag-success">已启用</span></td><td>2026-09-07 10:30</td><td><button class="btn btn-xs" onclick="viewModel()">查看</button><button class="btn btn-xs" onclick="openEditor()">编辑</button></td></tr>
+<tr><td><span style="font-weight:600;font-size:12px">流动性风险预警模型</span></td><td>集团总部</td><td><span class="model-type-badge single">单指标</span></td><td>-</td><td><span style="font-size:10px;color:var(--text-muted)">全部触发</span></td><td>V1.0</td><td><span class="tag tag-success">已启用</span></td><td>2026-09-06 14:20</td><td><button class="btn btn-xs" onclick="viewModel()">查看</button><button class="btn btn-xs" onclick="openEditor()">编辑</button></td></tr>
+<tr><td><span style="font-weight:600;font-size:12px">信用风险集中度预警</span></td><td>AMC子公司</td><td><span class="model-type-badge multi">多指标</span></td><td>2</td><td><span style="font-size:10px;color:var(--text-muted)">按优先级触发</span></td><td>V1.0</td><td><span class="tag tag-success">已启用</span></td><td>2026-09-05 09:15</td><td><button class="btn btn-xs" onclick="viewModel()">查看</button><button class="btn btn-xs" onclick="openEditor()">编辑</button></td></tr>
+<tr><td><span style="font-weight:600;font-size:12px">市场风险波动预警（新建中）</span></td><td>证券子公司</td><td><span class="model-type-badge single">单指标</span></td><td>-</td><td><span style="font-size:10px;color:var(--text-muted)">按优先级触发</span></td><td>V0.1</td><td><span class="tag tag-warning">草稿</span></td><td>2026-09-04 16:00</td><td><button class="btn btn-xs" onclick="openEditor()">编辑</button><button class="btn btn-xs" onclick="if(confirm('确认删除此模型？'))showToast('已删除','error')" style="color:var(--danger)">删除</button></td></tr>
+</tbody></table><div class="pagination-area"><span class="page-info">共 <b>4</b> 条</span><div><button class="page-btn active">1</button></div></div></div>
+
+</div></div>
+<div id="toastContainer"></div>
+
+<script>
+function u(){document.getElementById('clock').textContent=new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});};u();setInterval(u,1000);
+function toggleTheme(){document.body.classList.toggle('dark');var i=document.getElementById('themeIcon');if(i)i.className=document.body.classList.contains('dark')?'fas fa-sun':'fas fa-moon';localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');}
+if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');var ti=document.getElementById('themeIcon');if(ti)ti.className='fas fa-sun';}
+function filterMenu(q){q=q.toLowerCase();document.querySelectorAll('.menu-item').forEach(function(m){var t=m.textContent.toLowerCase();m.style.display=q&&!t.includes(q)?'none':'flex';});}
+function showToast(msg,type){var c=document.getElementById('toastContainer');if(!c)return;var t=document.createElement('div');t.className='toast '+(type||'success');t.innerHTML='<i class="fas fa-'+(type==='error'?'times-circle':'check-circle')+'"></i> '+msg;c.appendChild(t);setTimeout(function(){t.classList.add('fadeout');setTimeout(function(){t.remove();},300);},2500);}
+
+function closeModal(){var o=document.getElementById('modalOverlay');if(o)o.classList.remove('show');}
+
+// ==================== Editor Builder ====================
+
+function buildEditorHtml(isView){
+  var disabled = isView ? ' disabled style="background:var(--bg);cursor:default"' : '';
+  var readonly = isView ? ' readonly style="background:var(--bg);cursor:default"' : '';
+  var modelType = 'multi'; // default to multi-index
+  return ''+
+    // Top bar: back + title
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">'+
+      '<button class="btn btn-xs btn-outline" onclick="closeModal()"><i class="fas fa-arrow-left"></i> 返回列表</button>'+
+      '<span style="font-size:14px;font-weight:600;color:var(--text)">'+(isView?'查看':'编辑')+'限额预警模型</span>'+
+    '</div>'+
+    // Model basic info card
+    '<div class="form-grid" style="margin-bottom:16px;padding:14px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">'+
+      '<div class="form-group full-width"><label style="color:var(--text);font-size:12px;font-weight:600"><i class="fas fa-info-circle" style="color:var(--info)"></i> 模型基本信息</label></div>'+
+      '<div class="form-group full-width"><label>模型名称 <span style="color:var(--danger)">*</span></label><input value="融资业务综合预警模型"'+disabled+' placeholder="请输入模型名称"></div>'+
+      '<div class="form-group"><label>适用范围 <span style="color:var(--danger)">*</span></label><select'+disabled+'><option selected>国泰海通</option><option>集团总部</option><option>AMC子公司</option><option>证券子公司</option></select></div>'+
+      '<div class="form-group"><label>版本</label><input value="V2.0"'+disabled+'></div>'+
+      '<div class="form-group"><label>模型类型 <span style="color:var(--danger)">*</span></label><select id="modelTypeSelect" onchange="onModelTypeChange(this)"'+(isView?' disabled':'')+'><option value="single">简单规则</option><option value="multi" selected>复杂规则</option></select></div>'+
+      '<div class="form-group"><label>生效策略</label><select'+(isView?' disabled':'')+'><option selected>按优先级触发（命中最高级即停止）</option><option>全部触发（可重叠）</option></select></div>'+
+      '<div class="form-group full-width"><label>模型描述</label><textarea placeholder="请描述模型用途和适用场景"'+disabled+'>针对国泰海通融资业务的多级风险阈值配置，覆盖融资集中度、资产负债率、短期债务占比等核心指标。</textarea></div>'+
+    '</div>'+
+    // Dynamic rules area (placeholder)
+    '<div id="rulesArea">'+
+      buildMultiIndicatorHtml(isView)+
+    '</div>'+
+    '';
+}
+
+function onModelTypeChange(sel){
+  var area = document.getElementById('rulesArea');
+  if(!area) return;
+  if(sel.value === 'single'){
+    area.innerHTML = buildSingleIndicatorHtml(false);
+  } else {
+    area.innerHTML = buildMultiIndicatorHtml(false);
+  }
+}
+
+// ==================== Single Indicator Mode ====================
+
+function buildSingleIndicatorHtml(isView){
+  var disabled = isView ? ' disabled ' : '';
+  return '<div style="margin-top:8px">'+
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'+
+      '<span class="model-type-badge single"><i class="fas fa-signal"></i> 单指标模式</span>'+
+      '<span style="font-size:12px;color:var(--text-muted)">指标名称：</span>'+
+      '<select'+(isView?' disabled':'')+' style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;width:180px"><option selected>资本充足率</option><option>杠杆率</option><option>不良贷款率</option><option>拨备覆盖率</option></select>'+
+    '</div>'+
+    '<div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">'+
+      '<table class="single-table">'+
+        '<thead><tr><th style="width:36px">#</th><th>预警信号</th><th style="width:90px">操作符</th><th style="width:100px">阈值</th><th style="width:70px">单位</th><th style="width:50px">操作</th></tr></thead>'+
+        '<tbody id="singleTableBody">'+
+          '<tr><td style="text-align:center">1</td>'+
+            '<td><select'+disabled+' style="width:100%"><option selected>红灯</option><option>黄灯</option><option>绿灯</option><option>蓝灯</option></select></td>'+
+            '<td><select'+disabled+' style="width:100%"><option selected>&gt;</option><option>&gt;=</option><option>&lt;</option><option>&lt;=</option><option>=</option></select></td>'+
+            '<td><input type="number" value="0.25" step="0.01"'+(isView?' readonly':'')+' style="width:100%"></td>'+
+            '<td><select'+disabled+' style="width:100%"><option selected>%</option><option>元</option><option>倍</option></select></td>'+
+            '<td style="text-align:center">'+(!isView?'<button class="btn btn-xs" style="color:var(--danger);border:none;padding:2px" onclick="delSingleRow(this)"><i class="fas fa-times"></i></button>':'')+'</td></tr>'+
+          '<tr><td style="text-align:center">2</td>'+
+            '<td><select'+disabled+' style="width:100%"><option>红灯</option><option selected>黄灯</option><option>绿灯</option><option>蓝灯</option></select></td>'+
+            '<td><select'+disabled+' style="width:100%"><option selected>&gt;</option><option>&gt;=</option><option>&lt;</option><option>&lt;=</option><option>=</option></select></td>'+
+            '<td><input type="number" value="0.15" step="0.01"'+(isView?' readonly':'')+' style="width:100%"></td>'+
+            '<td><select'+disabled+' style="width:100%"><option selected>%</option><option>元</option><option>倍</option></select></td>'+
+            '<td style="text-align:center">'+(!isView?'<button class="btn btn-xs" style="color:var(--danger);border:none;padding:2px" onclick="delSingleRow(this)"><i class="fas fa-times"></i></button>':'')+'</td></tr>'+
+        '</tbody>'+
+      '</table>'+
+      (!isView ? '<div style="padding:8px 10px;border-top:1px solid var(--border);background:var(--bg)"><button class="btn btn-xs" onclick="addSingleRow()"><i class="fas fa-plus"></i> 新增一行</button></div>' : '')+
+    '</div>'+
+  '</div>';
+}
+
+function addSingleRow(){
+  var tbody = document.getElementById('singleTableBody');
+  if(!tbody) return;
+  var num = tbody.children.length + 1;
+  var row = document.createElement('tr');
+  row.innerHTML = '<td style="text-align:center">'+num+'</td>'+
+    '<td><select style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;background:var(--card-bg);color:var(--text);outline:none"><option>红灯</option><option>黄灯</option><option>绿灯</option><option>蓝灯</option></select></td>'+
+    '<td><select style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;background:var(--card-bg);color:var(--text);outline:none"><option>&gt;</option><option>&gt;=</option><option>&lt;</option><option>&lt;=</option><option>=</option></select></td>'+
+    '<td><input type="number" value="0" step="0.01" style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;background:var(--card-bg);color:var(--text);outline:none"></td>'+
+    '<td><select style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;background:var(--card-bg);color:var(--text);outline:none"><option selected>%</option><option>元</option><option>倍</option></select></td>'+
+    '<td style="text-align:center"><button class="btn btn-xs" style="color:var(--danger);border:none;padding:2px" onclick="delSingleRow(this)"><i class="fas fa-times"></i></button></td>';
+  tbody.appendChild(row);
+  updateSingleNumbers();
+}
+
+function delSingleRow(btn){
+  if(confirm('确认删除此行？')){
+    btn.closest('tr').remove();
+    updateSingleNumbers();
+  }
+}
+
+function updateSingleNumbers(){
+  var tbody = document.getElementById('singleTableBody');
+  if(!tbody) return;
+  var rows = tbody.querySelectorAll('tr');
+  rows.forEach(function(r, i){
+    var td = r.querySelector('td:first-child');
+    if(td) td.textContent = i + 1;
+  });
+}
+
+// ==================== Multi-Indicator Mode ====================
+
+function buildMultiIndicatorHtml(isView){
+  return '<div class="rule-blocks-section">'+
+    '<div class="rule-blocks-header">'+
+      '<h3><i class="fas fa-layer-group" style="color:var(--info)"></i> 预警规则块列表</h3>'+
+      (!isView ? '<button class="btn btn-sm btn-primary" onclick="addRuleBlock()"><i class="fas fa-plus"></i> 新增预警级别规则块</button>' : '')+
+    '</div>'+
+    '<div id="ruleBlocksContainer">'+
+      buildBlockHtml(1, '红灯', 'red', 100, true, '融资集中度 > 80 AND 资产负债率 > 65 AND 短期债务占比 > 20', ['push','email','freeze'], isView)+
+      buildBlockHtml(2, '黄灯', 'yellow', 50, true, '融资集中度 > 65 AND 资产负债率 > 55', ['push','email'], isView)+
+      buildBlockHtml(3, '绿灯', 'green', 10, true, '融资集中度 < 50', ['log','dashboard'], isView)+
+    '</div>'+
+  '</div>';
+}
+
+function buildBlockHtml(num, name, color, priority, enabled, formula, actions, isView){
+  var disabled = isView ? ' disabled ' : '';
+  var colorOptions = '<option value="red"'+(color==='red'?' selected':'')+'>🔴 红灯</option><option value="yellow"'+(color==='yellow'?' selected':'')+'>🟡 黄灯</option><option value="green"'+(color==='green'?' selected':'')+'>🟢 绿灯</option><option value="blue"'+(color==='blue'?' selected':'')+'>🔵 蓝灯</option><option value="purple"'+(color==='purple'?' selected':'')+'>🟣 紫灯</option>';
+  var actionDefs = [
+    {key:'push', label:'推送代办消息', param:''},
+    {key:'email', label:'发送邮件通知', param:''},
+    {key:'freeze', label:'自动发函', param:''},
+    {key:'external', label:'推送外部系统', param:''},
+    {key:'log', label:'记录日志', param:''},
+    {key:'dashboard', label:'更新仪表盘', param:''}
+  ];
+  var actionHtml = '';
+  actionDefs.forEach(function(a){
+    var checked = actions.indexOf(a.key) >= 0;
+    actionHtml += '<div class="action-checkbox">'+
+      '<input type="checkbox"'+(checked?' checked':'')+(isView?' disabled':'')+'>'+
+      '<label>'+a.label+'</label>'+
+      (a.param ? '<input class="action-param" value="'+a.param+'"'+(isView?' readonly':'')+'>' : '')+
+    '</div>';
+  });
+  return '<div class="rule-block" style="border-left:4px solid var(--'+color+')" data-block-index="'+num+'">'+
+    '<div class="rule-block-header">'+
+      '<span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>'+
+      '<span class="block-label">块 #'+num+'</span>'+
+      '<select class="block-name-input" style="width:80px"'+disabled+'>'+colorOptions+'</select>'+
+      '<span style="font-size:11px;color:var(--text-muted);margin-left:4px">优先级权重：</span>'+
+      '<input type="number" value="'+priority+'"'+(isView?' readonly':'')+' style="width:55px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;background:var(--card-bg);color:var(--text)">'+
+      '<span style="font-size:11px;color:var(--text-muted);margin-left:4px">启用：</span>'+
+      '<input type="checkbox"'+(enabled?' checked':'')+(isView?' disabled':'')+' style="accent-color:var(--success);cursor:pointer">'+
+      (!isView ? '<div style="margin-left:auto;display:flex;gap:4px"><button class="btn btn-xs" style="color:var(--danger);border:none" onclick="if(confirm(\'确认删除此规则块？\'))this.closest(\'.rule-block\').remove();updateBlockNumbers()"><i class="fas fa-trash-can"></i> 删除</button></div>' : '')+
+    '</div>'+
+    '<div class="rule-block-body">'+
+      '<div class="rule-section-title"><i class="fas fa-code-branch"></i> 触发条件（IF）</div>'+
+      '<div style="position:relative">'+
+      '<div class="formula-editor" contenteditable="'+(isView?'false':'true')+'" placeholder="输入条件公式，如：资产负债率 > 0.1，使用 $ 引用变量" onkeydown="onFormulaKeydown(event, this)" id="formula_'+num+'">'+parseFormulaToHtml(formula)+'</div>'+
+      '<div class="indicator-dropdown" id="dropdown_'+num+'" style="display:none"></div>'+
+      '</div>'+
+      '<div class="formula-hint">💡 输入 <code>$</code> 可弹出指标列表选择，支持模糊搜索</div>'+
+      '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">'+
+        '<div class="rule-section-title"><i class="fas fa-bolt" style="color:var(--warning)"></i> 执行动作（THEN）</div>'+
+        '<div class="action-rows">'+actionHtml+'</div>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+function addRuleBlock(){
+  var container = document.getElementById('ruleBlocksContainer');
+  if(!container) return;
+  var blocks = container.querySelectorAll('.rule-block');
+  var num = blocks.length + 1;
+  var html = buildBlockHtml(num, '蓝灯', 'blue', 10, true, '', ['log'], false);
+  container.insertAdjacentHTML('beforeend', html);
+  showToast('已添加块 #'+num);
+  updateBlockNumbers();
+}
+
+function updateBlockNumbers(){
+  var blocks = document.querySelectorAll('#ruleBlocksContainer .rule-block');
+  blocks.forEach(function(b, i){
+    var label = b.querySelector('.block-label');
+    if(label) label.textContent = '块 #'+(i+1);
+  });
+}
+
+// ==================== SQL Copy ====================
+
+function copySql(btn){
+  var code = document.querySelector('.sql-preview-box');
+  if(!code) return;
+  var text = code.textContent;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(function(){showToast('SQL 已复制');});
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    showToast('SQL 已复制');
+  }
+}
+
+// ==================== Indicator $ Trigger ====================
+
+// Indicator list from pref-indicator.html
+var indicatorList = [
+  {code: 'RPI-001', name: '异常资产占比', unit: '%', category: '偏好指标'},
+  {code: 'RPI-002', name: '关注资产占比', unit: '%', category: '偏好指标'},
+  {code: 'RPI-003', name: '单一客户集中度', unit: '%', category: '限额指标'},
+  {code: 'RPI-004', name: '流动性覆盖率', unit: '%', category: '限额指标'},
+  {code: 'RPI-005', name: '资本充足率', unit: '%', category: '偏好指标'},
+  {code: 'RPI-006', name: '杠杆率', unit: '%', category: '偏好指标'},
+  {code: 'RPI-007', name: '不良贷款率', unit: '%', category: '限额指标'},
+  {code: 'RPI-008', name: '拨备覆盖率', unit: '%', category: '限额指标'},
+  {code: 'RPI-009', name: '融资集中度', unit: '%', category: '限额指标'},
+  {code: 'RPI-010', name: '资产负债率', unit: '%', category: '限额指标'},
+  {code: 'RPI-011', name: '短期债务占比', unit: '%', category: '限额指标'},
+  {code: 'RPI-012', name: '流动比率', unit: '倍', category: '限额指标'},
+  {code: 'RPI-013', name: '单一客户融资余额', unit: '元', category: '限额指标'},
+  {code: 'RPI-014', name: '担保比率', unit: '%', category: '限额指标'}
+];
+
+function onFormulaKeydown(e, editor){
+  // Detect $ key press, prevent insertion and show dropdown
+  if(e.key === '$'){
+    e.preventDefault();
+    showIndicatorDropdown(editor);
+  }
+}
+
+function showIndicatorDropdown(ta){
+  var dropdown = document.getElementById(ta.id.replace('formula_', 'dropdown_'));
+  if(!dropdown) return;
+  // Build dropdown content
+  dropdown.innerHTML = ''+
+    '<div class="dd-search" style="padding:6px 8px;border-bottom:1px solid var(--border)">'+
+    '<input type="text" placeholder="搜索指标名称..." oninput="filterIndicatorDropdown(this, \''+ta.id+'\')" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:11px;outline:none;font-family:inherit;background:var(--card-bg);color:var(--text)">'+
+    '</div>';
+  var groups = {};
+  indicatorList.forEach(function(item){
+    if(!groups[item.category]) groups[item.category] = [];
+    groups[item.category].push(item);
+  });
+  Object.keys(groups).forEach(function(cat){
+    dropdown.innerHTML += '<div class="dd-group" style="padding:4px 8px;font-size:10px;font-weight:600;color:var(--text-muted);background:var(--bg)">'+cat+'</div>';
+    groups[cat].forEach(function(item){
+      dropdown.innerHTML += ''+
+        '<div class="dd-item" data-code="'+item.code+'" data-name="'+item.name+'" data-unit="'+item.unit+'" onclick="selectIndicatorItem(this, \''+ta.id+'\')" style="display:flex;align-items:center;justify-content:space-between;padding:5px 10px;cursor:pointer;font-size:11px;transition:background .1s;border-bottom:1px solid rgba(0,0,0,.03)">'+
+        '<span><span class="dd-name" style="font-weight:500;color:var(--text)">'+item.name+'</span> <span class="dd-meta" style="font-size:10px;color:var(--text-muted)">'+item.code+'</span></span>'+
+        '<span class="dd-unit" style="font-size:10px;color:var(--text-muted)">'+item.unit+'</span>'+
+        '</div>';
+    });
+  });
+  // Position the dropdown
+  var rect = ta.getBoundingClientRect();
+  var modalBody = document.getElementById('modalBody');
+  var modalRect = modalBody ? modalBody.getBoundingClientRect() : {top: 0, left: 0};
+  dropdown.style.position = 'fixed';
+  dropdown.style.top = (rect.bottom + 2) + 'px';
+  dropdown.style.left = rect.left + 'px';
+  dropdown.style.width = Math.max(rect.width, 320) + 'px';
+  dropdown.style.display = 'block';
+  dropdown.style.zIndex = '9999';
+  // Close on outside click
+  setTimeout(function(){
+    var handler = function(e){
+      if(!dropdown.contains(e.target) && e.target !== ta){
+        dropdown.style.display = 'none';
+        document.removeEventListener('click', handler);
+      }
+    };
+    document.addEventListener('click', handler);
+  }, 10);
+}
+
+function filterIndicatorDropdown(input, taId){
+  var q = input.value.toLowerCase();
+  var dropdown = document.getElementById('dropdown_' + taId.replace('formula_', ''));
+  if(!dropdown) return;
+  var items = dropdown.querySelectorAll('.dd-item');
+  items.forEach(function(item){
+    var name = item.getAttribute('data-name') || '';
+    var code = item.getAttribute('data-code') || '';
+    var match = name.toLowerCase().indexOf(q) >= 0 || code.toLowerCase().indexOf(q) >= 0;
+    item.style.display = match ? 'flex' : 'none';
+  });
+  // Also filter groups
+  var groups = dropdown.querySelectorAll('.dd-group');
+  groups.forEach(function(g){
+    var next = g.nextElementSibling;
+    var hasVisible = false;
+    while(next && next.classList.contains('dd-item')){
+      if(next.style.display !== 'none') hasVisible = true;
+      next = next.nextElementSibling;
+    }
+    g.style.display = hasVisible ? 'block' : 'none';
+  });
+}
+
+function parseFormulaToHtml(formula){
+  if(!formula) return '';
+  // Sort indicators by name length (descending) for longest match first
+  var sorted = indicatorList.slice().sort(function(a, b){return b.name.length - a.name.length;});
+  var html = formula;
+  sorted.forEach(function(item){
+    var name = item.name;
+    var escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    var regex = new RegExp(escaped, 'g');
+    html = html.replace(regex, '<span class="indicator-chip" contenteditable="false">'+name+'<span class="chip-remove" onclick="this.parentElement.remove()">&times;</span></span>');
+  });
+  return html;
+}
+
+function selectIndicatorItem(el, taId){
+  var name = el.getAttribute('data-name');
+  var editor = document.getElementById(taId);
+  if(!editor) return;
+  // Create indicator chip element
+  var chip = document.createElement('span');
+  chip.className = 'indicator-chip';
+  chip.contentEditable = 'false';
+  chip.innerHTML = name + '<span class="chip-remove" onclick="this.parentElement.remove()">&times;</span>';
+  // Insert at cursor position in contenteditable
+  var sel = window.getSelection();
+  if(sel.rangeCount > 0 && editor.contains(sel.anchorNode)){
+    var range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(chip);
+    // Move cursor after the chip
+    range.setStartAfter(chip);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } else {
+    // Fallback: append to end
+    editor.appendChild(chip);
+  }
+  editor.focus();
+  // Close dropdown
+  var dropdown = document.getElementById(editor.id.replace('formula_', 'dropdown_'));
+  if(dropdown) dropdown.style.display = 'none';
+  showToast('已选择指标：'+name);
+}
+
+// ==================== Modal ====================
+
+function viewModel(){
+  openEditor(true);
+}
+
+function openEditor(isView){
+  var title = isView ? '查看模型' : '编辑模型';
+  var html = buildEditorHtml(isView || false);
+  openModal(title, html);
+}
+
+function openModal(title, html){
+  var o = document.getElementById('modalOverlay');
+  if(!o){
+    o = document.createElement('div');
+    o.className = 'modal-overlay';
+    o.id = 'modalOverlay';
+    o.innerHTML = '<div class="modal"><div class="modal-header"><span id="modalTitle"></span><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modalBody"></div><div class="modal-footer" id="modalFooter"></div></div>';
+    document.body.appendChild(o);
+  }
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = html;
+  // Build footer with action buttons
+  var isView = (title === '查看模型');
+  var footer = document.getElementById('modalFooter');
+  if(!isView){
+    footer.innerHTML = '<button class="btn btn-sm btn-outline" onclick="showToast(\'模拟测试执行完成\')"><i class="fas fa-flask"></i> 模拟测试</button>'+
+      '<button class="btn btn-sm btn-success" onclick="showToast(\'模型保存成功\');closeModal()"><i class="fas fa-save"></i> 保存模型</button>'+
+      '<button class="btn btn-sm" onclick="closeModal()">取消</button>';
+  } else {
+    footer.innerHTML = '<button class="btn btn-sm" onclick="closeModal()">关闭</button>';
+  }
+  o.classList.add('show');
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', function(e){
+  if(e.target.closest('.modal-close') || e.target.closest('#modalOverlay') && !e.target.closest('.modal')){
+    closeModal();
+  }
+});
+</script>
+</body>
+</html>

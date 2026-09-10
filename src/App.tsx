@@ -22,6 +22,7 @@ import { getWorkbenchDataByRole } from './services/workbenchService';
 import { downloadCSV, downloadText } from './utils/download';
 import SmartAssistant from './SmartAssistant';
 import DashboardCockpit from './dashboard/DashboardCockpit';
+import GroupDashboard from './dashboard/GroupDashboard';
 
 export default App;
 
@@ -135,7 +136,8 @@ function WorkflowFeedbackOverview({ definition, instance, role, institution, sel
 function FileUploader({ files, onChange, multiple = true }: { files: Attachment[]; onChange: (files: Attachment[]) => void; multiple?: boolean }) { const onFiles = (e: ChangeEvent<HTMLInputElement>) => { const list = Array.from(e.target.files || []).map(makeAttachment); onChange(multiple ? [...files, ...list] : list.slice(0, 1)); e.target.value = ''; }; const remove = (id: string) => onChange(files.filter(x => x.id !== id)); return <div className="file-uploader"><label className="upload-drop"><input type="file" multiple={multiple} onChange={onFiles} /><span className="upload-icon">⇧</span><b>点击上传或拖拽文件至此</b><small>支持 PDF、Word、Excel、图片等格式</small></label>{files.length > 0 && <div className="file-list">{files.map(file => <div className="file-row" key={file.id}><span>▣ {file.name}</span><small>{formatSize(file.size)} · {file.uploadedAt}</small><div><Button variant="text" onClick={() => downloadText(file.name + '.txt', `文件：${file.name}\n类型：${file.type}\n大小：${formatSize(file.size)}`)}>下载</Button><Button variant="text" onClick={() => remove(file.id)}>删除</Button></div></div>)}</div>}</div>; }
 function EmptyModulePage({ title }: { title: string }) { return <Page title={title} breadcrumb={['其他模块', title]}><div className="empty-state"><div className="empty-icon">▧</div><h2>该模块详细设计见其他需求说明</h2><p>需求书 4.7–4.11 未提供字段及操作规则，当前保留统一菜单入口。</p></div></Page>; }
 const isModalRoute = (path: string) => { const listRoutes = ['/warning/risk-preference', '/warning/rules', '/warning/disposal', '/indicators/maintenance', '/indicators/versions', '/indicators/query', '/indicators/latest-status', '/major-events', '/major-events/definitions', '/reports', '/periodic-reports', '/special-risks/drafts', '/special-risks/manage', '/special-risks/feedback']; return path !== '/dashboard' && path !== '/workbench' && !listRoutes.includes(path) && (path.endsWith('/new') || path.endsWith('/edit') || path.includes('/config') || path.includes('/approve') || path.includes('/submissions') || !!path.match(/^\/(warning|indicators|major-events|reports|periodic-reports|special-risks)\/[^/]+/)); };
-function Page({ title, breadcrumb, children, actions, onClose, inline = false, hidePageTitle = false }: { title: string; breadcrumb: string[]; children: ReactNode; actions?: ReactNode; onClose?: () => void; inline?: boolean; hidePageTitle?: boolean }) { const description = pageDescriptions[title]; const content = <><div className="breadcrumb">集团并表管理系统 <span>›</span> {breadcrumb.join(' › ')}</div>{!hidePageTitle && <div className="page-title"><div className="page-title-copy"><h1>{title}</h1>{description && <p>{description}</p>}</div><div className="page-title-actions">{actions}</div></div>}{children}</>; if (inline || !isModalRoute(window.location.pathname)) return content; return <div className="modal-mask route-modal-mask"><div className="modal route-modal"><div className="route-modal-caption"><b>{title}</b><button aria-label="关闭" title="关闭" onClick={onClose || (() => window.history.back())}>×</button></div><div className="route-modal-body">{content}</div></div></div>; }
+const migratedPageTitles: Record<string, string> = { '风险偏好及目标': '风险偏好方案管理', '风险预警规则管理': '风险限额预警模型', '预警提示与处置': '风险预警处置管理', '指标新增与维护': '监测指标管理', '报表与分析中心': '报表中心', '定期风险报告管理': '定期风险报告' };
+function Page({ title, breadcrumb, children, actions, onClose, inline = false, hidePageTitle = false }: { title: string; breadcrumb: string[]; children: ReactNode; actions?: ReactNode; onClose?: () => void; inline?: boolean; hidePageTitle?: boolean }) { const displayTitle = migratedPageTitles[title] || title; const displayBreadcrumb = breadcrumb.map(item => migratedPageTitles[item] || item); const description = pageDescriptions[title]; const content = <><div className="breadcrumb">集团并表管理系统 <span>›</span> {displayBreadcrumb.join(' › ')}</div>{!hidePageTitle && <div className="page-title"><div className="page-title-copy"><h1>{displayTitle}</h1>{description && <p>{description}</p>}</div><div className="page-title-actions">{actions}</div></div>}{children}</>; if (inline || !isModalRoute(window.location.pathname)) return content; return <div className="modal-mask route-modal-mask"><div className="modal route-modal"><div className="route-modal-caption"><b>{displayTitle}</b><button aria-label="关闭" title="关闭" onClick={onClose || (() => window.history.back())}>×</button></div><div className="route-modal-body">{content}</div></div></div>; }
 function Table({ children }: { children: ReactNode }) { return <div className="table-wrap"><table>{children}</table></div>; }
 function Modal({ title, children, onClose, footer }: { title: string; children: ReactNode; onClose: () => void; footer?: ReactNode }) { return <div className="modal-mask"><div className="modal"><div className="modal-title"><b>{title}</b><button onClick={onClose}>×</button></div><div className="modal-body">{children}</div>{footer && <div className="modal-footer">{footer}</div>}</div></div>; }
 
@@ -182,21 +184,75 @@ function LoginPage({ initialRole, onLogin }: { initialRole: Role | null; onLogin
 
 function Header({ path, role, setRole, onReset, onLogout }: { path: string; role: Role; setRole: (role: Role) => void; onReset: () => void; onLogout: () => void }) { const managementWorkbench = path === '/workbench' && role !== '各金融机构'; const institutionWorkbench = path === '/workbench' && role === '各金融机构'; return <header className="app-header"><div className="brand"><span className="brand-mark">▥</span><span className="brand-copy"><b>{managementWorkbench ? '金控并表管理工作台' : institutionWorkbench ? `金融机构工作台（${currentInstitution}）` : '集团并表管理系统'}</b></span></div><div className="header-date">▣ 2024-06-30　13:22:45　 星期日</div><div className="header-right"><span className="bell">♧<i>12</i></span><span>?</span><span className="divider" /><span>{role === '各金融机构' ? currentInstitution : '集团并表范围'}⌄</span><label className="role-switch"><span>当前演示角色</span><select value={role} onChange={e => setRole(e.target.value as Role)}>{roleLabels.map(x => <option key={x}>{x}</option>)}</select></label><button className="reset-demo" onClick={onReset}>恢复演示数据</button><span className="avatar">张</span><span>张三</span><Button variant="text" onClick={onLogout}>退出登录</Button></div></header>; }
 
-type MenuItem = { label: string; path?: string; icon: string; children?: { label: string; path: string; roles?: Role[] }[] };
+type MenuItem = { label: string; path?: string; icon?: string; roles?: Role[]; queryOnlyFor?: Role[]; children?: MenuItem[] };
 const menus: MenuItem[] = [
-  { label: '并表驾驶舱', icon: '▦', path: '/dashboard' },
-  { label: '工作台', icon: '⌂', path: '/workbench' },
-  { label: '预警管理', icon: '★', children: [{ label: '风险偏好及目标', path: '/warning/risk-preference', roles: ['集团', '金控公司'] }, { label: '风险预警规则管理', path: '/warning/rules' }, { label: '预警提示与处置', path: '/warning/disposal' }, { label: '集中度风险监测', path: '/concentration-monitoring' }] },
-  { label: '指标管理', icon: '▤', children: [{ label: '指标新增与维护', path: '/indicators/maintenance' }, { label: '指标版本管理', path: '/indicators/versions' }, { label: '指标查询', path: '/indicators/query' }] },
-  { label: '报告管理', icon: '▧', children: [{ label: '重大风险事件报告', path: '/major-events' }, { label: '定期报告', path: '/periodic-reports' }] },
-  { label: '报表与分析中心', icon: '▨', path: '/reports' },
-  { label: '资本规划与预算', icon: '◫', path: '/empty/capital' },
-  { label: '会计并表管理', icon: '▧', path: '/empty/accounting' },
-  { label: '关联交易管理', icon: '♧', path: '/empty/related' },
-  { label: '知识库管理', icon: '▣', path: '/empty/knowledge' },
-  { label: '系统管理', icon: '⚙', path: '/empty/system' },
+  { label: '首页', icon: '⌂', path: '/workbench' },
+  { label: '驾驶舱', icon: '◩', path: '/cockpit' },
+  { label: '风险偏好管理', icon: '◇', children: [
+    { label: '风险偏好方案管理', path: '/warning/risk-preference', queryOnlyFor: ['各金融机构'] },
+  ] },
+  { label: '风险限额管理', icon: '▥', children: [
+    { label: '风险限额方案管理', path: '/limits/schemes' },
+    { label: '风险限额倒查', path: '/limits/backtrack' },
+  ] },
+  { label: '风险指标管理', icon: '▤', children: [
+    { label: '监测指标管理', path: '/indicators/maintenance', queryOnlyFor: ['各金融机构'] },
+    { label: '报表管理', children: [
+      { label: '报表中心', path: '/reports', roles: ['集团', '金控公司'] },
+      { label: '风险看板', path: '/dashboard', roles: ['集团'] },
+      { label: '资本看板', path: '/empty/capital-board', roles: ['集团', '金控公司'] },
+    ] },
+  ] },
+  { label: '风险预警与处置', icon: '★', children: [
+    { label: '风险限额预警模型', path: '/warning/rules', roles: ['集团', '金控公司'] },
+    { label: '风险预警处置管理', path: '/warning/disposal' },
+  ] },
+  { label: '风险报告管理', icon: '▧', children: [
+    { label: '定期风险报告', path: '/periodic-reports', roles: ['集团', '金控公司'] },
+    { label: '重大风险事件报告', path: '/major-events' },
+  ] },
+  { label: '知识库管理', icon: '▣', roles: ['集团', '金控公司'], children: [
+    { label: '制度库', path: '/empty/policy-library' },
+    { label: '法人治理', path: '/empty/corporate-governance' },
+  ] },
+  { label: '数据管理', icon: '▦', roles: ['集团', '金控公司'], children: [
+    { label: '数据收集', path: '/empty/data-collection' },
+    { label: '数据质量管理', path: '/empty/data-quality' },
+  ] },
+  { label: 'AI应用助手', icon: 'AI', path: '/ai-assistant' },
+  { label: '基础与系统管理', icon: '⚙', path: '/empty/system', roles: ['集团', '金控公司'] },
 ];
-function Sidebar({ path, role, navigate }: { path: string; role: Role; navigate: (path: string) => void }) { const [open, setOpen] = useState<string[]>(['预警管理', '指标管理', '报告管理']); return <aside className="sidebar">{menus.map(menu => { const children = menu.children?.filter(child => !child.roles || child.roles.includes(role)); const reportPathActive = (childPath: string) => childPath === '/major-events' ? path.startsWith('/major-events') : childPath === '/periodic-reports' ? path.startsWith('/periodic-reports') : false; const active = menu.path === path || (!!menu.path && path.startsWith(menu.path + '/')) || children?.some(x => path === x.path || path.startsWith(x.path + '/') || reportPathActive(x.path)); const expanded = open.includes(menu.label); return <div key={menu.label}><button className={`menu-root ${active ? 'active-root' : ''}`} onClick={() => children ? setOpen(value => value.includes(menu.label) ? value.filter(x => x !== menu.label) : [...value, menu.label]) : menu.path && navigate(menu.path)}><Icon>{menu.icon}</Icon><span>{menu.label}</span>{children && <em>{expanded ? '⌃' : '⌄'}</em>}</button>{children && expanded && <div className="menu-children">{children.map(child => <button className={path === child.path || path.startsWith(child.path + '/') || reportPathActive(child.path) ? 'active-child' : ''} key={child.path} onClick={() => navigate(child.path)}>{child.label}</button>)}</div>}</div>; })}</aside>; }
+const visibleMenuItems = (items: MenuItem[], role: Role): MenuItem[] => items
+  .filter(item => !item.roles || item.roles.includes(role))
+  .map(item => ({ ...item, children: item.children ? visibleMenuItems(item.children, role) : undefined }))
+  .filter(item => !!item.path || !!item.children?.length);
+const menuPathActive = (item: MenuItem, path: string): boolean => !!item.path && (path === item.path || path.startsWith(item.path + '/'));
+const menuBranchActive = (item: MenuItem, path: string): boolean => menuPathActive(item, path) || !!item.children?.some(child => menuBranchActive(child, path));
+const flattenMenus = (items: MenuItem[]): MenuItem[] => items.flatMap(item => [item, ...flattenMenus(item.children || [])]);
+
+function Sidebar({ path, role, navigate }: { path: string; role: Role; navigate: (path: string) => void }) {
+  const roleMenus = visibleMenuItems(menus, role);
+  const initiallyOpen = flattenMenus(roleMenus).filter(item => item.children?.length && menuBranchActive(item, path)).map(item => item.label);
+  const [open, setOpen] = useState<string[]>(initiallyOpen);
+  useEffect(() => {
+    const activeBranches = flattenMenus(roleMenus).filter(item => item.children?.length && menuBranchActive(item, path)).map(item => item.label);
+    setOpen(value => [...new Set([...value, ...activeBranches])]);
+  }, [path, role]);
+  const toggle = (label: string) => setOpen(value => value.includes(label) ? value.filter(item => item !== label) : [...value, label]);
+  const renderItems = (items: MenuItem[], depth = 0): ReactNode => items.map(item => {
+    const children = item.children || [];
+    const active = menuBranchActive(item, path);
+    const expanded = open.includes(item.label);
+    const queryOnly = item.queryOnlyFor?.includes(role);
+    return <div className={`menu-item depth-${depth}`} key={`${depth}-${item.label}`}>
+      <button className={`${depth === 0 ? 'menu-root' : 'menu-child'} ${active ? depth === 0 ? 'active-root' : 'active-child' : ''} ${children.length ? 'has-children' : ''}`} onClick={() => children.length ? toggle(item.label) : item.path && navigate(item.path)}>
+        {depth === 0 && <Icon>{item.icon}</Icon>}<span>{item.label}</span>{queryOnly && <small>仅查询</small>}{children.length > 0 && <em>{expanded ? '⌃' : '⌄'}</em>}
+      </button>
+      {children.length > 0 && expanded && <div className={`menu-children level-${depth + 1}`}>{renderItems(children, depth + 1)}</div>}
+    </div>;
+  });
+  return <aside className="sidebar">{renderItems(roleMenus)}</aside>;
+}
 
 const authStorageKey = 'demo-authenticated';
 const roleStorageKey = 'demo-role';
@@ -217,6 +273,13 @@ function readDemoSession(): DemoSession {
 }
 
 function canAccessRouteForRole(role: Role, path: string) {
+  if (path === '/cockpit') return true;
+  if (path === '/group-dashboard') return role !== '各金融机构';
+  if (path === '/dashboard' || path.startsWith('/dashboard/')) return role === '集团';
+  if (path === '/reports' || path.startsWith('/reports/')) return role !== '各金融机构';
+  if (path === '/periodic-reports' || path.startsWith('/periodic-reports/')) return role !== '各金融机构';
+  if (path === '/warning/rules' || path.startsWith('/warning/rules/')) return role !== '各金融机构';
+  if (['/empty/capital-board', '/empty/policy-library', '/empty/corporate-governance', '/empty/data-collection', '/empty/data-quality', '/empty/system'].includes(path)) return role !== '各金融机构';
   if (path.startsWith('/concentration-monitoring')) return canViewConcentrationMonitoring(role);
   if (path.startsWith('/warning/risk-preference')) {
     if (!canAccessRiskPreference(role)) return false;
@@ -270,11 +333,16 @@ function App() {
   };
   const goBack = () => navigate('/warning/risk-preference');
   const render = () => {
+    if (path === '/cockpit') return role === '各金融机构' ? <InstitutionCockpit navigate={navigate} /> : <GroupDashboard navigate={navigate} />;
+    if (path === '/group-dashboard') return <GroupDashboard navigate={navigate} />;
     if (path === '/dashboard' || path.startsWith('/dashboard/institution/')) return <DashboardCockpit state={state} role={role} institutionId={path.split('/')[3]} navigate={navigate} update={update} toast={toast} />;
     if (path === '/workbench') return role === '各金融机构' ? <InstitutionWorkbench state={state} role={role} navigate={navigate} /> : <ManagementWorkbench state={state} role={role} navigate={navigate} />;
     if (path === '/institutions') return <InstitutionList state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path.startsWith('/institutions/')) return <InstitutionDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
-    if (path.includes('/empty/')) return <EmptyModulePage title={menus.flatMap(x => [x, ...(x.children || [])]).find((x: any) => x.path === path)?.label || '模块占位页'} />;
+    if (path === '/limits/schemes') return <EmptyModulePage title="风险限额方案管理" />;
+    if (path === '/limits/backtrack') return <IndicatorQuery state={state} role={role} navigate={navigate} update={update} toast={toast} title="风险限额倒查" />;
+    if (path === '/ai-assistant') return <AiAssistantPage />;
+    if (path.includes('/empty/')) return <EmptyModulePage title={flattenMenus(menus).find(item => item.path === path)?.label || '模块占位页'} />;
     if (path === '/warning/risk-preference') return <RiskPreferenceList state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path.endsWith('/new') && path.startsWith('/warning/risk-preference')) return <RiskPreferenceEditor state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path.startsWith('/warning/risk-preference/')) return <RiskPreferenceDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
@@ -319,6 +387,19 @@ function App() {
   if (!authenticated) return <><LoginPage initialRole={loginRole} onLogin={login} /><SmartAssistant role={role} path={path} /></>;
   if (path === '/' || path === '/login') return <SmartAssistant role={role} path={path} />;
   return <div className="app"><Header path={path} role={role} setRole={changeRole} onReset={() => { reset(); toast('演示数据已恢复'); }} onLogout={logout} /><Sidebar path={path} role={role} navigate={navigate} /><main className="content">{render()}</main>{notice && <Modal title="操作提示" onClose={() => setNotice(null)} footer={<Button variant="secondary" onClick={() => setNotice(null)}>关闭</Button>}><div className="modal-note">{notice}</div></Modal>}<SmartAssistant role={role} path={path} /></div>;
+}
+
+function InstitutionCockpit({ navigate }: { navigate: (path: string) => void }) {
+  const source = `/institution-cockpit/index.html?name=${encodeURIComponent(currentInstitution)}`;
+  return <div className="institution-cockpit-host"><iframe title={`${currentInstitution}金融机构驾驶舱`} src={source} /><button className="institution-cockpit-back" onClick={() => navigate('/workbench')}>‹ 返回工作台</button></div>;
+}
+
+function AiAssistantPage() {
+  useEffect(() => {
+    const timer = window.setTimeout(() => document.querySelector<HTMLButtonElement>('.smart-assistant-launcher')?.click(), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+  return <Page title="AI应用助手" breadcrumb={['AI应用助手']}><div className="empty-state"><div className="empty-icon">AI</div><h2>AI应用助手已打开</h2><p>可通过右下角入口再次打开问数、填表和报告辅助能力。</p></div></Page>;
 }
 
 type PageProps = { state: DemoState; role: Role; navigate: (path: string) => void; update: (fn: (state: DemoState) => void) => void; toast: (message: string) => void };
@@ -764,7 +845,7 @@ function RoleWorkbench({ state, role, navigate, toast }: { state: DemoState; rol
 
   return <Page title="工作台" breadcrumb={['工作台']} hidePageTitle>
     <div className={`workspace-shell workspace-${variant}`}>
-      <div className="workspace-hero"><div><span className="workspace-role-chip">{variant === 'group' ? '集团本部 / 统筹监督' : variant === 'holding' ? '金控公司 / 国资公司' : '金融机构 / 报送反馈'}</span><h1>{workbenchTitle}</h1><p>{workbenchDescription}</p></div><div className="workspace-hero-actions"><Button variant="secondary" onClick={() => navigate('/concentration-monitoring')}>集中度风险监测</Button><Button onClick={() => navigate('/dashboard')}>进入驾驶舱</Button></div></div>
+      <div className="workspace-hero"><div><span className="workspace-role-chip">{variant === 'group' ? '集团本部 / 统筹监督' : variant === 'holding' ? '金控公司 / 国资公司' : '金融机构 / 报送反馈'}</span><h1>{workbenchTitle}</h1><p>{workbenchDescription}</p></div><div className="workspace-hero-actions"><Button variant="secondary" onClick={() => navigate('/cockpit')}>{variant === 'institution' ? '进入金融机构驾驶舱' : '集团及国资公司驾驶舱'}</Button><Button variant="secondary" onClick={() => navigate('/concentration-monitoring')}>集中度风险监测</Button>{variant === 'group' && <Button onClick={() => navigate('/dashboard')}>进入风险看板</Button>}</div></div>
       <WorkspaceMetrics items={metrics} navigate={navigate} />
       {messageCenter}
 
@@ -1305,7 +1386,7 @@ function IndicatorPeriodTable({ records, onViewCumulative }: { records: Indicato
   return <Table><thead><tr><th>序号</th><th>指标编码</th><th>指标名称</th><th>监测频率</th><th>指标值</th><th>当期亮灯情况</th><th>累计亮灯情况</th><th>指标定义</th><th>指标类型</th><th>指标子类</th><th>适用机构</th><th>预测范围</th><th>黄灯规则</th><th>红灯规则</th><th>指标期次</th></tr></thead><tbody>{records.map((record, index) => <tr key={record.id}><td>{index + 1}</td><td>{record.indicatorCode}</td><td>{record.indicatorName}</td><td>{record.monitoringFrequency}</td><td>{record.indicatorValue}</td><td><StatusTag value={record.currentLightStatus} /></td><td><TextAction onClick={() => onViewCumulative(record)}>查看</TextAction></td><td>{record.indicatorDefinition}</td><td>{record.indicatorType}</td><td>{record.indicatorSubType}</td><td>{record.institution}</td><td>{record.forecastRange}</td><td>{record.yellowRule}</td><td>{record.redRule}</td><td>{record.period}</td></tr>)}</tbody></Table>;
 }
 
-function IndicatorQuery({ state, role }: PageProps) {
+function IndicatorQuery({ state, role, title = '指标查询' }: PageProps & { title?: string }) {
   const initialInstitution = role === '各金融机构' ? currentInstitution : '';
   const [historyItem, setHistoryItem] = useState<IndicatorPeriodRecord | null>(null);
   const [q, setQ] = useState({ code: '', name: '', type: '', subtype: '', institution: initialInstitution, frequency: '', light: '', periodStart: '', periodEnd: '' });
@@ -1316,7 +1397,7 @@ function IndicatorQuery({ state, role }: PageProps) {
   const records = sourceRecords.filter(record => (!q.code || record.indicatorCode.includes(q.code)) && (!q.name || record.indicatorName.includes(q.name)) && (!q.type || record.indicatorType === q.type) && (!q.subtype || record.indicatorSubType.includes(q.subtype)) && (!q.institution || record.institution === q.institution) && (!q.frequency || record.monitoringFrequency === q.frequency) && (!q.light || record.currentLightStatus === q.light) && (!startOrder || record.periodOrder >= startOrder) && (!endOrder || record.periodOrder <= endOrder));
   const summaryText = (record: IndicatorPeriodRecord) => { const summary = calculateLightSummaryForRecords(getIndicatorHistoryRecords(state.indicatorPeriodRecords, record)); return `累计红灯${summary.red}次，黄灯${summary.yellow}次，绿灯${summary.green}次`; };
   const exportRows = () => downloadCSV('指标查询.csv', [['序号', '指标编码', '指标名称', '监测频率', '指标值', '当期亮灯情况', '累计亮灯情况', '指标定义', '指标类型', '指标子类', '适用机构', '预测范围', '黄灯规则', '红灯规则', '指标期次'], ...records.map((record, index) => [index + 1, record.indicatorCode, record.indicatorName, record.monitoringFrequency, record.indicatorValue, record.currentLightStatus, summaryText(record), record.indicatorDefinition, record.indicatorType, record.indicatorSubType, record.institution, record.forecastRange, record.yellowRule, record.redRule, record.period])]);
-  return <Page title="指标查询" breadcrumb={['指标管理', '指标查询']}><SearchPanel onSearch={() => undefined} onReset={() => setQ({ code: '', name: '', type: '', subtype: '', institution: initialInstitution, frequency: '', light: '', periodStart: '', periodEnd: '' })}><Field label="指标编码"><Input value={q.code} onChange={value => setQ({ ...q, code: value })} /></Field><Field label="指标名称"><Input value={q.name} onChange={value => setQ({ ...q, name: value })} /></Field><Field label="指标类型"><Select value={q.type} onChange={value => setQ({ ...q, type: value })} options={['财务类', '资本类', '风险类']} /></Field><Field label="指标子类"><Input value={q.subtype} onChange={value => setQ({ ...q, subtype: value })} /></Field><Field label="适用机构"><Select disabled={role === '各金融机构'} value={q.institution} onChange={value => setQ({ ...q, institution: value })} options={role === '各金融机构' ? [currentInstitution] : institutions} /></Field><Field label="监测频率"><Select value={q.frequency} onChange={value => setQ({ ...q, frequency: value })} options={['日', '周', '月', '季', '半年', '年', '不定期']} /></Field><Field label="当期亮灯"><Select value={q.light} onChange={value => setQ({ ...q, light: value })} options={['绿灯', '黄灯', '红灯']} /></Field><Field label="指标期次"><div className="date-range"><Input value={q.periodStart} onChange={periodStart => setQ({ ...q, periodStart })} placeholder="单一期次或起始期次" /><span>至</span><Input value={q.periodEnd} onChange={periodEnd => setQ({ ...q, periodEnd })} placeholder="结束期次（可选）" /></div></Field></SearchPanel><div className="list-toolbar"><span>{hasPeriodQuery ? '历史期间指标数据' : '默认展示各指标最新一期'} · {records.length} 条</span><Button variant="secondary" onClick={exportRows}>⇩ 导出</Button></div><IndicatorPeriodTable records={records} onViewCumulative={setHistoryItem} /><Pagination total={records.length} page={1} setPage={() => undefined} />{historyItem && <IndicatorLightHistoryModal record={historyItem} records={state.indicatorPeriodRecords} onClose={() => setHistoryItem(null)} />}</Page>;
+  return <Page title={title} breadcrumb={[title === '风险限额倒查' ? '风险限额管理' : '风险指标管理', title]}><SearchPanel onSearch={() => undefined} onReset={() => setQ({ code: '', name: '', type: '', subtype: '', institution: initialInstitution, frequency: '', light: '', periodStart: '', periodEnd: '' })}><Field label="指标编码"><Input value={q.code} onChange={value => setQ({ ...q, code: value })} /></Field><Field label="指标名称"><Input value={q.name} onChange={value => setQ({ ...q, name: value })} /></Field><Field label="指标类型"><Select value={q.type} onChange={value => setQ({ ...q, type: value })} options={['财务类', '资本类', '风险类']} /></Field><Field label="指标子类"><Input value={q.subtype} onChange={value => setQ({ ...q, subtype: value })} /></Field><Field label="适用机构"><Select disabled={role === '各金融机构'} value={q.institution} onChange={value => setQ({ ...q, institution: value })} options={role === '各金融机构' ? [currentInstitution] : institutions} /></Field><Field label="监测频率"><Select value={q.frequency} onChange={value => setQ({ ...q, frequency: value })} options={['日', '周', '月', '季', '半年', '年', '不定期']} /></Field><Field label="当期亮灯"><Select value={q.light} onChange={value => setQ({ ...q, light: value })} options={['绿灯', '黄灯', '红灯']} /></Field><Field label="指标期次"><div className="date-range"><Input value={q.periodStart} onChange={periodStart => setQ({ ...q, periodStart })} placeholder="单一期次或起始期次" /><span>至</span><Input value={q.periodEnd} onChange={periodEnd => setQ({ ...q, periodEnd })} placeholder="结束期次（可选）" /></div></Field></SearchPanel><div className="list-toolbar"><span>{hasPeriodQuery ? '历史期间指标数据' : '默认展示各指标最新一期'} · {records.length} 条</span><Button variant="secondary" onClick={exportRows}>⇩ 导出</Button></div><IndicatorPeriodTable records={records} onViewCumulative={setHistoryItem} /><Pagination total={records.length} page={1} setPage={() => undefined} />{historyItem && <IndicatorLightHistoryModal record={historyItem} records={state.indicatorPeriodRecords} onClose={() => setHistoryItem(null)} />}</Page>;
 }
 
 function MajorEventDefinitions({ state, role, navigate, update, toast }: PageProps) {
@@ -1730,7 +1811,7 @@ function ReportAnalysisCenter({ state, role, navigate, update, toast }: PageProp
     { name: '预警情况分析', description: '分析预警数量、等级、处置进度及解除情况。', period: '2024年6月', updatedAt: '2024-07-07', path: '/warning/disposal' },
     { name: '集中度风险分析', description: '从客户、行业、区域等维度分析集中度风险。', period: '2024年6月', updatedAt: '2024-07-06', path: '/concentration-monitoring' },
     { name: '机构风险情况分析', description: '按并表机构汇总风险指标、预警和重大事项。', period: '2024年二季度', updatedAt: '2024-07-05', path: '/dashboard' },
-  ];
+  ].filter(topic => role === '集团' || topic.path !== '/dashboard');
   const regulatoryReports = [
     { name: '金控集团风险并表监管报表', type: '风险监管报表', period: '2024年二季度', status: '已生成', updatedAt: '2024-07-09' },
     { name: '金控集团资本并表监管报表', type: '资本监管报表', period: '2024年二季度', status: '生成中', updatedAt: '2024-07-09' },

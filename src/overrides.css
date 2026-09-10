@@ -1248,6 +1248,43 @@ body {
 .menu-children .active-child:before { content: ""; position: absolute; left: 7px; top: 9px; bottom: 9px; width: 3px; border-radius: 3px; background: var(--ui-primary); }
 .menu-children .active-child:after { display: none; }
 
+.menu-child {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 37px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px 0 20px;
+  border: 0;
+  border-radius: 7px;
+  color: #718096;
+  background: transparent;
+  text-align: left;
+  font-size: 12px;
+}
+.menu-child:hover { color: #334155; background: #f8fafc; }
+.menu-child > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menu-child > em { margin-left: auto; color: #94a3b8; font-size: 11px; font-style: normal; }
+.menu-child > small { margin-left: auto; padding: 1px 5px; border-radius: 8px; color: #64748b; background: #eef2f7; font-size: 9px; white-space: nowrap; }
+.menu-child.active-child { color: #1d4ed8; background: var(--ui-primary-soft); font-weight: 600; }
+.menu-child.active-child:before { content: ""; position: absolute; left: 7px; top: 9px; bottom: 9px; width: 3px; border-radius: 3px; background: var(--ui-primary); }
+.menu-children.level-2 { margin: 1px 0 3px 11px; padding: 2px 0 3px 10px; border-left: 1px solid #e3eaf4; }
+.menu-children.level-2 .menu-child { height: 34px; padding-left: 17px; font-size: 11px; }
+.menu-root > small { margin-left: auto; color: #64748b; font-size: 9px; }
+.menu-root > small + em { margin-left: 0; }
+
+.app:has(.institution-cockpit-host) .app-header,
+.app:has(.institution-cockpit-host) .sidebar,
+.app:has(.institution-cockpit-host) .smart-assistant-launcher,
+.app:has(.institution-cockpit-host) .smart-assistant-panel { display: none; }
+.app:has(.institution-cockpit-host),
+.app:has(.institution-cockpit-host) .content { width: 100vw; height: 100vh; min-height: 0; margin: 0; padding: 0; overflow: hidden; max-width: none; background: #020c1e; }
+.institution-cockpit-host { position: relative; width: 100vw; height: 100vh; overflow: hidden; background: #020c1e; }
+.institution-cockpit-host iframe { display: block; width: 100%; height: 100%; border: 0; }
+.institution-cockpit-back { position: fixed; z-index: 5; top: 16px; right: 18px; padding: 7px 12px; border: 1px solid rgba(83,222,255,.55); border-radius: 3px; color: #dffaff; background: rgba(5,37,74,.84); box-shadow: 0 0 12px rgba(67,211,255,.18); font-size: 12px; }
+.institution-cockpit-back:hover { border-color: #64e7ff; background: rgba(8,67,119,.92); }
+
 .breadcrumb { margin: 0 0 14px; color: #94a3b8; font-size: 12px; }
 .breadcrumb span { padding: 0 7px; color: #c0cad7; }
 .page-title { min-height: 56px; align-items: flex-start; margin: 0 0 22px; gap: 24px; }

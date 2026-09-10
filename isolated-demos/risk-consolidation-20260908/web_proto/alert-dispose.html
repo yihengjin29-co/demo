@@ -1,0 +1,478 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>函件跟踪与处置 - 金控并表系统</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>:root{--primary:#1a3c6d;--primary-light:#2a5caa;--accent:#e8a838;--bg:#f0f2f6;--sidebar-bg:#1a2538;--sidebar-text:#b0bec5;--sidebar-active:#2a3f5f;--card-bg:#fff;--border:#d9e2ea;--text:#1e293b;--text-light:#5b6e8c;--text-muted:#94a3b8;--danger:#b91c1c;--success:#10b981;--warning:#f59e0b;--info:#3b82f6;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-hover:0 10px 25px -5px rgba(0,0,0,.1),0 4px 10px -2px rgba(0,0,0,.05);--font:14px/1.5 -apple-system,"Microsoft YaHei","PingFang SC",sans-serif;--sidebar-width:232px;--transition:0.18s cubic-bezier(0.4,0,0.2,1)}
+.dark{--bg:#0f172a;--card-bg:#1e293b;--border:#334155;--text:#e2e8f0;--text-light:#94a3b8;--text-muted:#64748b;--sidebar-bg:#0c1222;--sidebar-active:#1a2940;--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-hover:0 10px 25px -5px rgba(0,0,0,.5)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font:var(--font);color:var(--text);background:var(--bg);display:flex;flex-direction:column;min-height:100vh;transition:background var(--transition),color var(--transition)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:4px}
+.header{height:54px;background:linear-gradient(135deg,var(--primary) 0%,#0f2347 100%);color:#fff;display:flex;align-items:center;padding:0 22px;z-index:110;box-shadow:0 2px 10px rgba(0,0,0,.2);flex-shrink:0;position:relative;overflow:hidden}
+.header::after{content:'';position:absolute;top:0;right:0;width:300px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03));pointer-events:none}
+.header h1{font-size:16px;font-weight:600;letter-spacing:.3px;display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+.header .sub{font-size:11px;opacity:.6;margin-left:10px;position:relative;z-index:1}
+.header .user{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;position:relative;z-index:1}
+.header .user .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;box-shadow:0 0 0 2px rgba(255,255,255,.2)}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;opacity:.85;margin-right:14px;position:relative;z-index:1}
+.live-badge .dot{width:7px;height:7px;background:var(--success);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 6px rgba(16,185,129,.6)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.8)}}
+.theme-toggle{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;transition:all var(--transition);z-index:1;margin-right:8px}
+.theme-toggle:hover{background:rgba(255,255,255,.2)}
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);color:var(--sidebar-text);overflow-y:auto;flex-shrink:0;font-size:13px;transition:width var(--transition);position:relative;z-index:50}
+.sidebar a{color:inherit;text-decoration:none}
+.sidebar-search{padding:10px 14px;position:sticky;top:0;background:var(--sidebar-bg);z-index:2}
+.sidebar-search input{width:100%;height:32px;padding:6px 10px 6px 30px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none;font-family:inherit}
+.sidebar-search i{position:absolute;left:22px;top:19px;font-size:12px;opacity:.4}
+.main{flex:1;overflow-y:auto;padding:22px 26px;scroll-behavior:smooth}
+.menu-item{display:flex;align-items:center;padding:0 16px;height:38px;cursor:pointer;border-left:3px solid transparent;transition:all .12s;gap:8px;font-size:13px}
+.menu-item:hover{background:rgba(255,255,255,.04);color:#fff}
+.menu-item.active{background:var(--sidebar-active);color:#fff;border-left-color:var(--accent);font-weight:600}
+.menu-group-title{font-size:10px;padding:16px 16px 4px;opacity:.4;letter-spacing:2px;border-top:1px solid rgba(255,255,255,.04);margin-top:6px;cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none}
+.menu-group-title:hover{opacity:.7}
+.menu-group-title .fa-chevron-down{font-size:8px;transition:transform var(--transition);opacity:.5}
+.menu-group-title.collapsed .fa-chevron-down{transform:rotate(-90deg)}
+.menu-group-title.collapsed+.group-items{max-height:0;overflow:hidden;opacity:0}
+.group-items{max-height:600px;transition:all var(--transition)}
+.page-title{font-size:1.15rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.page-title small{font-weight:400;color:var(--text-muted);font-size:12px}
+.breadcrumb{font-size:11px;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.breadcrumb a{color:var(--info);text-decoration:none}.breadcrumb a:hover{text-decoration:underline}
+.btn{padding:7px 16px;border-radius:8px;font-weight:500;font-size:12px;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:var(--card-bg);color:var(--text);white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-family:inherit;text-decoration:none}
+.btn:hover{background:var(--bg);border-color:#cbd5e1}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light);border-color:var(--primary-light)}
+.btn-success{background:var(--success);border-color:var(--success);color:#fff}
+.btn-success:hover{background:#059669;border-color:#059669}
+.btn-warning{background:var(--warning);border-color:var(--warning);color:#fff}
+.btn-warning:hover{background:#d97706;border-color:#d97706}
+.btn-outline-info{background:transparent;border-color:var(--info);color:var(--info)}
+.btn-outline-info:hover{background:var(--info);color:#fff}
+.btn-sm{padding:5px 12px;font-size:11px;border-radius:6px}
+.btn-lg{padding:9px 20px;font-size:13px;border-radius:10px}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:600;letter-spacing:.2px}
+.tag-success{background:rgba(16,185,129,.1);color:var(--success)}
+.tag-danger{background:rgba(185,28,28,.08);color:var(--danger)}
+.tag-info{background:rgba(59,130,246,.1);color:var(--info)}
+.tag-warning{background:rgba(245,158,11,.1);color:var(--warning)}
+.tag-neutral{background:rgba(148,163,184,.12);color:var(--text-muted)}
+.form-card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:18px}
+.form-card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;background:#fafbfc}
+.dark .form-card-header{background:var(--card-bg)}
+.form-card-body{padding:18px}
+.form-row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:16px}
+.form-row:last-child{margin-bottom:0}
+.form-group{flex:1;min-width:200px;display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11px;font-weight:600;color:var(--text-light);letter-spacing:.3px}
+.form-group .form-control{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;transition:all .15s}
+.form-group .form-control:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.form-group .form-control:disabled{opacity:.6;cursor:not-allowed}
+.form-group .form-hint{font-size:10px;color:var(--text-muted);margin-top:2px}
+.radio-group{display:flex;flex-wrap:wrap;gap:16px;padding:4px 0}
+.radio-group label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;cursor:pointer;color:var(--text)}
+.radio-group input[type=radio]{accent-color:var(--primary);width:16px;height:16px;cursor:pointer}
+.textarea-monospace{font-family:"Courier New",Consolas,monospace;font-size:13px;line-height:1.7;min-height:160px;resize:vertical}
+.textarea-rich{font-family:inherit;font-size:13px;line-height:1.7;min-height:120px;resize:vertical}
+.upload-area{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.upload-area .file-label{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px dashed var(--border);border-radius:8px;cursor:pointer;font-size:12px;color:var(--text-light);transition:all .15s;background:var(--card-bg)}
+.upload-area .file-label:hover{border-color:var(--info);color:var(--info);background:rgba(59,130,246,.04)}
+.upload-area .file-label input[type=file]{display:none}
+.upload-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.upload-item{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:6px;font-size:11px;color:var(--text)}
+.upload-item .remove{color:var(--danger);cursor:pointer;font-size:12px;padding:0 2px}
+.upload-item .remove:hover{opacity:.7}
+.approval-steps{display:flex;align-items:flex-start;gap:8px;padding:8px 0;flex-wrap:wrap}
+.approval-step{display:flex;align-items:center;gap:6px;font-size:12px;position:relative}
+.approval-step .step-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.approval-step .step-circle.done{background:var(--success);color:#fff}
+.approval-step .step-circle.active{background:var(--info);color:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+.approval-step .step-circle.pending{background:rgba(148,163,184,.15);color:var(--text-muted)}
+.approval-step .step-arrow{color:var(--text-muted);font-size:10px;margin:0 2px}
+.approval-step .step-info{display:flex;flex-direction:column;gap:1px}
+.approval-step .step-name{font-weight:600;font-size:12px;color:var(--text)}
+.approval-step .step-role{font-size:10px;color:var(--text-muted)}
+.approval-step .step-status{font-size:10px;font-weight:500}
+.action-bar{display:flex;gap:8px;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap}
+.alert-link{color:var(--info);text-decoration:none;cursor:pointer;font-weight:500}
+.alert-link:hover{text-decoration:underline}
+.alert-ref{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(59,130,246,.04);border:1px solid rgba(59,130,246,.12);border-radius:8px;margin-bottom:16px;font-size:13px}
+.alert-ref i{color:var(--info);font-size:14px}
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(2px)}.modal-overlay.show{display:flex}
+.modal{background:var(--card-bg);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.2);width:640px;max-width:92vw;max-height:85vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px;position:sticky;top:0;background:var(--card-bg);z-index:2}
+.modal-close{width:28px;height:28px;border:none;background:none;cursor:pointer;font-size:18px;color:var(--text-muted);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--bg);color:var(--text)}.modal-body{padding:18px}.modal-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.toast-container{position:fixed;top:64px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.12);display:flex;align-items:center;gap:8px;animation:slideIn .25s ease;max-width:360px;transition:all .3s}
+.toast.success{background:rgba(16,185,129,.95);color:#fff}
+.toast.error{background:rgba(185,28,28,.95);color:#fff}
+.toast.info{background:rgba(59,130,246,.95);color:#fff}
+.toast.fadeout{opacity:0;transform:translateX(40px)}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@media(max-width:768px){.sidebar{width:52px}.sidebar .menu-item span:not(.fa){display:none}.sidebar .menu-group-title,.sidebar-search{display:none}.main{padding:10px}.form-group{min-width:100%}}
+</style></head>
+<body>
+<div class="header"><h1><i class="fas fa-shield-halved"></i> 金控并表系统</h1><span class="sub">v1.0</span>
+<button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+<div class="live-badge"><span class="dot"></span>实时 <span id="clock">--</span></div>
+<div class="user"><span>系统管理员</span><div class="avatar">管</div></div></div>
+<div class="layout"><div class="sidebar" id="sidebar"><div class="sidebar-search"><i class="fas fa-search"></i><input type="text" placeholder="搜索菜单..." oninput="filterMenu(this.value)"></div><div class="menu"><a class="menu-item" href="index.html"><i class="fas fa-home" style="width:16px"></i> 首页</a><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-gauge-high"></i> 门户与工作台<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="dashboard.html"><i class="fas fa-chart-pie" style="width:16px"></i> 驾驶舱</a><a class="menu-item" href="workbench.html"><i class="fas fa-list-check" style="width:16px"></i> 工作台</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-table"></i> 指标管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="pref-indicator.html"><i class="fas fa-table" style="width:16px"></i> 指标信息</a><a class="menu-item" href="indicator-query.html"><i class="fas fa-search" style="width:16px"></i> 指标数据查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bullseye"></i> 风险管理偏好及目标<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="pref-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 偏好方案管理</a><a class="menu-item" href="pref-target.html"><i class="fas fa-bullseye" style="width:16px"></i> 偏好指标查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-line"></i> 风险限额管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="limit-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 限额方案管理</a><a class="menu-item" href="limit-target.html"><i class="fas fa-sliders" style="width:16px"></i> 限额参数设置</a><a class="menu-item" href="limit-warning-model.html"><i class="fas fa-diagram-project" style="width:16px"></i> 限额预警模型</a><a class="menu-item" href="limit-check.html"><i class="fas fa-magnifying-glass" style="width:16px"></i> 限额预警回检</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bell"></i> 风险提示与处置<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="alert-prompt.html"><i class="fas fa-exclamation-triangle" style="width:16px"></i> 风险预警列表</a><a class="menu-item" href="alert-ledger.html"><i class="fas fa-book" style="width:16px"></i> 函件台账管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-file-alt"></i> 风险管理报告<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-event.html"><i class="fas fa-bolt" style="width:16px"></i> 重大风险事件报告</a><a class="menu-item" href="periodic-report.html"><i class="fas fa-calendar" style="width:16px"></i> 定期报告</a><a class="menu-item" href="report-template.html"><i class="fas fa-copy" style="width:16px"></i> 报告模板管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-bar"></i> 数据分析与看板<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-board.html"><i class="fas fa-triangle-exclamation" style="width:16px"></i> 风险看板</a><a class="menu-item" href="capital-board.html"><i class="fas fa-sack-dollar" style="width:16px"></i> 资本看板</a><a class="menu-item" href="theme-board.html"><i class="fas fa-chart-line" style="width:16px"></i> 专题分析看板</a><a class="menu-item" href="report-mgr.html"><i class="fas fa-file-excel" style="width:16px"></i> 报表管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-robot"></i> AI应用<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="ai-fill.html"><i class="fas fa-pen" style="width:16px"></i> AI辅助填报</a><a class="menu-item" href="ai-qa.html"><i class="fas fa-comments" style="width:16px"></i> AI智能问数</a><a class="menu-item" href="ai-collect.html"><i class="fas fa-satellite-dish" style="width:16px"></i> AI风险舆情预警</a><a class="menu-item" href="ai-report.html"><i class="fas fa-file-pen" style="width:16px"></i> AI风险报告生成</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-arrows-rotate"></i> 业务流程管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="process-def.html"><i class="fas fa-gear" style="width:16px"></i> 流程定义与配置</a><a class="menu-item" href="process-monitor.html"><i class="fas fa-eye" style="width:16px"></i> 流程监控</a><a class="menu-item" href="process-archive.html"><i class="fas fa-box-archive" style="width:16px"></i> 流程归档与查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-screwdriver-wrench"></i> 基础与系统管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="base-info.html"><i class="fas fa-database" style="width:16px"></i> 基础信息管理</a><a class="menu-item" href="user-auth.html"><i class="fas fa-users" style="width:16px"></i> 用户与权限管理</a><a class="menu-item" href="data-std.html"><i class="fas fa-ruler" style="width:16px"></i> 数据标准管理</a><a class="menu-item" href="log-mgr.html"><i class="fas fa-clock-rotate-left" style="width:16px"></i> 操作日志管理</a><a class="menu-item" href="param-config.html"><i class="fas fa-gears" style="width:16px"></i> 参数配置</a></div></div></div><div class="main">
+<div class="breadcrumb"><a href="index.html">首页</a> / <a href="alert-prompt.html">风险预警列表</a> / 函件跟踪与处置</div>
+<div class="page-title"><i class="fas fa-rotate-left" style="color:var(--info)"></i> 函件跟踪与处置 <small>| 发函至办结全生命周期</small>
+<a href="alert-prompt.html" class="btn btn-sm" style="margin-left:auto"><i class="fas fa-arrow-left"></i> 返回预警列表</a></div>
+
+<!-- 关联预警编号 -->
+<div class="alert-ref">
+  <i class="fas fa-link"></i>
+  <span>关联预警编号：<strong>YJ-20260905-001</strong>（<span class="alert-link" onclick="showToast('正在加载原始预警数据...')">点击可查看原始数据</span>）</span>
+</div>
+
+<!-- 预警详情 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i> 预警详情</div>
+  <div class="form-card-body">
+    <div class="form-row">
+      <div class="form-group" style="min-width:100%">
+        <label><i class="fas fa-hashtag" style="font-size:10px;opacity:.6"></i> 预警编号</label>
+        <input class="form-control" type="text" value="YJ-20260905-001" disabled>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-building" style="font-size:10px;opacity:.6"></i> 预警机构</label>
+        <input class="form-control" type="text" value="上海XX科技公司" disabled>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-calendar" style="font-size:10px;opacity:.6"></i> 预警日期</label>
+        <input class="form-control" type="text" value="2026-09-05" disabled>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-chart-line" style="font-size:10px;opacity:.6"></i> 指标名称</label>
+        <input class="form-control" type="text" value="资本充足率" disabled>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-calculator" style="font-size:10px;opacity:.6"></i> 本期指标值</label>
+        <input class="form-control" type="text" value="10.2%" disabled>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-tags" style="font-size:10px;opacity:.6"></i> 指标管理类型</label>
+        <input class="form-control" type="text" value="限额指标" disabled>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-tag" style="font-size:10px;opacity:.6"></i> 指标类型</label>
+        <input class="form-control" type="text" value="资本类" disabled>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-sitemap" style="font-size:10px;opacity:.6"></i> 指标子类</label>
+        <input class="form-control" type="text" value="资本充足" disabled>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-signal" style="font-size:10px;opacity:.6"></i> 本期预警信号</label>
+        <input class="form-control" type="text" value="红灯" disabled style="color:var(--danger);font-weight:600">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="min-width:100%">
+        <label><i class="fas fa-ruler" style="font-size:10px;opacity:.6"></i> 预警规则</label>
+        <input class="form-control" type="text" value="贷款逾期率 > 5%" disabled>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-database" style="font-size:10px;opacity:.6"></i> 数据类型</label>
+        <input class="form-control" type="text" value="月" disabled>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-clock" style="font-size:10px;opacity:.6"></i> 预警时间</label>
+        <input class="form-control" type="text" value="09:32" disabled>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-users" style="font-size:10px;opacity:.6"></i> 管理机构</label>
+        <input class="form-control" type="text" value="风险管理部" disabled>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-users-gear" style="font-size:10px;opacity:.6"></i> 管理部门</label>
+        <input class="form-control" type="text" value="资本运营部" disabled>
+      </div>
+    </div>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="form-group" style="min-width:100%">
+        <label><i class="fas fa-comment" style="font-size:10px;opacity:.6"></i> 说明</label>
+        <textarea class="form-control" style="min-height:60px;resize:vertical;font-family:inherit;font-size:13px" disabled>需立即关注</textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 基本信息 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-info-circle" style="color:var(--info)"></i> 基本信息</div>
+  <div class="form-card-body">
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-heading" style="font-size:10px;opacity:.6"></i> 函件标题</label>
+        <input class="form-control" type="text" value="关于上海XX科技公司贷款逾期风险的预警通知函" placeholder="请输入函件标题">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="min-width:100%">
+        <label><i class="fas fa-tag" style="font-size:10px;opacity:.6"></i> 函件类型</label>
+        <div class="radio-group">
+          <label><input type="radio" name="letterType" value="riskReminder" checked> 风险提醒函</label>
+          <label><input type="radio" name="letterType" value="riskNotice"> 风险通知书</label>
+          <label><input type="radio" name="letterType" value="rectification"> 整改督办函</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-building" style="font-size:10px;opacity:.6"></i> 接收单位</label>
+        <input class="form-control" type="text" value="上海XX科技公司" placeholder="请输入接收单位名称">
+      </div>
+      <div class="form-group" style="min-width:120px;flex:0 1 auto">
+        <label><i class="fas fa-user" style="font-size:10px;opacity:.6"></i> 联系人</label>
+        <input class="form-control" type="text" value="张总" placeholder="联系人" style="min-width:100px">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-share" style="font-size:10px;opacity:.6"></i> 抄送部门</label>
+        <input class="form-control" type="text" value="风控部、法务部" placeholder="请输入抄送部门，多个部门用顿号分隔">
+      </div>
+      <div class="form-group" style="min-width:160px;flex:0 1 auto">
+        <label><i class="fas fa-calendar-day" style="font-size:10px;opacity:.6"></i> 限办日期</label>
+        <input class="form-control" type="date" value="2026-09-15">
+        <span class="form-hint"><i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i> 触发时限</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 函件正文 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-file-lines" style="color:var(--text-light)"></i> 函件正文 <span style="font-weight:400;font-size:11px;color:var(--text-muted)">（支持富文本编辑）</span></div>
+  <div class="form-card-body">
+    <div class="form-row">
+      <div class="form-group" style="min-width:100%">
+        <textarea class="form-control textarea-monospace" placeholder="请输入函件正文内容...">XX公司：
+
+  经系统监测，贵司截至9月5日贷款逾期率已达7.2%，超过预警阈值（5%）。根据《风险管理预警管理办法》相关规定，现正式向贵司发出风险预警通知。
+
+  请贵司高度重视上述风险状况，于收到本函后10个工作日内提交整改方案，包括但不限于以下内容：
+  1. 逾期原因分析及现状说明；
+  2. 拟采取的整改措施及时间节点；
+  3. 预计整改完成时间及预期效果。
+
+  如有疑问，请及时与风险管理部联系。
+
+  特此函告。
+
+  金控并表系统风险管理部
+  2026年9月5日</textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 附件文件清单 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-paperclip" style="color:var(--text-light)"></i> 附件文件清单</div>
+  <div class="form-card-body">
+    <div class="form-row">
+      <div class="form-group" style="min-width:100%">
+        <div class="upload-list">
+          <div class="upload-item"><i class="fas fa-file-pdf" style="color:var(--danger)"></i> 逾期明细表.pdf <span class="remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span></div>
+          <div class="upload-item"><i class="fas fa-file-word" style="color:var(--info)"></i> 整改方案模板.docx <span class="remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span></div>
+          <div class="upload-item"><i class="fas fa-file-excel" style="color:var(--success)"></i> 历史数据对比.xlsx <span class="remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 一、情况分析答复 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-pen" style="color:var(--info)"></i> 一、情况分析答复</div>
+  <div class="form-card-body">
+    <div class="form-row">
+      <div class="form-group" style="min-width:100%">
+        <textarea class="form-control textarea-rich" placeholder="请输入情况分析答复...">请详细说明导致本次预警指标异常的原因分析，包括但不限于：市场环境变化、内部经营状况、特殊事项影响等。</textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 二、处置方案反馈 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-list-check" style="color:var(--success)"></i> 二、处置方案反馈</div>
+  <div class="form-card-body">
+    <div class="form-row">
+      <div class="form-group" style="min-width:100%">
+        <textarea class="form-control textarea-rich" placeholder="请输入处置方案反馈...">请提出具体的整改措施及处置方案，包括：拟采取的整改措施、责任部门及责任人、计划完成时间节点等。</textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 三、处置执行跟踪 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-clock-rotate-left" style="color:var(--warning)"></i> 三、处置执行跟踪</div>
+  <div class="form-card-body">
+    <div class="form-row">
+      <div class="form-group" style="min-width:100%">
+        <textarea class="form-control textarea-rich" placeholder="请输入处置执行跟踪情况...">请记录处置方案的执行进展情况，包括：已完成的整改措施、执行效果评估、后续工作计划等。</textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 填报信息 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-user-pen" style="color:var(--text-light)"></i> 填报信息</div>
+  <div class="form-card-body">
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-user" style="font-size:10px;opacity:.6"></i> 填报人</label>
+        <input class="form-control" type="text" value="张三" placeholder="请输入填报人姓名">
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-phone" style="font-size:10px;opacity:.6"></i> 联系方式</label>
+        <input class="form-control" type="text" value="138-0000-0000" placeholder="请输入联系电话">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 附件上传 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-cloud-arrow-up" style="color:var(--text-light)"></i> 附件上传</div>
+  <div class="form-card-body">
+    <div class="form-row">
+      <div class="form-group" style="min-width:100%">
+        <div class="upload-area">
+          <label class="file-label" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-cloud-arrow-up"></i> <span>+ 上传附件</span>
+            <input type="file" id="fileInput" multiple onchange="handleFileUpload(this)">
+          </label>
+          <span class="form-hint" style="margin-left:4px">支持 PDF、Word、Excel 格式，单个文件不超过10MB</span>
+        </div>
+        <div class="upload-list" id="uploadList">
+          <div class="upload-item"><i class="fas fa-file-pdf" style="color:var(--danger)"></i> 整改报告.pdf <span class="remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 说明 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-comment" style="color:var(--text-light)"></i> 说明</div>
+  <div class="form-card-body">
+    <div class="form-row" style="margin-bottom:0">
+      <div class="form-group" style="min-width:100%">
+        <textarea class="form-control" style="min-height:80px;resize:vertical;font-family:inherit;font-size:13px" placeholder="请输入补充说明..."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 审批流程 -->
+<div class="form-card">
+  <div class="form-card-header"><i class="fas fa-clipboard-list" style="color:var(--warning)"></i> 审批流程</div>
+  <div class="form-card-body">
+    <div class="approval-steps">
+      <div class="approval-step">
+        <div class="step-circle done"><i class="fas fa-check" style="font-size:10px"></i></div>
+        <div class="step-info">
+          <span class="step-name">李风控</span>
+          <span class="step-role">经办人</span>
+          <span class="step-status" style="color:var(--success)"><i class="fas fa-check-circle" style="font-size:9px"></i> 已提交</span>
+        </div>
+        <span class="step-arrow"><i class="fas fa-chevron-right"></i></span>
+      </div>
+      <div class="approval-step">
+        <div class="step-circle active"><span>2</span></div>
+        <div class="step-info">
+          <span class="step-name">王总监</span>
+          <span class="step-role">部门经理</span>
+          <span class="step-status" style="color:var(--info)"><i class="fas fa-spinner" style="font-size:9px"></i> 审批中</span>
+        </div>
+        <span class="step-arrow"><i class="fas fa-chevron-right"></i></span>
+      </div>
+      <div class="approval-step">
+        <div class="step-circle pending"><span>3</span></div>
+        <div class="step-info">
+          <span class="step-name">陈总</span>
+          <span class="step-role">分管领导</span>
+          <span class="step-status" style="color:var(--text-muted)">待审批</span>
+        </div>
+        <span class="step-arrow"><i class="fas fa-chevron-right"></i></span>
+      </div>
+      <div class="approval-step">
+        <div class="step-circle pending"><span>4</span></div>
+        <div class="step-info">
+          <span class="step-name">归档</span>
+          <span class="step-role">自动归档</span>
+          <span class="step-status" style="color:var(--text-muted)">待完成</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 操作按钮 -->
+<div class="form-card" style="box-shadow:none;border:none;background:transparent">
+  <div class="action-bar" style="justify-content:flex-end">
+    <button class="btn btn-lg"><i class="fas fa-floppy-disk"></i> 保存草稿</button>
+    <button class="btn btn-lg btn-primary"><i class="fas fa-paper-plane"></i> 提交审批</button>
+    <button class="btn btn-lg btn-success"><i class="fas fa-eye"></i> 预览PDF</button>
+  </div>
+</div>
+
+</div></div>
+<div id="toastContainer" class="toast-container"></div>
+<div id="modalOverlay" class="modal-overlay"><div class="modal"><div class="modal-header"><span id="modalTitle"></span><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modalBody"></div><div class="modal-footer"><button class="btn" onclick="closeModal()">关闭</button></div></div></div>
+<script>
+function u(){document.getElementById('clock').textContent=new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});};u();setInterval(u,1000);
+function toggleTheme(){document.body.classList.toggle('dark');var i=document.getElementById('themeIcon');if(i)i.className=document.body.classList.contains('dark')?'fas fa-sun':'fas fa-moon';localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');}
+if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');var ti=document.getElementById('themeIcon');if(ti)ti.className='fas fa-sun';}
+function filterMenu(q){q=q.toLowerCase();document.querySelectorAll('.menu-item').forEach(function(m){var t=m.textContent.toLowerCase();m.style.display=q&&!t.includes(q)?'none':'flex';});}
+function showToast(msg,type){var c=document.getElementById('toastContainer');if(!c)return;var t=document.createElement('div');t.className='toast '+(type||'success');t.innerHTML='<i class="fas fa-'+(type==='error'?'times-circle':'check-circle')+'"></i> '+msg;c.appendChild(t);setTimeout(function(){t.classList.add('fadeout');setTimeout(function(){t.remove();},300);},2500);}
+function openModal(title,html){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=html;document.getElementById('modalOverlay').classList.add('show');}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
+function handleFileUpload(input){if(input.files&&input.files.length>0){var list=document.getElementById('uploadList');for(var i=0;i<input.files.length;i++){var f=input.files[i];var ext=f.name.split('.').pop().toLowerCase();var icon='fa-file';var color='var(--text-muted)';if(ext==='pdf'){icon='fa-file-pdf';color='var(--danger)';}else if(ext==='doc'||ext==='docx'){icon='fa-file-word';color='var(--info)';}else if(ext==='xls'||ext==='xlsx'){icon='fa-file-excel';color='var(--success)';}var item=document.createElement('div');item.className='upload-item';item.innerHTML='<i class="fas '+icon+'" style="color:'+color+'"></i> '+f.name+' <span class="remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>';list.appendChild(item);}input.value='';showToast('已上传 '+(input.files.length)+' 个附件');}}
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('button');
+  if(!btn||btn.closest('.modal-overlay'))return;
+  var t=btn.textContent.trim();
+  if(t==='')return;
+  if(t.indexOf('保存')>=0||t.indexOf('草稿')>=0){showToast('草稿已保存');return}
+  if(t.indexOf('提交')>=0){openModal('提交审批','<div style=\"padding:20px;text-align:center\"><i class=\"fas fa-paper-plane\" style=\"font-size:36px;display:block;margin-bottom:12px;color:var(--info)\"></i><p style=\"font-size:14px;font-weight:500;margin-bottom:6px\">确认提交审批？</p><p style=\"font-size:12px;color:var(--text-muted)\">提交后将进入审批流程，不可直接修改</p></div><div class=\"filter-group\" style=\"margin-top:12px\"><label>审批意见</label><textarea style=\"width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;min-height:60px;font-family:inherit;font-size:13px;background:var(--card-bg);color:var(--text)\"></textarea></div>');return}
+  if(t.indexOf('预览')>=0||t.indexOf('PDF')>=0){openModal('预览PDF','<div style=\"padding:30px;min-height:400px;background:rgba(255,255,255,.5);border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted);gap:8px\"><i class=\"fas fa-file-pdf\" style=\"font-size:40px;color:var(--danger)\"></i><p>PDF预览功能</p><p style=\"font-size:11px\">此处将展示函件PDF预览效果</p></div>');return}
+  if(t.indexOf('上传')>=0||t.indexOf('附件')>=0){document.getElementById('fileInput').click();return}
+  if(t.indexOf('查询')>=0||t.indexOf('搜索')>=0){showToast('查询完成');return}
+  if(t.indexOf('查看')>=0||t.indexOf('详情')>=0){showToast('正在加载原始预警数据...');return}
+  if(t.indexOf('导出')>=0||t.indexOf('下载')>=0){showToast('导出成功');return}
+  if(t.indexOf('审批')>=0){openModal('审批','<div style=\"padding:20px\"><div style=\"display:flex;gap:12px;margin-bottom:16px\"><button class=\"btn btn-success\" data-action=\"approve\"><i class=\"fas fa-check\"></i> 通过</button><button class=\"btn btn-danger\" data-action=\"reject\"><i class=\"fas fa-times\"></i> 驳回</button></div><div class=\"filter-group\"><label>审批意见</label><textarea style=\"width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;min-height:80px;font-family:inherit;font-size:13px;background:var(--card-bg);color:var(--text)\"></textarea></div></div>');return}
+  else{showToast('操作: '+t)}
+});
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('button[data-action]');
+  if(!btn)return;
+  var action=btn.getAttribute('data-action');
+  if(action==='approve'){closeModal();showToast('审批通过');}
+  if(action==='reject'){closeModal();showToast('已驳回','error');}
+});
+</script>
+</body>
+</html>

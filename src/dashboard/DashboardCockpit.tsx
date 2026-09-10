@@ -287,7 +287,7 @@ export default function DashboardCockpit({ state, role, institutionId, navigate,
       <iframe
         className="reference-cockpit-frame"
         src="/group-cockpit/index.html"
-        title="集团及国资公司并表风险驾驶舱"
+        title="风险专题看板"
         loading="eager"
         allowFullScreen
       />
@@ -307,7 +307,7 @@ export default function DashboardCockpit({ state, role, institutionId, navigate,
   }
   return <div className={`dashboard-cockpit v14-cockpit ${viewMode === 'management' ? 'is-management' : ''} ${institution ? 'is-institution' : 'is-group'}`}>
     <div className="v14-grid-bg" /><div className="v14-scanline" />
-    <header className="v14-topbar"><div className="v14-title-lockup">{institution && <button className="v14-back" onClick={() => navigate('/dashboard')}>‹ 返回集团驾驶舱</button>}<span>{institution ? `${config.label.toUpperCase()} INSTITUTION COCKPIT` : role === '集团' ? 'GROUP CONSOLIDATED RISK CENTER' : 'FINANCIAL HOLDING CONTROL CENTER'}</span><h1>{institution ? `${institution.shortName}驾驶舱` : '金控并表管理驾驶舱'}</h1><small>{institution ? `${config.label}业态 · ${config.frequency}监测口径 · 当前机构数据权限` : '集团金融风险全景监测与穿透管理'}</small></div><div className="v14-top-actions"><ViewSwitcher value={viewMode} onChange={setViewMode} /><div className="v14-update"><small>最近数据更新时间</small><b>2024-06-30 13:22:45</b></div><button className="v14-ai-shortcut" onClick={() => document.querySelector<HTMLButtonElement>('.smart-assistant-launcher')?.click()}><i>AI</i><span>问数</span></button></div></header>
+    <header className="v14-topbar"><div className="v14-title-lockup">{institution && <button className="v14-back" onClick={() => navigate('/dashboard')}>‹ 返回风险专题看板</button>}<span>{institution ? `${config.label.toUpperCase()} INSTITUTION COCKPIT` : role === '集团' ? 'GROUP CONSOLIDATED RISK CENTER' : 'FINANCIAL HOLDING CONTROL CENTER'}</span><h1>{institution ? `${institution.shortName}驾驶舱` : '风险专题看板'}</h1><small>{institution ? `${config.label}业态 · ${config.frequency}监测口径 · 当前机构数据权限` : '集团金融风险全景监测与穿透管理'}</small></div><div className="v14-top-actions"><ViewSwitcher value={viewMode} onChange={setViewMode} /><div className="v14-update"><small>最近数据更新时间</small><b>2024-06-30 13:22:45</b></div><button className="v14-ai-shortcut" onClick={() => document.querySelector<HTMLButtonElement>('.smart-assistant-launcher')?.click()}><i>AI</i><span>问数</span></button></div></header>
     <TopFilterBar value={filters} institutions={state.institutions.map(item => item.name)} locked={!!institution} onChange={setFilters} onReset={() => setFilters(defaultFilters())} />
     <nav className="v14-section-nav"><span>当前口径：{filters.period} · {filters.institution} · {filters.indicatorType} · {filters.riskType}</span><div><button onClick={() => scrollTo('overview')}>01 总体概览</button><button onClick={() => scrollTo('risk-view')}>02 风险全景视图</button><button onClick={() => scrollTo('operations')}>03 经营情况</button></div><em><i />{modeLabel} · 数据链路正常</em></nav>
     <main className="v14-main">
@@ -359,7 +359,7 @@ function ExecutiveCockpit({ state, navigate, toast }: { state: DemoState; naviga
   const sentiment = (item: NewsItem) => item.id === 'news-4' ? '正面' : item.id === 'news-2' ? '中性' : '负面';
   const newsList = (items: NewsItem[]) => items.map(item => <button className="exec-news-item" key={item.id} onClick={() => { setAllNews(false); setDrawer({ type: 'news', item }); }}><span><b>{item.institution}</b><time>{item.time}</time><em className={sentiment(item) === '负面' ? 'red' : sentiment(item) === '中性' ? 'yellow' : 'green'}>{sentiment(item)}</em></span><strong>{item.title}</strong></button>);
   return <div className="dashboard-cockpit executive-cockpit">
-    <header className="exec-topbar"><span className="exec-date">数据时点 <b>2024-06-30</b></span><h1>金控并表驾驶舱</h1><div><button onClick={() => { setDrawer(null); setSelection(null); setAllNews(false); toast('已刷新本地 DEMO 数据，数据时点为 2024-06-30'); }}>↻ 刷新</button><button onClick={toggleFullscreen}>{fullscreen ? '⊡ 退出全屏' : '⛶ 全屏'}</button></div></header>
+    <header className="exec-topbar"><span className="exec-date">数据时点 <b>2024-06-30</b></span><h1>风险专题看板</h1><div><button onClick={() => { setDrawer(null); setSelection(null); setAllNews(false); toast('已刷新本地 DEMO 数据，数据时点为 2024-06-30'); }}>↻ 刷新</button><button onClick={toggleFullscreen}>{fullscreen ? '⊡ 退出全屏' : '⛶ 全屏'}</button></div></header>
     <div className="exec-content-grid">
     <main className="exec-main-column">
     <section className="exec-overview"><div className="exec-section-heading"><h2><span>01</span>总体概览</h2><small>2024年6月 · 并表口径</small></div><div className="exec-summary-grid">

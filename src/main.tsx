@@ -4,5 +4,6 @@ import App from './App';
 import './styles.css';
 import './overrides.css';
 import './dashboard/dashboard.css';
+import './dashboard/group-dashboard.css';
 
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);

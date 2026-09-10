@@ -1,0 +1,552 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>偏好方案管理 - 金控并表系统</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+:root{--primary:#1a3c6d;--primary-light:#2a5caa;--accent:#e8a838;--bg:#f0f2f6;--sidebar-bg:#1a2538;--sidebar-text:#b0bec5;--sidebar-active:#2a3f5f;--card-bg:#fff;--border:#d9e2ea;--text:#1e293b;--text-light:#5b6e8c;--text-muted:#94a3b8;--danger:#b91c1c;--success:#10b981;--warning:#f59e0b;--info:#3b82f6;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,.06);--shadow-hover:0 10px 25px -5px rgba(0,0,0,.1),0 4px 10px -2px rgba(0,0,0,.05);--font:14px/1.5 -apple-system,"Microsoft YaHei","PingFang SC",sans-serif;--sidebar-width:232px;--transition:0.18s cubic-bezier(0.4,0,0.2,1)}
+.dark{--bg:#0f172a;--card-bg:#1e293b;--border:#334155;--text:#e2e8f0;--text-light:#94a3b8;--text-muted:#64748b;--sidebar-bg:#0c1222;--sidebar-active:#1a2940;--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-hover:0 10px 25px -5px rgba(0,0,0,.5)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font:var(--font);color:var(--text);background:var(--bg);display:flex;flex-direction:column;min-height:100vh;transition:background var(--transition),color var(--transition)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:4px}
+.header{height:54px;background:linear-gradient(135deg,var(--primary) 0%,#0f2347 100%);color:#fff;display:flex;align-items:center;padding:0 22px;z-index:110;box-shadow:0 2px 10px rgba(0,0,0,.2);flex-shrink:0;position:relative;overflow:hidden}
+.header h1{font-size:16px;font-weight:600;letter-spacing:.3px;display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+.header .sub{font-size:11px;opacity:.6;margin-left:10px;position:relative;z-index:1}
+.header .user{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;position:relative;z-index:1}
+.header .user .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;box-shadow:0 0 0 2px rgba(255,255,255,.2)}
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);color:var(--sidebar-text);overflow-y:auto;flex-shrink:0;font-size:13px;transition:width var(--transition);position:relative;z-index:50}
+.sidebar a{color:inherit;text-decoration:none}
+.sidebar-search{padding:10px 14px;position:sticky;top:0;background:var(--sidebar-bg);z-index:2}
+.sidebar-search input{width:100%;height:32px;padding:6px 10px 6px 30px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none;font-family:inherit}
+.sidebar-search i{position:absolute;left:22px;top:19px;font-size:12px;opacity:.4}
+.main{flex:1;overflow-y:auto;padding:22px 26px;scroll-behavior:smooth}
+.menu-item{display:flex;align-items:center;padding:0 16px;height:38px;cursor:pointer;border-left:3px solid transparent;transition:all .12s;gap:8px;font-size:13px;color:inherit;text-decoration:none}
+.menu-item:hover{background:rgba(255,255,255,.04);color:#fff}
+.menu-item.active{background:var(--sidebar-active);color:#fff;border-left-color:var(--accent);font-weight:600}
+.menu-group-title{font-size:10px;padding:16px 16px 4px;opacity:.4;letter-spacing:2px;border-top:1px solid rgba(255,255,255,.04);margin-top:6px;cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none}
+.menu-group-title:hover{opacity:.7}
+.menu-group-title .fa-chevron-down{font-size:8px;transition:transform var(--transition);opacity:.5}
+.menu-group-title.collapsed .fa-chevron-down{transform:rotate(-90deg)}
+.menu-group-title.collapsed+.group-items{max-height:0;overflow:hidden;opacity:0}
+.group-items{max-height:600px;transition:all var(--transition)}
+.page-title{font-size:1.15rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.page-title small{font-weight:400;color:var(--text-muted);font-size:12px}
+.breadcrumb{font-size:11px;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.breadcrumb a{color:var(--info);text-decoration:none}.breadcrumb a:hover{text-decoration:underline}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:var(--card-bg);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border);transition:all var(--transition);position:relative;overflow:hidden}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.stat-card .stat-title{font-size:11px;letter-spacing:.8px;font-weight:600;color:var(--text-light);margin-bottom:6px}
+.stat-value{font-size:1.8rem;font-weight:800;color:var(--text);line-height:1.15}
+.filter-bar{background:var(--card-bg);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.filter-group{display:flex;flex-direction:column;gap:4px;min-width:120px}
+.filter-group label{font-size:10px;font-weight:600;color:var(--text-light);letter-spacing:.5px}
+.filter-group input,.filter-group select{padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit}
+.filter-group input:focus,.filter-group select:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.btn{padding:7px 16px;border-radius:8px;font-weight:500;font-size:12px;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:var(--card-bg);color:var(--text);white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-family:inherit;text-decoration:none}
+.btn:hover{background:var(--bg);border-color:#cbd5e1}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light);border-color:var(--primary-light)}
+.btn-success{background:var(--success);border-color:var(--success);color:#fff}
+.btn-xs{padding:3px 8px;font-size:10px;border-radius:6px}
+.table-wrapper{background:var(--card-bg);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border)}
+.table-wrapper .table-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);background:#fafbfc}
+.dark .table-wrapper .table-header{background:var(--card-bg)}
+.table-header .title{font-weight:600;font-size:13px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;min-width:650px}
+.data-table th{padding:10px 12px;text-align:left;font-weight:600;background:#f8fafc;border-bottom:2px solid var(--border);white-space:nowrap;color:var(--text-light);font-size:11px;letter-spacing:.3px}
+.dark .data-table th{background:var(--sidebar-active)}
+.data-table td{padding:9px 12px;border-bottom:1px solid rgba(0,0,0,.04)}.dark .data-table td{border-color:rgba(255,255,255,.04)}
+.data-table tbody tr{transition:background .12s}.data-table tbody tr:hover{background:rgba(59,130,246,.04)}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:600;letter-spacing:.2px}
+.tag-success{background:rgba(16,185,129,.1);color:var(--success)}.tag-info{background:rgba(59,130,246,.1);color:var(--info)}
+.tag-warning{background:rgba(245,158,11,.1);color:var(--warning)}.tag-danger{background:rgba(185,28,28,.08);color:var(--danger)}
+.pagination-area{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid var(--border);background:var(--card-bg);font-size:12px}
+.page-info{color:var(--text-light)}
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card-bg);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.2);width:860px;max-width:94vw;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px;position:sticky;top:0;background:var(--card-bg);z-index:2}
+.modal-close{width:28px;height:28px;border:none;background:none;cursor:pointer;font-size:18px;color:var(--text-muted);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--bg);color:var(--text)}.modal-body{padding:18px}.modal-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid .full-width{grid-column:1 / -1}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11px;font-weight:600;color:var(--text-light);letter-spacing:.3px}
+.form-group input,.form-group select{padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;transition:all .15s}
+.form-group input:focus,.form-group select:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.form-group textarea{padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;transition:all .15s;min-height:70px;resize:vertical}
+.form-group textarea:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+</style>
+</head>
+<body>
+<div class="header"><h1><i class="fas fa-shield-halved" style="color:var(--accent)"></i> 金控并表系统</h1><span class="sub">v1.0</span>
+<div class="live-badge"><span class="dot"></span>实时 <span id="clock">--</span></div>
+<div class="user"><span>系统管理员</span><div class="avatar">管</div></div></div>
+<div class="layout">
+<div class="sidebar" id="sidebar"><div class="sidebar-search"><i class="fas fa-search"></i><input type="text" placeholder="搜索菜单..." oninput="filterMenu(this.value)"></div><div class="menu"><a class="menu-item" href="index.html"><i class="fas fa-home" style="width:16px"></i> 首页</a><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-gauge-high"></i> 门户与工作台<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="dashboard.html"><i class="fas fa-chart-pie" style="width:16px"></i> 驾驶舱</a><a class="menu-item" href="workbench.html"><i class="fas fa-list-check" style="width:16px"></i> 工作台</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-table"></i> 指标管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="pref-indicator.html"><i class="fas fa-table" style="width:16px"></i> 指标信息</a><a class="menu-item" href="indicator-query.html"><i class="fas fa-search" style="width:16px"></i> 指标数据查询</a></div><div class="menu-group-title" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bullseye"></i> 风险管理偏好及目标<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item active" href="pref-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 偏好方案管理</a><a class="menu-item" href="pref-target.html"><i class="fas fa-bullseye" style="width:16px"></i> 偏好指标查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-line"></i> 风险限额管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="limit-scheme.html"><i class="fas fa-file-lines" style="width:16px"></i> 限额方案管理</a><a class="menu-item" href="limit-target.html"><i class="fas fa-sliders" style="width:16px"></i> 限额参数设置</a><a class="menu-item" href="limit-warning-model.html"><i class="fas fa-diagram-project" style="width:16px"></i> 限额预警模型</a><a class="menu-item" href="limit-check.html"><i class="fas fa-magnifying-glass" style="width:16px"></i> 限额预警回检</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-bell"></i> 风险提示与处置<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="alert-prompt.html"><i class="fas fa-exclamation-triangle" style="width:16px"></i> 风险预警列表</a><a class="menu-item" href="alert-ledger.html"><i class="fas fa-book" style="width:16px"></i> 函件台账管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-file-alt"></i> 风险管理报告<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-event.html"><i class="fas fa-bolt" style="width:16px"></i> 重大风险事件报告</a><a class="menu-item" href="periodic-report.html"><i class="fas fa-calendar" style="width:16px"></i> 定期报告</a><a class="menu-item" href="report-template.html"><i class="fas fa-copy" style="width:16px"></i> 报告模板管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-chart-bar"></i> 数据分析与看板<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="risk-board.html"><i class="fas fa-triangle-exclamation" style="width:16px"></i> 风险看板</a><a class="menu-item" href="capital-board.html"><i class="fas fa-sack-dollar" style="width:16px"></i> 资本看板</a><a class="menu-item" href="theme-board.html"><i class="fas fa-chart-line" style="width:16px"></i> 专题分析看板</a><a class="menu-item" href="report-mgr.html"><i class="fas fa-file-excel" style="width:16px"></i> 报表管理</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-robot"></i> AI应用<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="ai-fill.html"><i class="fas fa-pen" style="width:16px"></i> AI辅助填报</a><a class="menu-item" href="ai-qa.html"><i class="fas fa-comments" style="width:16px"></i> AI智能问数</a><a class="menu-item" href="ai-collect.html"><i class="fas fa-satellite-dish" style="width:16px"></i> AI风险舆情预警</a><a class="menu-item" href="ai-report.html"><i class="fas fa-file-pen" style="width:16px"></i> AI风险报告生成</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-arrows-rotate"></i> 业务流程管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="process-def.html"><i class="fas fa-gear" style="width:16px"></i> 流程定义与配置</a><a class="menu-item" href="process-monitor.html"><i class="fas fa-eye" style="width:16px"></i> 流程监控</a><a class="menu-item" href="process-archive.html"><i class="fas fa-box-archive" style="width:16px"></i> 流程归档与查询</a></div><div class="menu-group-title collapsed" onclick="this.classList.toggle('collapsed')"><i class="fas fa-screwdriver-wrench"></i> 基础与系统管理<i class="fas fa-chevron-down"></i></div><div class="group-items"><a class="menu-item" href="base-info.html"><i class="fas fa-database" style="width:16px"></i> 基础信息管理</a><a class="menu-item" href="user-auth.html"><i class="fas fa-users" style="width:16px"></i> 用户与权限管理</a><a class="menu-item" href="data-std.html"><i class="fas fa-ruler" style="width:16px"></i> 数据标准管理</a><a class="menu-item" href="log-mgr.html"><i class="fas fa-clock-rotate-left" style="width:16px"></i> 操作日志管理</a><a class="menu-item" href="param-config.html"><i class="fas fa-gears" style="width:16px"></i> 参数配置</a></div></div></div>
+<div class="main">
+<div class="breadcrumb"><a href="index.html">首页</a> / 偏好方案管理</div>
+<div class="page-title"><i class="fas fa-file-lines" style="color:var(--info)"></i> 偏好方案管理 <small>| 风险偏好方案全流程管理</small></div>
+
+<div class="stats-grid"><div class="stat-card"><div class="stat-title">方案总数</div><div class="stat-value">3</div></div><div class="stat-card"><div class="stat-title">生效中</div><div class="stat-value">1</div></div><div class="stat-card"><div class="stat-title">审批中</div><div class="stat-value">1</div></div><div class="stat-card"><div class="stat-title">已过期</div><div class="stat-value">1</div></div></div>
+
+<div class="filter-bar"><div class="filter-group"><label>方案名称</label><input placeholder="请输入"></div><div class="filter-group"><label>状态</label><select><option>全部</option></select></div>
+<button class="btn btn-primary btn-xs" id="btnQuery">查询</button>
+<button class="btn btn-success btn-xs" id="btnAdd">+ 新建方案</button></div>
+
+<div class="table-wrapper"><div class="table-header"><span class="title">偏好方案列表</span></div>
+<table class="data-table"><thead><tr><th>方案编号</th><th>方案名称</th><th>管理机构</th><th>管理部门</th><th>版本</th><th>生效日期</th><th>失效日期</th><th>状态</th><th>操作</th></tr></thead><tbody>
+<tr><td>RAP-2026-001</td><td>2026年度风险偏好方案</td><td>国资公司</td><td>资本运营部</td><td>V2.0</td><td>2026-01-01</td><td>2026-12-31</td><td><span class="tag tag-success">已生效</span></td><td><button class="btn btn-xs view-btn">查看</button><button class="btn btn-xs edit-btn">编辑</button></td></tr>
+<tr><td>RAP-2026-002</td><td>2026年度风险偏好调整方案</td><td>国资公司</td><td>资本运营部</td><td>V1.0</td><td>2026-07-01</td><td>2026-12-31</td><td><span class="tag tag-warning">审批中</span></td><td><button class="btn btn-xs view-btn">查看</button></td></tr>
+</tbody></table></div>
+</div></div>
+
+<div id="toastContainer"></div>
+
+<script>
+function u(){document.getElementById('clock').textContent=new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});};u();setInterval(u,1000);
+function toggleTheme(){document.body.classList.toggle('dark');var i=document.getElementById('themeIcon');if(i)i.className=document.body.classList.contains('dark')?'fas fa-sun':'fas fa-moon';localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');}
+if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');var ti=document.getElementById('themeIcon');if(ti)ti.className='fas fa-sun';}
+function filterMenu(q){q=q.toLowerCase();document.querySelectorAll('.menu-item').forEach(function(m){var t=m.textContent.toLowerCase();m.style.display=q&&!t.includes(q)?'none':'flex';});}
+
+function showToast(msg){var c=document.getElementById('toastContainer');if(!c)return;var t=document.createElement('div');t.style.cssText='background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:10px 16px;box-shadow:0 4px 12px rgba(0,0,0,.1);color:var(--text);font-size:13px;margin-bottom:8px;animation:slideUp .25s ease';t.textContent=msg;c.appendChild(t);setTimeout(function(){t.remove();},2500);}
+
+function openModal(title,html){
+  var o=document.getElementById('modalOverlay');
+  if(!o){
+    o=document.createElement('div');
+    o.className='modal-overlay';
+    o.id='modalOverlay';
+    o.innerHTML='<div class="modal"><div class="modal-header"><span id="modalTitle"></span><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modalBody"></div><div class="modal-footer"><button class="btn btn-primary" onclick="closeModal();showToast(\'保存成功\')">保存</button><button class="btn" onclick="closeModal()">取消</button></div></div>';
+    document.body.appendChild(o);
+  }
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalBody').innerHTML=html;
+  o.classList.add('show');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
+
+// Event handlers
+document.getElementById('btnAdd').onclick = function(){
+  openModal('新增方案','<div class="form-grid">'+
+    '<div class="form-group full-width"><label>方案编号</label><input placeholder="自动生成" disabled style="background:var(--bg)"></div>'+
+    '<div class="form-group full-width"><label>方案名称 <span style="color:var(--danger)">*</span></label><input placeholder="请输入方案名称"></div>'+
+    '<div class="form-group"><label>年度</label><select><option>2026</option><option>2025</option><option>2024</option></select></div>'+
+    '<div class="form-group"><label>版本</label><input value="V1.0"></div>'+
+    '<div class="form-group"><label>管理机构 <span style="color:var(--danger)">*</span></label><select><option>国资公司</option><option>集团</option><option>子公司</option></select></div>'+
+    '<div class="form-group"><label>管理部门 <span style="color:var(--danger)">*</span></label><select><option>资本运营部</option><option>风险管理部</option><option>财务部</option></select></div>'+
+    '<div class="form-group"><label>生效日期 <span style="color:var(--danger)">*</span></label><input type="date"></div>'+
+    '<div class="form-group"><label>失效日期 <span style="color:var(--danger)">*</span></label><input type="date"></div>'+
+    '<div class="form-group full-width"><label>OA文号 <span style="color:var(--danger)">*</span></label><input placeholder="请输入OA文号"></div>'+
+	    '<div class="form-group full-width"><label>OA链接 <span style="color:var(--danger)">*</span></label><input placeholder="请输入OA链接"></div>'+
+	    '<div class="form-group full-width"><label>方案上传</label><div style="display:flex;gap:8px;align-items:center">'+
+    '<input type="file" id="fileUploadAdd" style="display:none" onchange="document.getElementById(\'fileNameAdd\').textContent=this.files[0]?this.files[0].name:\'未选择文件\'">'+
+    '<button class="btn btn-xs btn-primary" onclick="document.getElementById(\'fileUploadAdd\').click()"><i class="fas fa-upload"></i> 选择文件</button>'+
+    '<span id="fileNameAdd" style="font-size:12px;color:var(--text-muted)">未选择文件</span>'+
+    '<span style="font-size:10px;color:var(--text-muted);margin-left:4px">支持 .pdf, .doc, .docx, .xlsx 格式</span></div></div>'+
+    '<div class="form-group full-width"><label>风险偏好描述</label><textarea placeholder="请输入风险偏好描述"></textarea></div>'+
+	    '<div class="form-group full-width"><label>说明</label><textarea placeholder="请输入方案说明"></textarea></div>'+
+'<div style="margin-top:12px;grid-column:1/-1"><label style="color:var(--text-muted);font-size:11px;display:block;margin-bottom:8px;font-weight:600">目标分解列表</label>'+
+'<div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-end">'+
+'<div class="filter-group" style="min-width:140px"><label>目标机构</label><select onchange="filterTargetTable()" id="filterTargetOrg"><option value="">全部</option><option>集团总部</option><option>AMC子公司</option><option>证券子公司</option></select></div>'+
+'<div class="filter-group" style="min-width:140px"><label>指标名称</label><input placeholder="请输入" oninput="filterTargetTable()" id="filterTargetName"></div>'+
+'<button class="btn btn-xs" onclick="document.getElementById(\'filterTargetOrg\').value=\'\';document.getElementById(\'filterTargetName\').value=\'\';filterTargetTable()"><i class="fas fa-undo"></i> 重置</button>'+
+'<div style="margin-left:auto;display:flex;gap:6px"><button class="btn btn-xs btn-primary">+ 新增目标</button><button class="btn btn-xs">导入</button></div></div>'+
+'<div style="overflow-x:auto;border:1px solid var(--border);border-radius:8px">'+
+'<table id="targetTable" style="width:100%;font-size:11px;border-collapse:collapse;min-width:800px"><thead><tr style="background:var(--bg)">'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">指标代码</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">指标名称</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">目标机构</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">操作符</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">偏好指标值</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">数值单位</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">说明</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">状态</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">操作</th></tr></thead><tbody id="targetTableBody">'+
+'<tr data-org="集团总部" data-name="资本充足率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-001</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">资本充足率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">集团总部</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">12</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">资本充足率目标不低于12%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs">调整</button></td></tr>'+
+'<tr data-org="集团总部" data-name="杠杆率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-002</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">杠杆率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">集团总部</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">7</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">杠杆率目标不低于7%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs">调整</button></td></tr>'+
+'<tr data-org="AMC子公司" data-name="单一客户集中度"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-003</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">单一客户集中度</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">AMC子公司</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≤</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">10</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">单一客户集中度不超过10%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-warning">待下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs btn-primary">下达</button></td></tr>'+
+'<tr data-org="证券子公司" data-name="流动性覆盖率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-004</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">流动性覆盖率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">证券子公司</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">100</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">流动性覆盖率不低于100%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs">调整</button></td></tr>'+
+'<tr data-org="AMC子公司" data-name="不良贷款率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-005</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">不良贷款率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">AMC子公司</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≤</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">5</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">不良贷款率不超过5%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-warning">待下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs btn-primary">下达</button></td></tr>'+
+'<tr data-org="集团总部" data-name="拨备覆盖率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-006</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">拨备覆盖率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">集团总部</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">150</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">拨备覆盖率不低于150%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs">调整</button></td></tr>'+
+'</tbody></table></div>'+
+'<div id="targetPagination" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:12px">'+
+'<span id="targetPageInfo" style="color:var(--text-muted)">共 <b>6</b> 条</span>'+
+'<div id="targetPageControls" style="display:flex;gap:4px">'+
+'<button class="btn btn-xs" onclick="changeTargetPage(-1)"><i class="fas fa-chevron-left"></i></button>'+
+'<span id="targetPageNum" style="padding:3px 8px;font-size:11px;color:var(--text-light)">1</span>'+
+'<button class="btn btn-xs" onclick="changeTargetPage(1)"><i class="fas fa-chevron-right"></i></button></div></div></div>');
+};
+
+document.getElementById('btnQuery').onclick = function(){showToast('查询完成');};
+
+// View buttons
+document.querySelectorAll('.view-btn').forEach(function(b){
+  b.onclick = function(){
+    openModal('方案详情','<div class="form-grid" style="padding:4px 0">'+
+      '<div class="form-group full-width"><label style="color:var(--text-muted);font-size:11px;font-weight:600">方案编号</label><p style="font-weight:600;font-size:13px;color:var(--text)">RAP-2026-001</p></div>'+
+      '<div class="form-group full-width"><label style="color:var(--text-muted);font-size:11px;font-weight:600">方案名称</label><p style="font-size:13px;color:var(--text);font-weight:600">2026年度风险偏好方案</p></div>'+
+      '<div class="form-group"><label style="color:var(--text-muted);font-size:11px;font-weight:600">年度</label><p style="font-size:13px;color:var(--text)">2026</p></div>'+
+      '<div class="form-group"><label style="color:var(--text-muted);font-size:11px;font-weight:600">状态</label><p><span class="tag tag-success">已生效</span></p></div>'+
+      '<div class="form-group"><label style="color:var(--text-muted);font-size:11px;font-weight:600">版本</label><p style="font-size:13px;color:var(--text)">V2.0</p></div>'+
+      '<div class="form-group"><label style="color:var(--text-muted);font-size:11px;font-weight:600">管理机构</label><p style="font-size:13px;color:var(--text)">国资公司</p></div>'+
+      '<div class="form-group"><label style="color:var(--text-muted);font-size:11px;font-weight:600">管理部门</label><p style="font-size:13px;color:var(--text)">资本运营部</p></div>'+
+      '<div class="form-group"><label style="color:var(--text-muted);font-size:11px;font-weight:600">生效日期</label><p style="font-size:13px;color:var(--text)">2026-01-01</p></div>'+
+      '<div class="form-group"><label style="color:var(--text-muted);font-size:11px;font-weight:600">失效日期</label><p style="font-size:13px;color:var(--text)">2026-12-31</p></div>'+
+      '<div class="form-group full-width"><label style="color:var(--text-muted);font-size:11px;font-weight:600">OA文号</label><p style="font-size:13px;color:var(--text)">-</p></div>'+
+      '<div class="form-group full-width"><label style="color:var(--text-muted);font-size:11px;font-weight:600">OA链接</label><p style="font-size:13px;color:var(--text)">-</p></div>'+
+      '<div class="form-group full-width"><label style="color:var(--text-muted);font-size:11px;font-weight:600">方案上传</label><div style="display:flex;gap:8px;align-items:center;padding:4px 0">'+
+      '<i class="fas fa-paperclip" style="color:var(--info)"></i>'+
+      '<span style="font-size:13px;color:var(--text)">2026年度风险偏好方案.pdf</span>'+
+      '<button class="btn btn-xs" onclick="showToast(\'文件下载中\')"><i class="fas fa-download"></i> 下载</button>'+
+      '<button class="btn btn-xs" onclick="showToast(\'文件预览中\')"><i class="fas fa-eye"></i> 预览</button></div></div>'+
+      '<div class="form-group full-width"><label style="color:var(--text-muted);font-size:11px;font-weight:600">风险偏好描述</label><p style="font-size:13px;color:var(--text);background:var(--bg);padding:10px 12px;border-radius:8px">-</p></div>'+
+	      '<div class="form-group full-width"><label style="color:var(--text-muted);font-size:11px;font-weight:600">说明</label><p style="font-size:13px;color:var(--text);background:var(--bg);padding:10px 12px;border-radius:8px">2026年度集团风险偏好方案。</p></div>'+
+'<div style="margin-top:8px;grid-column:1/-1"><label style="color:var(--text-muted);font-size:11px;display:block;margin-bottom:8px;font-weight:600">目标分解列表</label>'+
+'<div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-end">'+
+'<div class="filter-group" style="min-width:140px"><label>目标机构</label><select><option value="">全部</option><option>集团总部</option><option>AMC子公司</option><option>证券子公司</option></select></div>'+
+'<div class="filter-group" style="min-width:140px"><label>指标名称</label><input placeholder="请输入"></div>'+
+'<button class="btn btn-xs btn-primary"><i class="fas fa-undo"></i> 重置</button></div>'+
+'<div style="overflow-x:auto;border:1px solid var(--border);border-radius:8px">'+
+'<table style="width:100%;font-size:11px;border-collapse:collapse;min-width:800px"><thead><tr style="background:var(--bg)">'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">指标代码</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">指标名称</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">目标机构</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">操作符</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">偏好指标值</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">数值单位</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">说明</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">状态</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">操作</th></tr></thead><tbody>'+
+'<tr><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-001</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">资本充足率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">集团总部</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">12</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">资本充足率目标不低于12%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs" disabled style="opacity:.5">调整</button></td></tr>'+
+'<tr><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-002</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">杠杆率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">集团总部</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">7</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">杠杆率目标不低于7%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs" disabled style="opacity:.5">调整</button></td></tr>'+
+'<tr><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-003</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">单一客户集中度</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">AMC子公司</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≤</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">10</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">单一客户集中度不超过10%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-warning">待下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs" disabled style="opacity:.5">下达</button></td></tr>'+
+'</tbody></table></div>'+
+'<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:12px">'+
+'<span style="color:var(--text-muted)">共 <b>3</b> 条</span>'+
+'<div style="display:flex;gap:4px">'+
+'<button class="btn btn-xs"><i class="fas fa-chevron-left"></i></button>'+
+'<span style="padding:3px 8px;font-size:11px;color:var(--text-light)">1/1</span>'+
+'<button class="btn btn-xs"><i class="fas fa-chevron-right"></i></button></div></div></div>');
+  };
+});
+
+// Edit buttons
+document.querySelectorAll('.edit-btn').forEach(function(b){
+  b.onclick = function(){
+    openModal('编辑方案','<div class="form-grid">'+
+      '<div class="form-group full-width"><label>方案编号</label><input value="RAP-2026-001" disabled style="width:100%"></div>'+
+      '<div class="form-group full-width"><label>方案名称 <span style="color:var(--danger)">*</span></label><input value="2026年度风险偏好方案" style="width:100%"></div>'+
+      '<div class="form-group"><label>年度</label><select style="width:100%"><option>2026</option><option>2025</option><option>2024</option></select></div>'+
+      '<div class="form-group"><label>版本</label><input value="V2.0" style="width:100%"></div>'+
+      '<div class="form-group"><label>管理机构 <span style="color:var(--danger)">*</span></label><select style="width:100%"><option selected>国资公司</option><option>集团</option><option>子公司</option></select></div>'+
+      '<div class="form-group"><label>管理部门 <span style="color:var(--danger)">*</span></label><select style="width:100%"><option selected>资本运营部</option><option>风险管理部</option><option>财务部</option></select></div>'+
+      '<div class="form-group"><label>生效日期</label><input type="date" value="2026-01-01" style="width:100%"></div>'+
+      '<div class="form-group"><label>失效日期</label><input type="date" value="2026-12-31" style="width:100%"></div>'+
+      '<div class="form-group full-width"><label>OA文号 <span style="color:var(--danger)">*</span></label><input placeholder="请输入OA文号" style="width:100%"></div>'+
+      '<div class="form-group full-width"><label>OA链接 <span style="color:var(--danger)">*</span></label><input placeholder="请输入OA链接" style="width:100%"></div>'+
+      '<div class="form-group full-width"><label>方案上传</label><div style="display:flex;gap:8px;align-items:center">'+
+      '<input type="file" id="fileUpload" style="display:none" onchange="document.getElementById(\'fileName\').textContent=this.files[0]?this.files[0].name:\'未选择文件\'">'+
+      '<button class="btn btn-xs btn-primary" onclick="document.getElementById(\'fileUpload\').click()"><i class="fas fa-upload"></i> 选择文件</button>'+
+      '<span id="fileName" style="font-size:12px;color:var(--text-muted)">未选择文件</span>'+
+      '<span style="font-size:10px;color:var(--text-muted);margin-left:4px">支持 .pdf, .doc, .docx, .xlsx 格式</span></div></div>'+
+      '<div class="form-group full-width"><label>风险偏好描述</label><textarea style="width:100%" placeholder="请输入风险偏好描述"></textarea></div>'+
+	      '<div class="form-group full-width"><label>说明</label><textarea style="width:100%">2026年度集团风险偏好方案。</textarea></div>'+
+'<div style="margin-top:12px;grid-column:1/-1"><label style="color:var(--text-muted);font-size:11px;display:block;margin-bottom:8px;font-weight:600">目标分解列表</label>'+
+'<div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-end">'+
+'<div class="filter-group" style="min-width:140px"><label>目标机构</label><select onchange="filterTargetTable()" id="filterTargetOrg"><option value="">全部</option><option>集团总部</option><option>AMC子公司</option><option>证券子公司</option></select></div>'+
+'<div class="filter-group" style="min-width:140px"><label>指标名称</label><input placeholder="请输入" oninput="filterTargetTable()" id="filterTargetName"></div>'+
+'<button class="btn btn-xs btn-primary" onclick="document.getElementById(\'filterTargetOrg\').value=\'\';document.getElementById(\'filterTargetName\').value=\'\';filterTargetTable()"><i class="fas fa-undo"></i> 重置</button>'+
+'<div style="margin-left:auto;display:flex;gap:6px"><button class="btn btn-xs btn-primary">+ 新增目标</button><button class="btn btn-xs">导入</button></div></div>'+
+'<div style="overflow-x:auto;border:1px solid var(--border);border-radius:8px">'+
+'<table id="targetTable" style="width:100%;font-size:11px;border-collapse:collapse;min-width:800px"><thead><tr style="background:var(--bg)">'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">指标代码</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">指标名称</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">目标机构</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">操作符</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">偏好指标值</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">数值单位</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">说明</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">状态</th>'+
+'<th style="padding:6px 8px;text-align:left;white-space:nowrap;font-weight:600;border-bottom:2px solid var(--border)">操作</th></tr></thead><tbody id="targetTableBody">'+
+'<tr data-org="集团总部" data-name="资本充足率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-001</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">资本充足率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">集团总部</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">12</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">资本充足率目标不低于12%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs">调整</button></td></tr>'+
+'<tr data-org="集团总部" data-name="杠杆率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-002</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">杠杆率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">集团总部</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">7</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">杠杆率目标不低于7%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs">调整</button></td></tr>'+
+'<tr data-org="AMC子公司" data-name="单一客户集中度"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-003</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">单一客户集中度</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">AMC子公司</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≤</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">10</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">单一客户集中度不超过10%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-warning">待下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs btn-primary">下达</button></td></tr>'+
+'<tr data-org="证券子公司" data-name="流动性覆盖率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-004</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">流动性覆盖率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">证券子公司</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">100</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">流动性覆盖率不低于100%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs">调整</button></td></tr>'+
+'<tr data-org="AMC子公司" data-name="不良贷款率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-005</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">不良贷款率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">AMC子公司</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≤</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">5</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">不良贷款率不超过5%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-warning">待下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs btn-primary">下达</button></td></tr>'+
+'<tr data-org="集团总部" data-name="拨备覆盖率"><td style="padding:5px 8px;border-bottom:1px solid var(--border)">ZB-006</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">拨备覆盖率</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">集团总部</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">≥</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">150</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)">拨备覆盖率不低于150%</td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span class="tag tag-success">已下达</span></td>'+
+'<td style="padding:5px 8px;border-bottom:1px solid var(--border)"><button class="btn btn-xs">调整</button></td></tr>'+
+'</tbody></table></div>'+
+'<div id="targetPagination" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:12px">'+
+'<span id="targetPageInfo" style="color:var(--text-muted)">共 <b>6</b> 条</span>'+
+'<div id="targetPageControls" style="display:flex;gap:4px">'+
+'<button class="btn btn-xs" onclick="changeTargetPage(-1)"><i class="fas fa-chevron-left"></i></button>'+
+'<span id="targetPageNum" style="padding:3px 8px;font-size:11px;color:var(--text-light)">1</span>'+
+'<button class="btn btn-xs" onclick="changeTargetPage(1)"><i class="fas fa-chevron-right"></i></button></div></div></div>');
+  };
+});
+// Global click delegation for tolerance table buttons
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('button');
+  if (!btn) return;
+  var modal = document.getElementById('modalOverlay');
+  if (!modal || !modal.classList.contains('show')) return;
+  if (!btn.closest('#modalBody')) return;
+  var txt = btn.textContent.trim();
+  if (txt === '编辑') {
+    var h = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">';
+    h += '<div class="filter-group"><label>指标编号</label><input value="RPI-001" disabled style="width:100%"></div>';
+    h += '<div class="filter-group"><label>类型</label><select style="width:100%"><option selected>资本</option><option>集中度风险</option><option>流动性风险</option></select></div>';
+    h += '<div class="filter-group" style="grid-column:1/-1"><label>指标名称</label><input value="资本充足率" style="width:100%"></div>';
+    h += '<div class="filter-group"><label>操作符</label><select style="width:100%"><option>大于</option><option selected>大于等于</option><option>小于</option><option>小于等于</option></select></div>';
+    h += '<div class="filter-group"><label>目标偏好阈值</label><input value="12%" style="width:100%"></div>';
+    h += '<div class="filter-group"><label>生效日期</label><input type="date" value="2026-01-01" style="width:100%"></div>';
+    h += '<div class="filter-group"><label>失效日期</label><input type="date" value="2026-12-31" style="width:100%"></div>';
+    h += '<div class="filter-group" style="grid-column:1/-1"><label>偏好说明</label><textarea style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;min-height:60px;font-family:inherit;font-size:13px;background:var(--card-bg);color:var(--text)" placeholder="请输入偏好说明"></textarea></div>';
+    h += '<div class="filter-group" style="grid-column:1/-1"><label>备注</label><textarea style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;min-height:60px;font-family:inherit;font-size:13px;background:var(--card-bg);color:var(--text)" placeholder="请输入备注"></textarea></div></div>';
+    openModal('编辑指标',h); return;
+  }
+  if (txt === '删除') {
+    var h = '<div style="text-align:center;padding:30px">';
+    h += '<i class="fas fa-exclamation-triangle" style="font-size:48px;color:var(--danger);margin-bottom:16px;display:block"></i>';
+    h += '<p style="font-size:16px;font-weight:600;margin-bottom:8px">确认删除此指标？</p>';
+    h += '<p style="color:var(--text-muted)">此操作不可撤销。</p></div>';
+    openModal('删除确认',h); return;
+  }
+  if (txt === '+ 新增指标') {
+    var h = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">';
+    h += '<div class="filter-group"><label>指标编号</label><input placeholder="自动生成" disabled style="width:100%"></div>';
+    h += '<div class="filter-group"><label>指标名称</label><input placeholder="请输入指标名称" style="width:100%"></div>';
+    h += '<div class="filter-group"><label>类型</label><select style="width:100%"><option>资本</option><option>集中度风险</option><option>流动性风险</option></select></div>';
+    h += '<div class="filter-group"><label>目标偏好</label><input placeholder="如: 12%" style="width:100%"></div>';
+    h += '<div class="filter-group"><label>生效日期</label><input type="date" style="width:100%"></div>';
+    h += '<div class="filter-group"><label>失效日期</label><input type="date" style="width:100%"></div></div>';
+    openModal('新增指标',h); return;
+  }
+  if (txt === '调整') {
+    var h = '<div class="form-grid">'+
+      '<div class="form-group"><label>年度</label><select><option>2026</option><option>2025</option><option>2024</option></select></div>'+
+      '<div class="form-group"><label>偏好方案</label><select><option>2026年度偏好方案</option><option>2025年度偏好方案</option></select></div>'+
+      '<div class="form-group"><label>指标编号</label><input value="ZB-001" readonly style="background:var(--bg)"></div>'+
+      '<div class="form-group"><label>指标名称</label><input value="资本充足率" readonly style="background:var(--bg)"></div>'+
+      '<div class="form-group"><label>管理机构</label><select><option>国资公司</option><option>集团</option><option>子公司</option></select></div>'+
+      '<div class="form-group"><label>管理部门</label><select><option>资本运营部</option><option>风险管理部</option><option>财务部</option></select></div>'+
+      '<div class="form-group"><label>目标机构</label><select><option>集团总部</option><option>AMC子公司</option><option>证券子公司</option></select></div>'+
+      '<div class="form-group"><label>操作符</label><select><option>大于</option><option>大于等于</option><option selected>小于</option><option>小于等于</option></select></div>'+
+      '<div class="form-group"><label>偏好指标值</label><input placeholder="请输入偏好指标值"></div>'+
+      '<div class="form-group"><label>数值单位</label><select><option>%</option><option>万元</option><option>亿元</option></select></div>'+
+      '<div class="form-group"><label>生效日期</label><input type="date" value="2026-01-01"></div>'+
+      '<div class="form-group"><label>失效日期</label><input type="date" value="2026-12-31"></div>'+
+      '<div class="form-group full-width"><label>说明</label><textarea placeholder="请输入说明"></textarea></div>'+
+      '</div>';
+    openModal('调整',h);
+  }
+  if (txt === '下达') {
+    var h = '<div style="text-align:center;padding:30px">'+
+      '<i class="fas fa-check-circle" style="font-size:48px;color:var(--success);margin-bottom:16px;display:block"></i>'+
+      '<p style="font-size:16px;font-weight:600;margin-bottom:8px">确认下达此目标？</p>'+
+      '<p style="color:var(--text-muted)">下达后目标将生效并通知相关机构。</p></div>';
+    openModal('下达确认',h); return;
+  }
+  if (txt === '+ 新增目标') {
+    var h = '<div class="form-grid" style="padding:4px 0">'+
+      '<div class="form-group"><label>年度</label><select><option>2026</option><option>2025</option><option>2024</option></select></div>'+
+      '<div class="form-group"><label>偏好方案</label><select><option>2026年度偏好方案</option><option>2025年度偏好方案</option></select></div>'+
+      '<div class="form-group"><label>指标编号</label><input placeholder="自动生成" disabled></div>'+
+      '<div class="form-group"><label>指标名称</label><input placeholder="请输入指标名称"></div>'+
+      '<div class="form-group"><label>目标机构</label><select><option>集团总部</option><option>AMC子公司</option><option>证券子公司</option></select></div>'+
+      '<div class="form-group"><label>管理机构</label><select><option>风险管理部</option><option>资金运营部</option><option>合规管理部</option></select></div>'+
+      '<div class="form-group"><label>数值单位</label><select><option>%</option><option>万元</option><option>亿元</option></select></div>'+
+      '<div class="form-group"><label>管理部门</label><select><option>风险管理部</option><option>资金运营部</option><option>合规管理部</option></select></div>'+
+      '<div class="form-group"><label>操作符</label><select><option>大于</option><option>大于等于</option><option selected>小于</option><option>小于等于</option></select></div>'+
+      '<div class="form-group"><label>偏好指标值</label><input placeholder="请输入偏好指标值"></div>'+
+      '<div class="form-group"><label>生效日期</label><input type="date"></div>'+
+      '<div class="form-group"><label>失效日期</label><input type="date"></div>'+
+      '<div class="form-group full-width"><label>说明</label><textarea placeholder="请输入说明"></textarea></div>'+
+      '</div>';
+    openModal('新增目标',h); return;
+  }
+  if (txt === '导入') {
+    showToast('导入功能已触发'); return;
+  }
+});
+
+// Target table filter & pagination
+var targetPageSize = 3;
+var targetCurrentPage = 1;
+
+function filterTargetTable() {
+  var org = document.getElementById('filterTargetOrg').value;
+  var name = document.getElementById('filterTargetName').value.toLowerCase();
+  var rows = document.querySelectorAll('#targetTableBody tr');
+  var visible = [];
+  rows.forEach(function(r) {
+    var match = true;
+    if (org && r.getAttribute('data-org') !== org) match = false;
+    if (name && r.getAttribute('data-name').toLowerCase().indexOf(name) < 0) match = false;
+    if (match) { visible.push(r); r.style.display = ''; }
+    else { r.style.display = 'none'; }
+  });
+  targetCurrentPage = 1;
+  updateTargetPagination(visible);
+}
+
+function updateTargetPagination(visibleRows) {
+  var total = visibleRows.length;
+  var totalPages = Math.max(1, Math.ceil(total / targetPageSize));
+  if (targetCurrentPage > totalPages) targetCurrentPage = totalPages;
+  var start = (targetCurrentPage - 1) * targetPageSize;
+  var end = Math.min(start + targetPageSize, total);
+  // Hide all visible rows first, then show only current page
+  visibleRows.forEach(function(r, i) {
+    r.style.display = (i >= start && i < end) ? '' : 'none';
+  });
+  document.getElementById('targetPageInfo').innerHTML = '共 <b>' + total + '</b> 条';
+  document.getElementById('targetPageNum').textContent = targetCurrentPage + '/' + totalPages;
+}
+
+function changeTargetPage(delta) {
+  var total = document.querySelectorAll('#targetTableBody tr').length;
+  var totalPages = Math.max(1, Math.ceil(total / targetPageSize));
+  var newPage = targetCurrentPage + delta;
+  if (newPage < 1 || newPage > totalPages) return;
+  targetCurrentPage = newPage;
+  // Re-apply filter to get visible rows, then paginate
+  var org = document.getElementById('filterTargetOrg').value;
+  var name = document.getElementById('filterTargetName').value.toLowerCase();
+  var rows = document.querySelectorAll('#targetTableBody tr');
+  var visible = [];
+  rows.forEach(function(r) {
+    var match = true;
+    if (org && r.getAttribute('data-org') !== org) match = false;
+    if (name && r.getAttribute('data-name').toLowerCase().indexOf(name) < 0) match = false;
+    if (match) visible.push(r);
+  });
+  updateTargetPagination(visible);
+}
+
+</script>
+</body>
+</html>
