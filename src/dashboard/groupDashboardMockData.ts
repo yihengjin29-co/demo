@@ -75,6 +75,57 @@ export const institutionEquity = [
   { name: '国际AMC', relation: '控股', ratio: '36.5%', type: '资产管理', totalAssets: '1,268亿', netAssets: '286亿', revenue: '76亿', profit: '18亿', children: ['AMC资产管理', '特殊机会投资', '境外SPV'], remaining: 15 },
 ];
 
+export type InstitutionPenetrationMetric = {
+  id: string;
+  name: string;
+  value: string;
+  unit: string;
+  change: string;
+  tone: 'up' | 'down' | 'warn' | 'flat';
+};
+
+export type InstitutionPenetrationItem = {
+  id: 'spdb' | 'cpic' | 'ht' | 'amc';
+  name: string;
+  shortName: string;
+  equityRatio: string;
+  stockPrice: string;
+  marketValue: string;
+  metrics: InstitutionPenetrationMetric[];
+};
+
+// Market and indicator values are synthetic fixtures. Indicator IDs mirror the risk-board pool.
+export const institutionPenetration: InstitutionPenetrationItem[] = [
+  {
+    id: 'spdb', name: '浦发银行', shortName: '浦发', equityRatio: '12.3%', stockPrice: '¥9.86', marketValue: '¥2,892亿',
+    metrics: [
+      { id: 'p-cap', name: '资本充足率', value: '14.80', unit: '%', change: '▲ 0.20pct', tone: 'up' },
+      { id: 'p-npl', name: '不良贷款率', value: '1.67', unit: '%', change: '▼ 0.03pct', tone: 'down' },
+    ],
+  },
+  {
+    id: 'cpic', name: '太保', shortName: '太保', equityRatio: '18.7%', stockPrice: '¥28.60', marketValue: '¥2,745亿',
+    metrics: [
+      { id: 'c-solvency', name: '综合偿付能力充足率', value: '238.70', unit: '%', change: '▲ 3.10pct', tone: 'up' },
+      { id: 'c-roe', name: '净资产收益率', value: '12.60', unit: '%', change: '▲ 0.60pct', tone: 'up' },
+    ],
+  },
+  {
+    id: 'ht', name: '国泰海通', shortName: '国泰海通', equityRatio: '32.5%', stockPrice: '¥16.42', marketValue: '¥5,328亿',
+    metrics: [
+      { id: 'h-netcapital', name: '净资本', value: '1,284', unit: '亿元', change: '▲ 42亿元', tone: 'up' },
+      { id: 'h-cap', name: '风险覆盖率', value: '186.50', unit: '%', change: '▲ 4.20pct', tone: 'up' },
+    ],
+  },
+  {
+    id: 'amc', name: '国际AMC', shortName: '国际AMC', equityRatio: '36.5%', stockPrice: '非上市', marketValue: '—',
+    metrics: [
+      { id: 'a-credit', name: '项目逾期率', value: '8.40', unit: '%', change: '▲ 0.40pct', tone: 'warn' },
+      { id: 'a-liq', name: '现金短债比', value: '1.08', unit: '倍', change: '▲ 0.05倍', tone: 'up' },
+    ],
+  },
+];
+
 export const eventMonitor = [
   { name: '重大风险事件', value: 6, delta: '▲ 3', tone: 'red', icon: '!' },
   { name: '重大舆情事件', value: 11, delta: '▲ 2', tone: 'blue', icon: '▤' },

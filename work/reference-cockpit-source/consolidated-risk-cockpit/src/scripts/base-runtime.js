@@ -1,7 +1,7 @@
 'use strict';
 const $=(q,root=document)=>root.querySelector(q), $$=(q,root=document)=>[...root.querySelectorAll(q)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const ORGS={group:{name:'并表监测层',type:'独立计算口径 · 示例'},amc:{name:'国际AMC',type:'不良资产经营 · 手工填报'},ht:{name:'国泰海通',type:'证券业务 · 接口接入'}};
+const ORGS={group:{name:'并表监测层',type:'独立计算口径 · 示例'},amc:{name:'国际AMC',type:'不良资产经营 · 手工填报'},ht:{name:'国泰海通',type:'证券业务 · 接口接入'},cpic:{name:'太保',type:'保险业务 · 接口接入（演示）'}};
 const CATS=[['credit','信用'],['concentration','集中度'],['liquidity','流动性'],['market','市场'],['operational','操作'],['compliance','合规'],['reputation','声誉'],['it','信息科技'],['strategic','战略'],['adequacy','资本充足'],['efficiency','经营效率']];
 const catName=id=>CATS.find(c=>c[0]===id)?.[1]||id;
 const STATUS={red:'红灯',yellow:'黄灯',green:'正常',no_data:'缺数',overdue:'数据超期',none:'未配置'};
@@ -48,11 +48,18 @@ const seeds=[
  ['h-rep','ht','reputation','重大声誉风险事件数量',0,'件','high',1,2,'经人工核实并认定的重大声誉事件数量'],
  ['h-it','ht','it','重要系统可用率',99.98,'%', 'low',99.9,99.5,'可用服务时间 / 应提供服务时间 × 100%'],
  ['h-strategy','ht','strategic','战略目标执行偏离度',8.2,'%', 'high',10,20,'目标与实际差异 / 目标；按年度目标映射监测'],
+ ['h-netcapital','ht','adequacy','净资本',1284,'亿元', 'low',1100,900,'按风险看板演示口径归集的净资本'],
  ['h-cap','ht','adequacy','风险覆盖率',186.5,'%', 'low',150,120,'净资本 / 各项风险资本准备之和 × 100%'],
  ['h-roe','ht','efficiency','净资产收益率',7.6,'%', 'low',5,3,'本机构净利润 / 平均净资产 × 100%'],
- ['h-cost','ht','efficiency','成本收入比',42.1,'%', 'high',45,55,'同口径营业费用 / 营业收入 × 100%']
+ ['h-cost','ht','efficiency','成本收入比',42.1,'%', 'high',45,55,'同口径营业费用 / 营业收入 × 100%'],
+ ['c-solvency','cpic','adequacy','综合偿付能力充足率',238.7,'%', 'low',180,150,'实际资本 / 最低资本 × 100%'],
+ ['c-core-solvency','cpic','adequacy','核心偿付能力充足率',172.4,'%', 'low',120,100,'核心资本 / 最低资本 × 100%'],
+ ['c-roe','cpic','efficiency','净资产收益率',12.6,'%', 'low',8,5,'本机构净利润 / 平均净资产 × 100%'],
+ ['c-combined','cpic','efficiency','综合成本率',97.8,'%', 'high',100,103,'赔付率与费用率之和'],
+ ['c-market','cpic','market','权益类资产风险敞口占比',18.4,'%', 'high',22,28,'权益类资产风险敞口 / 投资资产 × 100%'],
+ ['c-liq','cpic','liquidity','流动性覆盖率',156.3,'%', 'low',130,110,'优质流动性资产 / 短期现金净流出 × 100%']
 ];
-const indicators=seeds.map((s,i)=>{const [id,org,cat,name,current,unit,direction,yellow,red,formula]=s;return {id,org,cat,name,current,unit,direction,yellow,red,formula,version:'DEMO-R1.0',frequency:cat==='strategic'?'季':'月',stale:id==='h-strategy',seed:i,source:org==='amc'?'国际AMC手工填报 → 金控数仓':org==='ht'?'机构接口（示意） → 金控数仓':'金控数仓 → 专题计算结果',regulatory:null,history:Array.from({length:36},(_,j)=>{if(current===null)return null;if(unit==='件')return j===35?current:(j%9===i%9?1:0);if(j===35)return current;let factor=.9+.1*j/35+Math.sin(j*.7+i)*.036;if(id==='h-market')factor=.7+.3*j/35+Math.sin(j*.5)*.015;return +(current*factor).toFixed(unit==='倍'?2:2)})}});
+const indicators=seeds.map((s,i)=>{const [id,org,cat,name,current,unit,direction,yellow,red,formula]=s;return {id,org,cat,name,current,unit,direction,yellow,red,formula,version:'DEMO-R1.0',frequency:cat==='strategic'?'季':'月',stale:id==='h-strategy',seed:i,source:org==='amc'?'国际AMC手工填报 → 金控数仓':org==='group'?'金控数仓 → 专题计算结果':ORGS[org].name+'授权接口（演示） → 金控数仓',regulatory:null,history:Array.from({length:36},(_,j)=>{if(current===null)return null;if(unit==='件')return j===35?current:(j%9===i%9?1:0);if(j===35)return current;let factor=.9+.1*j/35+Math.sin(j*.7+i)*.036;if(id==='h-market')factor=.7+.3*j/35+Math.sin(j*.5)*.015;return +(current*factor).toFixed(unit==='倍'?2:2)})}});
 const getInd=id=>indicators.find(i=>i.id===id);
 const monthIndex=()=>35-({'2026-08':0,'2026-07':1,'2026-06':2}[state.period]||0);
 const current=i=>i.stale?i.current:i.history[monthIndex()];

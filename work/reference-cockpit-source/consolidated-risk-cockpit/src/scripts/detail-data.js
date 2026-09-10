@@ -1,7 +1,7 @@
 // Reporting scope, dates, values and rules are synthetic prototype fixtures.
 Object.assign(ORGS,{spdb:{name:'浦发银行',type:'银行业务 · 接口接入（演示）'},srcb:{name:'沪农商银行',type:'银行业务 · 接口接入（演示）'}});
-const orgScope={amc:'2026-01',ht:'2026-01',spdb:'2026-07',srcb:'2026-08'};
-const orgOrder=['amc','ht','spdb','srcb'];
+const orgScope={amc:'2026-01',ht:'2026-01',cpic:'2026-01',spdb:'2026-07',srcb:'2026-08'};
+const orgOrder=['amc','ht','cpic','spdb','srcb'];
 function activeOrgs(period=state.period){return orgOrder.filter(org=>orgScope[org]<=period)}
 function previousMonth(period){const [y,m]=period.split('-').map(Number),d=new Date(y,m-2,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function monthEnd(period){const [y,m]=period.split('-').map(Number);return period+'-'+new Date(y,m,0).getDate()}
