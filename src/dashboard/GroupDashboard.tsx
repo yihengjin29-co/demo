@@ -129,7 +129,7 @@ function DashboardHeader({ navigate }: { navigate: Navigate }) {
   return <header className="gd-header">
     <button className="gd-brand" onClick={() => navigate('/workbench')} title="返回工作台"><span className="gd-brand-bars"><i /><i /><i /></span><span><b>上海国际集团</b><small>SHANGHAI INTERNATIONAL GROUP</small></span></button>
     <div className="gd-title"><span className="gd-title-wing left" /><div><h1>集团及国资公司驾驶舱</h1></div><span className="gd-title-wing right" /></div>
-    <div className="gd-header-meta"><time>{stamp}</time><span>观察月份：2026年8月</span><span>集团 / 国资公司共用视图</span><button onClick={toggleFullscreen}>⛶ 全屏</button><button onClick={() => navigate('/workbench')}>返回工作台</button></div>
+    <div className="gd-header-meta"><time>{stamp}</time><span>观察月份：2026年8月</span><span>集团 / 国资公司共用视图</span><button className="gd-institution-entry" onClick={() => navigate('/dashboard/institution/inst-spdb')}>金融机构驾驶舱 ↗</button><button onClick={toggleFullscreen}>⛶ 全屏</button><button onClick={() => navigate('/workbench')}>返回工作台</button></div>
   </header>;
 }
 
@@ -154,27 +154,27 @@ function RiskBoardOverlay({ entry, onClose }: { entry: RiskBoardEntry; onClose: 
   const separator = entry.query ? '?' : '';
   return createPortal(<div className="gd-riskboard-mask" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
     <section className="gd-riskboard-dialog" role="dialog" aria-modal="true" aria-label={entry.title}>
-      <header><div><h2>{entry.title}</h2><small>风险看板原页面</small></div><button onClick={onClose} aria-label="关闭风险看板弹窗">×</button></header>
-      <iframe src={`/group-cockpit/index.html${separator}${entry.query}`} title={`${entry.title} · 风险看板`} allowFullScreen />
+      <header><div><h2>{entry.title}</h2><small>集团风险专题视图</small></div><button onClick={onClose} aria-label="关闭风险专题看板弹窗">×</button></header>
+      <iframe src={`/group-cockpit/index.html${separator}${entry.query}`} title={entry.title} allowFullScreen />
     </section>
   </div>, document.body);
 }
 
 function RiskHeatmapPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) {
-  return <Panel title="风险热力图" className="gd-heatmap-panel" actions={<button className="gd-panel-entry" onClick={() => openRiskBoard('', '风险看板')}>进入风险看板 ↗</button>}>
+  return <Panel title="风险热力图" className="gd-heatmap-panel" actions={<button className="gd-panel-entry" onClick={() => openRiskBoard('', '风险专题看板')}>进入风险专题看板 ↗</button>}>
     <div className="gd-heatmap-legend"><span><i className="red" />红灯</span><span><i className="yellow" />黄灯</span><span><i className="green" />正常</span><span><i className="gray" />缺数 / 超期 / 未配置</span></div>
     <div className="gd-heatmap-grid" style={{ '--risk-columns': riskCategories.length } as CSSProperties}>
       <div className="gd-heat-axis corner">机构 / 风险类型</div>{riskCategories.map(risk => <div className="gd-heat-axis" key={risk.id}>{risk.label}</div>)}
       {heatmapRows.map(org => <div className="gd-heatmap-row" key={org.id}>
-        <button className="gd-heat-org" onClick={() => openRiskBoard(`entry=org&org=${org.id}`, `${org.name} · 资本与风险监测`)}><b>{org.name}</b></button>
-        {riskCategories.map(risk => { const cell = org.cells[risk.id] || { status: 'none' as const }; return <button className="gd-heat-cell" key={risk.id} aria-label={`${org.name} ${risk.label}风险`} onClick={() => openRiskBoard(`entry=cell&org=${org.id}&cat=${risk.id}`, `${org.name} · ${risk.label}风险`)}><HeatSignal cell={cell} /></button>; })}
+        <div className="gd-heat-org"><b>{org.name}</b></div>
+        {riskCategories.map(risk => { const cell = org.cells[risk.id] || { status: 'none' as const }; return <div className="gd-heat-cell" key={risk.id} aria-label={`${org.name} ${risk.label}风险`}><HeatSignal cell={cell} /></div>; })}
       </div>)}
     </div>
-    <div className="gd-heatmap-foot"><span>亮灯表示当前综合风险状态（红黄并存时按红灯展示）；点击后弹出风险看板原下钻页面</span><button onClick={() => openRiskBoard('entry=quality', '数据状态核对')}>数据状态 ↗</button></div>
+    <div className="gd-heatmap-foot"><span>亮灯表示当前综合风险状态（红黄并存时按红灯展示）</span></div>
   </Panel>;
 }
 
-function KeyIndicatorPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) {
+function KeyIndicatorPanel() {
   const defaultIds = ['g-sector', 'g-liq', 'g-credit'];
   const selectedIds = (() => {
     try {
@@ -184,10 +184,10 @@ function KeyIndicatorPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) 
     } catch { return defaultIds; }
   })();
   const selected = selectedIds.map(id => keyIndicatorCatalog.find(item => item.id === id)).filter((item): item is KeyIndicator => Boolean(item));
-  return <Panel title="关键指标情况" className="gd-capital-panel" actions={<button className="gd-panel-entry" onClick={() => openRiskBoard('', '风险看板')}>已选 {selected.length} 项 · 进入看板 ↗</button>}>
-    <div className="gd-capital-layout"><div className="gd-capital-grid">{selected.map((item, index) => <button className={`gd-capital-card ${item.status === '黄灯' ? 'yellow' : item.status === '红灯' ? 'red' : 'green'}`} key={item.id} onClick={() => openRiskBoard(`entry=indicator&id=${item.id}`, `${item.name} · 指标详情`)}>
+  return <Panel title="关键指标情况" className="gd-capital-panel" actions={<span className="gd-panel-note">已选 {selected.length} 项</span>}>
+    <div className="gd-capital-layout"><div className="gd-capital-grid">{selected.map((item, index) => <article className={`gd-capital-card ${item.status === '黄灯' ? 'yellow' : item.status === '红灯' ? 'red' : 'green'}`} key={item.id}>
       <header><span>{['◈', '◇', '▥'][index]}</span><b>{item.name}</b></header><strong>{item.value}<em>{item.unit}</em></strong><small className={item.status === '正常' ? 'up' : 'warn'}><span>{item.scope} · {item.type}</span>{item.change}</small><div className="gd-capital-trend"><em>近12个月趋势</em><LineChart values={item.trend} color={item.status === '黄灯' ? '#fac63e' : item.status === '红灯' ? '#ff5368' : '#42d9ff'} width={180} height={100} /><div className="gd-months"><span>9月</span><span>本月</span></div></div><i className="gd-card-status">{item.status === '正常' ? '○ 正常' : item.status === '黄灯' ? '△ 黄灯' : '● 红灯'}</i>
-    </button>)}</div><button className="gd-capital-custom" onClick={() => openRiskBoard('entry=configure', '关键指标自定义')}><b>＋</b><span>自定义</span><small>进入看板设置</small></button></div>
+    </article>)}</div></div>
   </Panel>;
 }
 
@@ -230,7 +230,7 @@ function EventPanel() {
 export default function GroupDashboard({ navigate }: { navigate: Navigate }) {
   const pageHint = useMemo(() => 'DEMO 数据仅用于界面展示，不代表真实业务数据', []);
   const [riskBoardEntry, setRiskBoardEntry] = useState<RiskBoardEntry | null>(null);
-  const openRiskBoard: OpenRiskBoard = (query = '', title = '风险看板') => setRiskBoardEntry({ query, title });
+  const openRiskBoard: OpenRiskBoard = (query = '', title = '风险专题看板') => setRiskBoardEntry({ query, title });
   useEffect(() => {
     const handleRiskBoardMessage = (event: MessageEvent) => {
       if (event.origin !== window.location.origin || event.data?.type !== 'institution-metrics-updated') return;
@@ -242,7 +242,7 @@ export default function GroupDashboard({ navigate }: { navigate: Navigate }) {
   return <div className="group-dashboard-host"><div className="group-dashboard-screen">
     <DashboardHeader navigate={navigate} />
     <BusinessStrip />
-    <main className="gd-main-grid"><div className="gd-top-monitoring"><RiskHeatmapPanel openRiskBoard={openRiskBoard} /><KeyIndicatorPanel openRiskBoard={openRiskBoard} /></div><InstitutionPenetrationPanel /><EventPanel /></main>
+    <main className="gd-main-grid"><div className="gd-top-monitoring"><RiskHeatmapPanel openRiskBoard={openRiskBoard} /><KeyIndicatorPanel /></div><InstitutionPenetrationPanel /><EventPanel /></main>
     <footer className="gd-footer"><span><i />数据链路正常 · 观察期 2026年8月</span><span>{pageHint}</span></footer>
   </div>{riskBoardEntry && <RiskBoardOverlay entry={riskBoardEntry} onClose={() => setRiskBoardEntry(null)} />}</div>;
 }

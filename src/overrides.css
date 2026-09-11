@@ -1323,13 +1323,13 @@ body {
 .menu-root > small + em { margin-left: 0; }
 
 .app:has(.institution-cockpit-host) .app-header,
-.app:has(.institution-cockpit-host) .sidebar,
-.app:has(.institution-cockpit-host) .smart-assistant-launcher,
-.app:has(.institution-cockpit-host) .smart-assistant-panel { display: none; }
+.app:has(.institution-cockpit-host) .sidebar { display: none; }
 .app:has(.institution-cockpit-host),
 .app:has(.institution-cockpit-host) .content { width: 100vw; height: 100vh; min-height: 0; margin: 0; padding: 0; overflow: hidden; max-width: none; background: #020c1e; }
 .institution-cockpit-host { position: relative; width: 100vw; height: 100vh; overflow: hidden; background: #020c1e; }
 .institution-cockpit-host iframe { display: block; width: 100%; height: 100%; border: 0; }
+.app:has(.institution-cockpit-host) .smart-assistant-launcher { z-index: 21010; border-color: rgba(83,222,255,.58); color: #e9fbff; background: linear-gradient(135deg,#0879ad,#145391); box-shadow: 0 0 24px rgba(83,222,255,.3); }
+.app:has(.institution-cockpit-host) .smart-assistant-panel { z-index: 21009; border-color: rgba(83,222,255,.38); background: #06172e; box-shadow: 0 22px 65px rgba(0,0,0,.48),0 0 26px rgba(83,222,255,.14); }
 .institution-cockpit-back { position: fixed; z-index: 5; top: 16px; right: 18px; padding: 7px 12px; border: 1px solid rgba(83,222,255,.55); border-radius: 3px; color: #dffaff; background: rgba(5,37,74,.84); box-shadow: 0 0 12px rgba(67,211,255,.18); font-size: 12px; }
 .institution-cockpit-back:hover { border-color: #64e7ff; background: rgba(8,67,119,.92); }
 
