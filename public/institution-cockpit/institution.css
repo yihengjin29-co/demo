@@ -410,3 +410,22 @@
   .institution-screen .risk-metric-list { padding:4px 0; }
   .institution-screen .risk-metric-list[data-count="1"] { grid-template-rows:minmax(130px,180px); }
 }
+
+/* Shared cockpit switcher and consistently aligned header controls. */
+.institution-screen .screen-tools { gap:9px; }
+.institution-screen .cockpit-switch { display:flex; align-items:center; gap:7px; white-space:nowrap; }
+.institution-screen .cockpit-switch>span { color:#92acc8; font-size:11px; }
+.institution-screen .cockpit-switch select { width:156px; max-width:none; }
+.institution-screen .screen-tools>label[for="period"] { margin-left:3px; white-space:nowrap; }
+.institution-screen .screen-tools select,
+.institution-screen .screen-tools .bare { height:28px; min-height:28px; border:1px solid #285274; border-radius:2px; color:#cbe8f7; background:rgba(8,39,68,.78); font-size:11px; line-height:26px; white-space:nowrap; }
+.institution-screen .screen-tools select { padding-top:0; padding-bottom:0; }
+.institution-screen .screen-tools .bare { display:flex; align-items:center; justify-content:center; padding:0 9px; }
+.institution-screen .screen-tools .bare:hover { border-color:#59d9f8; color:#e7fbff; background:#0e466b; }
+@media (max-width:1550px), (max-height:900px) {
+  .institution-screen .screen-tools { gap:6px; }
+  .institution-screen .cockpit-switch { gap:4px; }.institution-screen .cockpit-switch>span { font-size:9px; }
+  .institution-screen .cockpit-switch select { width:142px; }
+  .institution-screen .screen-tools select,.institution-screen .screen-tools .bare { font-size:9px; }
+  .institution-screen .screen-tools .bare { padding:0 6px; }
+}

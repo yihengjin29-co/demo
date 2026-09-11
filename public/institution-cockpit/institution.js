@@ -287,6 +287,9 @@
     const save = $('[data-action="save-business"]'); if (save) save.disabled = businessDraft.length !== 2;
   });
   document.addEventListener('keydown', event => { if (event.key === 'Escape') closeDialog(); });
+  $('#cockpitSwitch').addEventListener('change', event => {
+    if (event.target.value === 'group') window.parent.location.assign('/group-dashboard');
+  });
   $('#period').addEventListener('change', updatePeriod);
   $('#riskMetricList').addEventListener('mouseenter', () => { riskRotationPaused = true; });
   $('#riskMetricList').addEventListener('mouseleave', () => { riskRotationPaused = false; });

@@ -622,3 +622,21 @@
   .gd-heatmap-panel .gd-panel-body { grid-template-rows:18px minmax(0,1fr) 16px; gap:3px; padding:2px 8px 5px; }
   .gd-heatmap-grid { grid-template-rows:minmax(20px,.6fr) repeat(4,minmax(29px,1fr)); gap:3px; }
 }
+
+/* One aligned control row for dashboard switching, fullscreen and workbench navigation. */
+@media(min-width:1200px) {
+  .gd-header { grid-template-columns:300px minmax(420px,1fr) 620px; }
+  .gd-header-meta { display:grid; grid-template-rows:18px 27px; align-content:center; justify-items:end; gap:2px; min-width:0; padding-left:10px; }
+  .gd-header-meta time { width:auto; font-size:12px; line-height:18px; text-align:right; }
+  .gd-header-tools { display:flex; min-width:0; align-items:center; justify-content:flex-end; gap:7px; }
+  .gd-header-tools>span { color:#8ab5d0; font-size:10px; line-height:26px; }
+  .gd-dashboard-switcher,.gd-header-tools>button { height:26px; min-height:26px; border:1px solid rgba(66,217,255,.38); border-radius:2px; color:#d9f5ff; background:rgba(8,47,82,.72); font-size:10px; line-height:24px; white-space:nowrap; }
+  .gd-dashboard-switcher { width:150px; padding:0 24px 0 9px; outline:0; cursor:pointer; }
+  .gd-dashboard-switcher:hover,.gd-dashboard-switcher:focus { border-color:#63e4ff; background:#0d456a; }
+  .gd-header-tools>button { display:flex; align-items:center; justify-content:center; padding:0 9px; }
+}
+@media(max-width:1650px) and (min-width:1200px) {
+  .gd-header { grid-template-columns:260px minmax(360px,1fr) 590px; }
+  .gd-header-tools { gap:5px; }.gd-header-tools>span { font-size:9px; }.gd-dashboard-switcher { width:142px; }
+  .gd-header-tools>button { padding:0 7px; font-size:9px; }
+}

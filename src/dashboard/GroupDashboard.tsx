@@ -41,8 +41,8 @@ type ConsolidatedConcentration = {
 };
 
 const consolidatedConcentrations: ConsolidatedConcentration[] = [
-  { id: 'single-legal-max', name: '单一客户', ratio: 18.2, exposureLabel: '最大风险敞口', exposure: '118', change: '▲ 0.40个百分点', tone: 'yellow' },
-  { id: 'top-ten-total', name: '前十大客户', ratio: 42.6, exposureLabel: '风险敞口合计', exposure: '246.4', change: '▼ 0.80个百分点', tone: 'cyan' },
+  { id: 'single-legal-max', name: '单一集团客户', ratio: 18.2, exposureLabel: '最大风险敞口', exposure: '118', change: '▲ 0.40个百分点', tone: 'yellow' },
+  { id: 'top-ten-total', name: '前十大集团客户', ratio: 42.6, exposureLabel: '风险敞口合计', exposure: '246.4', change: '▼ 0.80个百分点', tone: 'cyan' },
 ];
 
 const riskCategories = [
@@ -144,7 +144,19 @@ function DashboardHeader({ navigate }: { navigate: Navigate }) {
   return <header className="gd-header">
     <button className="gd-brand" onClick={() => navigate('/workbench')} title="返回工作台"><span className="gd-brand-bars"><i /><i /><i /></span><span><b>上海国际集团</b><small>SHANGHAI INTERNATIONAL GROUP</small></span></button>
     <div className="gd-title"><span className="gd-title-wing left" /><div><h1>集团及国资公司驾驶舱</h1></div><span className="gd-title-wing right" /></div>
-    <div className="gd-header-meta"><time>{stamp}</time><span>观察月份：2026年8月</span><span>集团 / 国资公司共用视图</span><button className="gd-institution-entry" onClick={() => navigate('/dashboard/institution/inst-amc')}>金融机构驾驶舱 ↗</button><button onClick={toggleFullscreen}>⛶ 全屏</button><button onClick={() => navigate('/workbench')}>返回工作台</button></div>
+    <div className="gd-header-meta">
+      <time>{stamp}</time>
+      <div className="gd-header-tools">
+        <span>观察月份：2026年8月</span>
+        <span>集团 / 国资公司共用视图</span>
+        <select className="gd-dashboard-switcher" value="group" aria-label="切换驾驶舱" onChange={event => { if (event.target.value === 'amc') navigate('/dashboard/institution/inst-amc'); }}>
+          <option value="group">集团驾驶舱</option>
+          <option value="amc">国际AMC驾驶舱</option>
+        </select>
+        <button onClick={toggleFullscreen}>⛶ 全屏</button>
+        <button onClick={() => navigate('/workbench')}>返回工作台</button>
+      </div>
+    </div>
   </header>;
 }
 
@@ -228,13 +240,13 @@ function KeyIndicatorPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) 
   </Panel>;
 }
 
-const institutionMarketForecast: Partial<Record<InstitutionPenetrationItem['id'], number[]>> = {
-  spdb: [2892, 2924, 2910, 2972, 3018, 3002, 3076, 3105, 3088, 3162, 3210, 3268],
-  srcb: [663, 671, 668, 682, 691, 699, 707, 715, 711, 726, 736, 744],
-  ht: [5328, 5395, 5362, 5488, 5576, 5520, 5665, 5732, 5698, 5824, 5936, 6048],
+const institutionPriceTrend: Partial<Record<InstitutionPenetrationItem['id'], number[]>> = {
+  spdb: [8.1, 8.4, 8.2, 8.8, 9.2, 8.9, 9.5, 9.1, 9.6, 9.3, 9.7, 9.86],
+  srcb: [5.8, 5.9, 6.2, 6, 6.4, 6.2, 6.5, 6.7, 6.4, 6.6, 6.7, 6.88],
+  ht: [14, 14.6, 14.2, 15.1, 16, 15.4, 16.8, 17.2, 16.8, 15.9, 16.1, 16.42],
 };
 
-function InstitutionMarketForecastPanel() {
+function InstitutionMarketPanel({ navigate }: { navigate: Navigate }) {
   const [selectedId, setSelectedId] = useState<InstitutionPenetrationItem['id']>('spdb');
   const connectorPoints = [
     { id: 'spdb', d: 'M450 145 C408 125 370 92 315 78', anchor: [450, 145], end: [315, 78] },
@@ -242,21 +254,20 @@ function InstitutionMarketForecastPanel() {
     { id: 'ht', d: 'M450 255 C408 275 370 308 315 322', anchor: [450, 255], end: [315, 322] },
     { id: 'amc', d: 'M550 255 C592 275 630 308 685 322', anchor: [550, 255], end: [685, 322] },
   ];
-  return <Panel title="机构市值预测" className="gd-equity-panel gd-market-forecast-panel" actions={<div className="gd-penetration-actions"><span>重点持股机构市值预测 · 预测期 2026-09—2027-08</span></div>}>
-    <div className="gd-penetration-stage" aria-label="上海国际集团四家重点持股机构市值预测">
+  return <Panel title="机构市值监测" className="gd-equity-panel gd-market-forecast-panel" actions={<div className="gd-penetration-actions"><span>重点持股机构市场表现 · 截至 2026-08-31</span></div>}>
+    <div className="gd-penetration-stage" aria-label="上海国际集团四家重点持股机构市场表现">
       <svg className="gd-penetration-links" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true"><defs><filter id="gdLinkGlow"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>{connectorPoints.map(link => <g key={link.id} className={selectedId === link.id ? 'active' : ''}><path d={link.d} /><circle cx={link.anchor[0]} cy={link.anchor[1]} r="5" /><circle className="end" cx={link.end[0]} cy={link.end[1]} r="3.5" /></g>)}</svg>
       {institutionPenetration.map((item, index) => {
         const active = selectedId === item.id;
-        const forecast = institutionMarketForecast[item.id];
-        const forecastValue = forecast?.[forecast.length - 1];
-        return <button key={item.id} className={`gd-institution-card position-${index + 1} ${active ? 'active' : 'muted'}`} aria-pressed={active} onClick={() => setSelectedId(item.id)}>
+        const priceTrend = institutionPriceTrend[item.id];
+        return <button key={item.id} className={`gd-institution-card position-${index + 1} ${active ? 'active' : 'muted'}`} aria-pressed={active} onClick={() => { setSelectedId(item.id); if (item.id === 'amc') navigate('/dashboard/institution/inst-amc'); }}>
           <header><span className="gd-institution-logo">{item.shortName.slice(0, 1)}</span><strong>{item.name}</strong><i>›</i></header>
           <div className="org-market-split">
-            <dl className="org-quote"><div><dt>当前市值</dt><dd>{item.marketValue}</dd></div><div><dt>持股比例</dt><dd>{item.equityRatio}</dd></div></dl>
+            <dl className="org-quote"><div><dt>股价</dt><dd>{item.stockPrice}</dd></div><div><dt>持股比例</dt><dd>{item.equityRatio}</dd></div></dl>
             <div className="org-price-trend">
-              <small>{forecast ? '未来12个月市值预测 · 模拟' : '非上市 · 暂无公开市值预测'}</small>
-              {forecast ? <LineChart values={forecast} color="#52dcff" width={220} height={65} /> : <div className="org-no-price">—</div>}
-              <small>{forecast ? `2026.09 — 2027.08 · 预计 ¥${forecastValue?.toLocaleString()}亿` : '待估值模型接入'}</small>
+              <small>{priceTrend ? '近12个月股价 · 示例' : '非上市 · 无公开股价走势'}</small>
+              {priceTrend ? <LineChart values={priceTrend} color="#52dcff" width={220} height={65} /> : <div className="org-no-price">—</div>}
+              <small>{priceTrend ? '2025.09 — 2026.08' : '点击进入AMC驾驶舱 ↗'}</small>
             </div>
           </div>
         </button>;
@@ -293,7 +304,7 @@ export default function GroupDashboard({ navigate }: { navigate: Navigate }) {
   return <div className="group-dashboard-host"><div className="group-dashboard-screen">
     <DashboardHeader navigate={navigate} />
     <BusinessStrip />
-    <main className="gd-main-grid"><div className="gd-top-monitoring"><ConsolidatedConcentrationPanel /><RiskHeatmapPanel openRiskBoard={openRiskBoard} /><KeyIndicatorPanel openRiskBoard={openRiskBoard} /></div><InstitutionMarketForecastPanel /><EventPanel /></main>
+    <main className="gd-main-grid"><div className="gd-top-monitoring"><ConsolidatedConcentrationPanel /><RiskHeatmapPanel openRiskBoard={openRiskBoard} /><KeyIndicatorPanel openRiskBoard={openRiskBoard} /></div><InstitutionMarketPanel navigate={navigate} /><EventPanel /></main>
     <footer className="gd-footer"><span><i />数据链路正常 · 观察期 2026年8月</span><span>{pageHint}</span></footer>
   </div>{riskBoardEntry && <RiskBoardOverlay entry={riskBoardEntry} onClose={() => setRiskBoardEntry(null)} />}</div>;
 }
