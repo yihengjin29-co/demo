@@ -129,7 +129,7 @@ function DashboardHeader({ navigate }: { navigate: Navigate }) {
   return <header className="gd-header">
     <button className="gd-brand" onClick={() => navigate('/workbench')} title="返回工作台"><span className="gd-brand-bars"><i /><i /><i /></span><span><b>上海国际集团</b><small>SHANGHAI INTERNATIONAL GROUP</small></span></button>
     <div className="gd-title"><span className="gd-title-wing left" /><div><h1>集团及国资公司驾驶舱</h1></div><span className="gd-title-wing right" /></div>
-    <div className="gd-header-meta"><time>{stamp}</time><span>观察月份：2026年8月</span><span>集团 / 国资公司共用视图</span><button className="gd-institution-entry" onClick={() => navigate('/dashboard/institution/inst-spdb')}>金融机构驾驶舱 ↗</button><button onClick={toggleFullscreen}>⛶ 全屏</button><button onClick={() => navigate('/workbench')}>返回工作台</button></div>
+    <div className="gd-header-meta"><time>{stamp}</time><span>观察月份：2026年8月</span><span>集团 / 国资公司共用视图</span><button className="gd-institution-entry" onClick={() => navigate('/dashboard/institution/inst-amc')}>金融机构驾驶舱 ↗</button><button onClick={toggleFullscreen}>⛶ 全屏</button><button onClick={() => navigate('/workbench')}>返回工作台</button></div>
   </header>;
 }
 

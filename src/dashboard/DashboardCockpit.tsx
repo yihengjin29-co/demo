@@ -299,7 +299,7 @@ export default function DashboardCockpit({ state, role, institutionId, navigate,
       <iframe
         className="reference-cockpit-frame"
         src={`/institution-cockpit/index.html?name=${encodeURIComponent(institution.shortName)}`}
-        title={`${institution.shortName}金融机构风险驾驶舱`}
+        title={`${institution.shortName}金融机构驾驶舱`}
         loading="eager"
         allowFullScreen
       />

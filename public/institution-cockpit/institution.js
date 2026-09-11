@@ -2,8 +2,9 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const params = new URLSearchParams(location.search);
-  const institution = params.get('name') || '浦发银行';
+  const institution = params.get('name') || '国际AMC';
   $('#institutionName').textContent = institution;
+  document.title = `金融机构驾驶舱 · ${institution}`;
 
   const monthData = {
     '2026-08': { yellow: 3, red: 1, events: 2, asof: '2026-08-31' },
@@ -144,7 +145,7 @@
 
   function renderBusinessRisks() {
     const selected = selectedBusinessIds.map(id => businessRiskMetrics.find(item => item.id === id)).filter(Boolean);
-    $('#businessRiskGrid').innerHTML = selected.map(item => `<button class="business-risk-item tone-${item.status === '黄灯' ? 'yellow' : 'green'}" data-detail="${item.name}" data-detail-text="${item.detail} 当前值${formatNumber(item.value, 1)}${item.unit}，当前状态${item.status}，较上期${item.change.replace(/[▲▼]\s*/, '')}。"><span class="business-risk-name">${item.name}</span><span class="business-risk-ring"><svg viewBox="0 0 120 120"><circle class="ring-track" cx="60" cy="60" r="54"/><circle class="ring-fill" cx="60" cy="60" r="54" pathLength="100" stroke-dasharray="${Math.min(100, item.value)} 100"/></svg><b>${formatNumber(item.value, 1)}<small>${item.unit}</small></b></span><span class="business-risk-state"><i></i>${item.status === '黄灯' ? '黄灯预警' : item.status === '红灯' ? '红灯预警' : '正常'}</span><span class="business-risk-change">较上期 <strong>${item.change}</strong></span></button>`).join('');
+    $('#businessRiskGrid').innerHTML = selected.map(item => `<button class="business-risk-item tone-${item.status === '黄灯' ? 'yellow' : 'green'}" data-detail="${item.name}" data-detail-text="${item.detail} 当前值${formatNumber(item.value, 1)}${item.unit}，当前状态${item.status}，较上期${item.change.replace(/[▲▼]\s*/, '')}。"><span class="business-risk-name">${item.name}</span><span class="business-risk-ring"><svg viewBox="0 0 120 120"><circle class="ring-track" cx="60" cy="60" r="54"/><circle class="ring-fill" cx="60" cy="60" r="54" pathLength="100" stroke-dasharray="${Math.min(100, item.value)} 100"/></svg><b>${formatNumber(item.value, 1)}<small>${item.unit}</small></b></span><span class="business-risk-change">较上期 <strong>${item.change}</strong></span></button>`).join('');
     bindDetails();
   }
   function statusOf(metric) {
@@ -174,12 +175,16 @@
       if (isOtherRisk) return `<button class="risk-metric-row risk-other-row" data-detail="${metric.name}" data-detail-text="当前值${metricValue(metric)}；下方展示最近4个季度变化趋势。"><span class="risk-metric-name"><strong>${metric.name}</strong><small>其他风险监测指标</small></span><span class="risk-other-value"><small>当前值</small><b>${metricValue(metric)}</b></span><span class="risk-trend"><small>最近4个季度趋势</small>${sparkline(metric.trend, 'cyan', true)}</span></button>`;
       if (metric.countOnly) return `<button class="risk-metric-row risk-count-row" data-detail="${metric.name}" data-detail-text="本期${metric.name}${metricValue(metric)}。该事件类指标仅展示数量，不设置三色阈值区间。"><span class="risk-metric-name"><strong>${metric.name}</strong><small>事件类指标 · 本期汇总</small></span><span class="risk-count-value"><small>本期数量</small><b>${metricValue(metric)}</b><em>数量展示</em></span></button>`;
       const status = statusOf(metric); const statusLabel = status === 'red' ? '红灯预警' : status === 'yellow' ? '黄灯预警' : '正常';
-      const direction = metric.low ? '数值越低越需关注' : '数值越高越需关注';
-      const pointer = status === 'red' ? 84 : status === 'yellow' ? 50 : 16;
-      const normalRange = metric.low ? `正常 ＞ ${metricValue(metric, metric.attention)}` : `正常 ＜ ${metricValue(metric, metric.attention)}`;
-      const yellowRange = metric.low ? `黄灯 ${metricValue(metric, metric.warning)}～${metricValue(metric, metric.attention)}` : `黄灯 ${metricValue(metric, metric.attention)}～${metricValue(metric, metric.warning)}`;
-      const redRange = metric.low ? `红灯 ≤ ${metricValue(metric, metric.warning)}` : `红灯 ≥ ${metricValue(metric, metric.warning)}`;
-      return `<button class="risk-metric-row tone-${status}" data-detail="${metric.name}" data-detail-text="当前值${metricValue(metric)}；关注阈值${metricValue(metric, metric.attention)}；预警阈值${metricValue(metric, metric.warning)}。${direction}。"><span class="risk-metric-name"><strong>${metric.name}</strong><small>${direction}</small><em>${statusLabel}</em></span><span class="risk-segment-wrap"><span class="risk-current" style="left:${pointer}%"><i></i><small>当前值</small><b>${metricValue(metric)}</b></span><span class="risk-segments"><i class="normal">正常</i><i class="attention">黄灯预警</i><i class="severe">红灯预警</i></span><span class="risk-thresholds"><i>${normalRange}</i><i>${yellowRange}</i><i>${redRange}</i></span></span><span class="risk-trend"><small>最近4个季度趋势</small>${sparkline(metric.trend, status === 'red' ? 'red' : status === 'yellow' ? 'yellow' : 'cyan', true)}</span></button>`;
+      const pointer = metric.low
+        ? (status === 'red' ? 10.8 : status === 'yellow' ? 32.5 : 71.7)
+        : (status === 'red' ? 89.2 : status === 'yellow' ? 67.5 : 28.3);
+      const segments = metric.low
+        ? '<span class="risk-segments low"><i class="severe"></i><i class="attention"></i><i class="normal"></i></span>'
+        : '<span class="risk-segments"><i class="normal"></i><i class="attention"></i><i class="severe"></i></span>';
+      const boundaries = metric.low
+        ? `<span class="risk-boundaries"><i style="left:21.7%">${metricValue(metric, metric.warning)}</i><i style="left:43.3%">${metricValue(metric, metric.attention)}</i></span>`
+        : `<span class="risk-boundaries"><i style="left:56.7%">${metricValue(metric, metric.attention)}</i><i style="left:78.3%">${metricValue(metric, metric.warning)}</i></span>`;
+      return `<button class="risk-metric-row tone-${status}" data-detail="${metric.name}" data-detail-text="当前值${metricValue(metric)}；关注阈值${metricValue(metric, metric.attention)}；预警阈值${metricValue(metric, metric.warning)}。"><span class="risk-metric-name"><strong>${metric.name}</strong><em>${statusLabel}</em></span><span class="risk-segment-wrap"><span class="risk-band"><span class="risk-current" style="left:${pointer}%"><b>${metricValue(metric)}</b><i></i></span>${segments}${boundaries}</span></span><span class="risk-trend"><small>最近4个季度趋势</small>${sparkline(metric.trend, status === 'red' ? 'red' : status === 'yellow' ? 'yellow' : 'cyan', true)}</span></button>`;
     }).join('');
     bindDetails();
   }
