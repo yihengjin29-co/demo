@@ -30,6 +30,21 @@ type KeyIndicator = {
   trend: number[];
 };
 
+type ConsolidatedConcentration = {
+  id: string;
+  name: string;
+  ratio: number;
+  exposureLabel: string;
+  exposure: string;
+  change: string;
+  tone: 'cyan' | 'yellow';
+};
+
+const consolidatedConcentrations: ConsolidatedConcentration[] = [
+  { id: 'single-legal-max', name: '单一客户', ratio: 18.2, exposureLabel: '最大风险敞口', exposure: '118', change: '▲ 0.40个百分点', tone: 'yellow' },
+  { id: 'top-ten-total', name: '前十大客户', ratio: 42.6, exposureLabel: '风险敞口合计', exposure: '246.4', change: '▼ 0.80个百分点', tone: 'cyan' },
+];
+
 const riskCategories = [
   { id: 'credit', label: '信用风险' },
   { id: 'concentration', label: '集中度风险' },
@@ -48,7 +63,7 @@ const keyIndicatorCatalog: KeyIndicator[] = [
   { id: 'g-sector', name: '最大行业风险暴露占比', value: '28.60', unit: '%', scope: '并表口径', risk: '集中度风险', type: '管控', status: '黄灯', change: '▲ 0.40个百分点', threshold: '黄灯 ≥ 25.00% · 红灯 ≥ 30.00%', formula: '同一行业风险暴露 / 全部风险暴露 × 100%', source: '金控数仓 → 专题计算结果', trend: [18.4, 21.6, 25.8, 29.7, 27.1, 23.6, 21.9, 24.8, 27.6, 26.2, 28.2, 28.6] },
   { id: 'g-liq', name: '未来30日现金覆盖倍数', value: '1.32', unit: '倍', scope: '并表口径', risk: '流动性风险', type: '管控', status: '正常', change: '▲ 0.08倍', threshold: '黄灯 ≤ 1.20倍 · 红灯 ≤ 1.00倍', formula: '可动用现金流入 / 到期现金流出；受限资金不计入', source: '金控数仓 → 专题计算结果', trend: [0.94, 1.18, 1.42, 1.09, 1.51, 1.22, 1.63, 1.31, 1.57, 1.11, 1.24, 1.32] },
   { id: 'g-credit', name: '资产拨备率', value: '2.18', unit: '%', scope: '并表口径', risk: '信用风险', type: '监测', status: '正常', change: '▲ 0.06个百分点', threshold: '黄灯 ≤ 2.00% · 红灯 ≤ 1.50%', formula: '减值准备 / 相关资产余额 × 100%', source: '金控数仓 → 专题计算结果', trend: [1.46, 1.78, 2.16, 1.89, 2.34, 2.02, 2.48, 2.21, 1.83, 2.37, 2.12, 2.18] },
-  { id: 'g-cap', name: '合格资本覆盖率', value: '138.40', unit: '%', scope: '并表口径', risk: '资本充足', type: '管控', status: '正常', change: '▲ 6.20个百分点', threshold: '黄灯 ≤ 130.00% · 红灯 ≤ 110.00%', formula: '抵消及调整后合格资本 / 最低资本要求 × 100%', source: '金控数仓 → 专题计算结果', trend: [111.6, 128.4, 119.8, 143.2, 132.6, 151.8, 140.4, 159.6, 147.1, 155.3, 132.2, 138.4] },
+  { id: 'g-cap', name: '资本充足率', value: '14.80', unit: '%', scope: '并表口径', risk: '资本充足', type: '管控', status: '正常', change: '▲ 0.20个百分点', threshold: '黄灯 ≤ 12.50% · 红灯 ≤ 10.50%', formula: '合格资本净额 / 风险加权资产 × 100%', source: '金控数仓 → 专题计算结果', trend: [13.6, 13.8, 13.7, 14, 14.1, 14.3, 14.2, 14.5, 14.4, 14.6, 14.6, 14.8] },
   { id: 'g-profit', name: '净利润', value: '52.80', unit: '亿元', scope: '并表口径', risk: '经营效率', type: '监测', status: '正常', change: '▲ 4.80%', threshold: '黄灯 ≤ 40.00亿元 · 红灯 ≤ 25.00亿元', formula: '同期间、同范围及调整规则计算的净利润', source: '金控数仓 → 专题计算结果', trend: [39.1, 41.5, 43.2, 42.8, 45.6, 47.1, 46.2, 49.4, 50.1, 51.4, 50.9, 52.8] },
   { id: 'g-leverage', name: '资产负债率', value: '72.40', unit: '%', scope: '并表口径', risk: '资本充足', type: '管控', status: '正常', change: '▼ 0.30个百分点', threshold: '黄灯 ≥ 75.00% · 红灯 ≥ 82.00%', formula: '调整后负债 / 调整后资产 × 100%', source: '金控数仓 → 专题计算结果', trend: [74.2, 74, 73.8, 73.6, 73.2, 73.5, 73.1, 72.9, 72.8, 72.6, 72.7, 72.4] },
 ];
@@ -167,47 +182,83 @@ function RiskHeatmapPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) {
       <div className="gd-heat-axis corner">机构 / 风险类型</div>{riskCategories.map(risk => <div className="gd-heat-axis" key={risk.id}>{risk.label}</div>)}
       {heatmapRows.map(org => <div className="gd-heatmap-row" key={org.id}>
         <div className="gd-heat-org"><b>{org.name}</b></div>
-        {riskCategories.map(risk => { const cell = org.cells[risk.id] || { status: 'none' as const }; return <div className="gd-heat-cell" key={risk.id} aria-label={`${org.name} ${risk.label}风险`}><HeatSignal cell={cell} /></div>; })}
+        {riskCategories.map(risk => { const cell = org.cells[risk.id] || { status: 'none' as const }; return <button type="button" className="gd-heat-cell" key={risk.id} aria-label={`${org.name} ${risk.label}，点击查看指标明细`} onClick={() => openRiskBoard(`entry=cell&org=${org.id}&cat=${risk.id}`, `${org.name} · ${risk.label}`)}><HeatSignal cell={cell} /></button>; })}
       </div>)}
     </div>
     <div className="gd-heatmap-foot"><span>亮灯表示当前综合风险状态（红黄并存时按红灯展示）</span></div>
   </Panel>;
 }
 
-function KeyIndicatorPanel() {
-  const defaultIds = ['g-sector', 'g-liq', 'g-credit'];
+function ConsolidatedConcentrationPanel() {
+  return <Panel title="并表集中度监测" className="gd-consolidated-gauge-panel">
+    <div className="gd-consolidated-gauges">{consolidatedConcentrations.map(item => {
+      const ratio = Math.max(0, Math.min(100, item.ratio));
+      return <article className={`gd-consolidated-gauge ${item.tone}`} key={item.id}>
+        <h3>{item.name}</h3>
+        <div className="gd-consolidated-ring" aria-label={`${item.name}集中度 ${item.ratio.toFixed(1)}%`}>
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle className="gd-ring-track" cx="60" cy="60" r="51" pathLength="100" />
+            <circle className="gd-ring-value" cx="60" cy="60" r="51" pathLength="100" strokeDasharray={`${ratio} ${100 - ratio}`} />
+          </svg>
+          <div><strong>{item.ratio.toFixed(1)}<small>%</small></strong><span>集中度</span></div>
+        </div>
+        <dl><dt>{item.exposureLabel}</dt><dd>{item.exposure}<small>亿元</small></dd></dl>
+        <p>较上月 <b>{item.change}</b></p>
+      </article>;
+    })}</div>
+  </Panel>;
+}
+
+function KeyIndicatorPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) {
+  const defaultIds = ['g-cap', 'g-leverage', 'g-credit'];
+  const legacyDefaultIds = ['g-sector', 'g-liq', 'g-credit'];
   const selectedIds = (() => {
     try {
       const saved = JSON.parse(localStorage.getItem('siig-risk-cockpit-selected-v5') || 'null');
       const valid = Array.isArray(saved) ? saved.filter(id => keyIndicatorCatalog.some(item => item.id === id)) as string[] : [];
-      return [...new Set([...valid, ...defaultIds])].slice(0, 3);
+      const isLegacyDefault = valid.length === legacyDefaultIds.length && legacyDefaultIds.every((id, index) => valid[index] === id);
+      return [...new Set([...(isLegacyDefault ? [] : valid), ...defaultIds])].slice(0, 3);
     } catch { return defaultIds; }
   })();
   const selected = selectedIds.map(id => keyIndicatorCatalog.find(item => item.id === id)).filter((item): item is KeyIndicator => Boolean(item));
-  return <Panel title="关键指标情况" className="gd-capital-panel" actions={<span className="gd-panel-note">已选 {selected.length} 项</span>}>
-    <div className="gd-capital-layout"><div className="gd-capital-grid">{selected.map((item, index) => <article className={`gd-capital-card ${item.status === '黄灯' ? 'yellow' : item.status === '红灯' ? 'red' : 'green'}`} key={item.id}>
-      <header><span>{['◈', '◇', '▥'][index]}</span><b>{item.name}</b></header><strong>{item.value}<em>{item.unit}</em></strong><small className={item.status === '正常' ? 'up' : 'warn'}><span>{item.scope} · {item.type}</span>{item.change}</small><div className="gd-capital-trend"><em>近12个月趋势</em><LineChart values={item.trend} color={item.status === '黄灯' ? '#fac63e' : item.status === '红灯' ? '#ff5368' : '#42d9ff'} width={180} height={100} /><div className="gd-months"><span>9月</span><span>本月</span></div></div><i className="gd-card-status">{item.status === '正常' ? '○ 正常' : item.status === '黄灯' ? '△ 黄灯' : '● 红灯'}</i>
-    </article>)}</div></div>
+  return <Panel title="关键指标情况" className="gd-capital-panel">
+    <div className="gd-capital-layout"><div className="gd-capital-grid">{selected.map((item, index) => <button type="button" className={`gd-capital-card ${item.status === '黄灯' ? 'yellow' : item.status === '红灯' ? 'red' : 'green'}`} key={item.id} aria-label={`查看${item.name}指标详情`} onClick={() => openRiskBoard(`entry=indicator&id=${item.id}`, `${item.name} · 指标详情`)}>
+      <header><span>{['◈', '◇', '▥'][index]}</span><b>{item.name}</b></header><strong>{item.value}<em>{item.unit}</em></strong><small className={item.status === '正常' ? 'up' : 'warn'}>{item.change}</small><div className="gd-capital-trend"><em>近12个月趋势</em><LineChart values={item.trend} color={item.status === '黄灯' ? '#fac63e' : item.status === '红灯' ? '#ff5368' : '#42d9ff'} width={180} height={100} /><div className="gd-months"><span>9月</span><span>本月</span></div></div><i className="gd-card-status">{item.status === '正常' ? '○ 正常' : item.status === '黄灯' ? '△ 黄灯' : '● 红灯'}</i>
+    </button>)}</div></div>
   </Panel>;
 }
 
-function InstitutionPenetrationPanel() {
+const institutionMarketForecast: Partial<Record<InstitutionPenetrationItem['id'], number[]>> = {
+  spdb: [2892, 2924, 2910, 2972, 3018, 3002, 3076, 3105, 3088, 3162, 3210, 3268],
+  srcb: [663, 671, 668, 682, 691, 699, 707, 715, 711, 726, 736, 744],
+  ht: [5328, 5395, 5362, 5488, 5576, 5520, 5665, 5732, 5698, 5824, 5936, 6048],
+};
+
+function InstitutionMarketForecastPanel() {
   const [selectedId, setSelectedId] = useState<InstitutionPenetrationItem['id']>('spdb');
-  const selected = institutionPenetration.find(item => item.id === selectedId) || institutionPenetration[0];
   const connectorPoints = [
     { id: 'spdb', d: 'M450 145 C408 125 370 92 315 78', anchor: [450, 145], end: [315, 78] },
     { id: 'srcb', d: 'M550 145 C592 125 630 92 685 78', anchor: [550, 145], end: [685, 78] },
     { id: 'ht', d: 'M450 255 C408 275 370 308 315 322', anchor: [450, 255], end: [315, 322] },
     { id: 'amc', d: 'M550 255 C592 275 630 308 685 322', anchor: [550, 255], end: [685, 322] },
   ];
-  return <Panel title="机构穿透监测" className="gd-equity-panel" actions={<div className="gd-penetration-actions"><span>重点持股机构市场表现 · 截至 2026-08-31</span></div>}>
-    <div className="gd-penetration-stage" aria-label="上海国际集团与四家金融机构穿透关系">
+  return <Panel title="机构市值预测" className="gd-equity-panel gd-market-forecast-panel" actions={<div className="gd-penetration-actions"><span>重点持股机构市值预测 · 预测期 2026-09—2027-08</span></div>}>
+    <div className="gd-penetration-stage" aria-label="上海国际集团四家重点持股机构市值预测">
       <svg className="gd-penetration-links" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true"><defs><filter id="gdLinkGlow"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>{connectorPoints.map(link => <g key={link.id} className={selectedId === link.id ? 'active' : ''}><path d={link.d} /><circle cx={link.anchor[0]} cy={link.anchor[1]} r="5" /><circle className="end" cx={link.end[0]} cy={link.end[1]} r="3.5" /></g>)}</svg>
       {institutionPenetration.map((item, index) => {
         const active = selectedId === item.id;
+        const forecast = institutionMarketForecast[item.id];
+        const forecastValue = forecast?.[forecast.length - 1];
         return <button key={item.id} className={`gd-institution-card position-${index + 1} ${active ? 'active' : 'muted'}`} aria-pressed={active} onClick={() => setSelectedId(item.id)}>
           <header><span className="gd-institution-logo">{item.shortName.slice(0, 1)}</span><strong>{item.name}</strong><i>›</i></header>
-          <dl className="gd-market-facts"><div><dt>持股比例</dt><dd>{item.equityRatio}</dd></div><div><dt>股价</dt><dd>{item.stockPrice}</dd></div><div><dt>市值</dt><dd>{item.marketValue}</dd></div></dl>
+          <div className="org-market-split">
+            <dl className="org-quote"><div><dt>当前市值</dt><dd>{item.marketValue}</dd></div><div><dt>持股比例</dt><dd>{item.equityRatio}</dd></div></dl>
+            <div className="org-price-trend">
+              <small>{forecast ? '未来12个月市值预测 · 模拟' : '非上市 · 暂无公开市值预测'}</small>
+              {forecast ? <LineChart values={forecast} color="#52dcff" width={220} height={65} /> : <div className="org-no-price">—</div>}
+              <small>{forecast ? `2026.09 — 2027.08 · 预计 ¥${forecastValue?.toLocaleString()}亿` : '待估值模型接入'}</small>
+            </div>
+          </div>
         </button>;
       })}
       <div className="gd-group-node"><strong>上海国际集团</strong></div>
@@ -242,7 +293,7 @@ export default function GroupDashboard({ navigate }: { navigate: Navigate }) {
   return <div className="group-dashboard-host"><div className="group-dashboard-screen">
     <DashboardHeader navigate={navigate} />
     <BusinessStrip />
-    <main className="gd-main-grid"><div className="gd-top-monitoring"><RiskHeatmapPanel openRiskBoard={openRiskBoard} /><KeyIndicatorPanel /></div><InstitutionPenetrationPanel /><EventPanel /></main>
+    <main className="gd-main-grid"><div className="gd-top-monitoring"><ConsolidatedConcentrationPanel /><RiskHeatmapPanel openRiskBoard={openRiskBoard} /><KeyIndicatorPanel openRiskBoard={openRiskBoard} /></div><InstitutionMarketForecastPanel /><EventPanel /></main>
     <footer className="gd-footer"><span><i />数据链路正常 · 观察期 2026年8月</span><span>{pageHint}</span></footer>
   </div>{riskBoardEntry && <RiskBoardOverlay entry={riskBoardEntry} onClose={() => setRiskBoardEntry(null)} />}</div>;
 }

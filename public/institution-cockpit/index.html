@@ -47,18 +47,18 @@
         <article class="category-metric-card" style="--metric-color:var(--green)" data-top-card="capital"></article>
       </section>
 
-      <section class="tier institution-middle" aria-label="主要业务风险、风险指标监测与战略目标">
+      <section class="tier institution-middle" aria-label="战略目标、风险指标监测与资产质量监测">
         <section class="screen-panel business-risk-panel">
-          <div class="panel-heading"><h2><i class="heading-mark"></i>主要业务风险</h2><div class="heading-tools"><button class="bare" data-business-config>选择2项</button><button class="bare" data-business-all>全部5项 ↗</button></div></div>
+          <div class="panel-heading"><h2><i class="heading-mark"></i>资产质量监测</h2><div class="heading-tools"><button class="bare" data-business-config>选择2项</button><button class="bare" data-business-all>全部5项 ↗</button></div></div>
           <div class="business-risk-grid" id="businessRiskGrid"></div>
-          <p class="panel-footnote">首页从独立业务风险指标池中展示2项，点击可查看趋势与说明。</p>
+          <p class="panel-footnote">首页从资产质量指标池中展示2项，点击可查看趋势与说明。</p>
         </section>
 
         <section class="screen-panel risk-monitor-panel">
           <div class="panel-heading"><h2><i class="heading-mark"></i>风险指标监测</h2><div class="heading-tools"><small>当前值 · 阈值区间 · 最近4季度趋势</small></div></div>
           <div class="risk-summary" id="riskSummary"></div>
           <div class="risk-tabs" id="riskTabs" role="tablist" aria-label="风险分类"></div>
-          <div class="risk-metric-list" id="riskMetricList"></div>
+          <div class="risk-metric-list" id="riskMetricList" aria-live="polite"></div>
           <div class="risk-band-legend"><span><i class="normal"></i>正常区间</span><span><i class="attention"></i>黄灯预警区间</span><span><i class="severe"></i>红灯预警区间</span><small>分段槽表示状态区间，非等距数轴；定位针表示当前值</small></div>
         </section>
 

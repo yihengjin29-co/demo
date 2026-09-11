@@ -39,19 +39,19 @@
 
   const quarters = ['2025Q3', '2025Q4', '2026Q1', '2026Q2'];
   const balanceSheetMetrics = [
-    { id: 'asset-liability', name: '资产负债率', value: 76.3, unit: '%', decimals: 1, change: '▼ 0.8个百分点', trend: [78.6, 77.5, 78.0, 76.3] },
-    { id: 'financial-leverage', name: '财务杠杆率', value: 4.22, unit: '倍', decimals: 2, change: '▼ 0.06倍', trend: [4.41, 4.29, 4.35, 4.22] }
+    { id: 'asset-liability', name: '资产负债率', value: 76.3, unit: '%', decimals: 1, change: '▼ 0.8个百分点', yoy: '▼ 1.4个百分点', trend: [78.6, 77.5, 78.0, 76.3] },
+    { id: 'financial-leverage', name: '财务杠杆率', value: 4.22, unit: '倍', decimals: 2, change: '▼ 0.06倍', yoy: '▼ 0.12倍', trend: [4.41, 4.29, 4.35, 4.22] }
   ];
   const financialMetrics = [
-    { id: 'roe', name: '净资产收益率（ROE）', value: 8.2, unit: '%', decimals: 1, change: '▲ 0.4个百分点', trend: [7.4, 7.9, 7.6, 8.2] },
-    { id: 'roa', name: '资产利润率（ROA）', value: 1.16, unit: '%', decimals: 2, change: '▲ 0.08个百分点', trend: [0.98, 1.09, 1.03, 1.16] },
-    { id: 'net-profit', name: '净利润', value: 52.8, unit: '亿元', decimals: 1, change: '▲ 4.8%', trend: [45.7, 50.1, 48.6, 52.8] },
-    { id: 'profit-growth', name: '净利润增速', value: 4.8, unit: '%', decimals: 1, change: '▲ 0.6个百分点', trend: [3.6, 4.4, 4.0, 4.8] },
-    { id: 'cost-income', name: '成本收入比', value: 31.6, unit: '%', decimals: 1, change: '▼ 0.7个百分点', trend: [33.4, 32.1, 32.8, 31.6] }
+    { id: 'roe', name: '净资产收益率（ROE）', value: 8.2, unit: '%', decimals: 1, change: '▲ 0.4个百分点', yoy: '▲ 0.7个百分点', trend: [7.4, 7.9, 7.6, 8.2] },
+    { id: 'roa', name: '资产利润率（ROA）', value: 1.16, unit: '%', decimals: 2, change: '▲ 0.08个百分点', yoy: '▲ 0.10个百分点', trend: [0.98, 1.09, 1.03, 1.16] },
+    { id: 'net-profit', name: '净利润', value: 52.8, unit: '亿元', decimals: 1, change: '▲ 4.8%', yoy: '▲ 8.6%', trend: [45.7, 50.1, 48.6, 52.8] },
+    { id: 'profit-growth', name: '净利润增速', value: 4.8, unit: '%', decimals: 1, change: '▲ 0.6个百分点', yoy: '▲ 1.2个百分点', trend: [3.6, 4.4, 4.0, 4.8] },
+    { id: 'cost-income', name: '成本收入比', value: 31.6, unit: '%', decimals: 1, change: '▼ 0.7个百分点', yoy: '▼ 1.5个百分点', trend: [33.4, 32.1, 32.8, 31.6] }
   ];
   const capitalMetrics = [
-    { id: 'excess-capital', name: '超额资本', value: 26800, unit: '万元', decimals: 0, change: '▲ 1,600万元', trend: [23100, 25200, 24600, 26800] },
-    { id: 'qualified-capital', name: '合格资本覆盖率', value: 129, unit: '%', decimals: 1, change: '▲ 2.6个百分点', trend: [122.6, 126.2, 124.9, 129] }
+    { id: 'excess-capital', name: '超额资本', value: 26800, unit: '万元', decimals: 0, change: '▲ 1,600万元', yoy: '▲ 3,700万元', trend: [23100, 25200, 24600, 26800] },
+    { id: 'qualified-capital', name: '合格资本覆盖率', value: 129, unit: '%', decimals: 1, change: '▲ 2.6个百分点', yoy: '▲ 5.4个百分点', trend: [122.6, 126.2, 124.9, 129] }
   ];
   const topMetricPools = {
     balance: { label: '资产负债类', metrics: balanceSheetMetrics },
@@ -114,6 +114,9 @@
   })();
   let businessDraft = [...selectedBusinessIds];
   let activeRiskCategory = '集中度风险';
+  const riskPageSize = 4;
+  let riskWindowStart = 0;
+  let riskRotationPaused = false;
   sessionStorage.setItem('institution-risk-tab', activeRiskCategory);
 
   function formatNumber(value, decimals = 1) {
@@ -138,14 +141,17 @@
   function renderTopCard(key) {
     const pool = topMetricPools[key]; const selected = contextMetric(pool.metrics.find(item => item.id === selectedTopIds[key]) || pool.metrics[0]);
     const tone = key === 'capital' ? 'green' : key === 'financial' ? 'blue' : 'cyan';
-    $(`[data-top-card="${key}"]`).innerHTML = `<div class="category-card-left"><label>${pool.label}<select data-top-select="${key}" aria-label="${pool.label}指标选择">${pool.metrics.map(item => `<option value="${item.id}" ${item.id === selectedTopIds[key] ? 'selected' : ''}>${item.name}</option>`).join('')}</select></label><button class="category-value" data-detail="${selected.name}" data-detail-text="${pool.label}当前展示指标。当前值${formatNumber(selected.value, selected.decimals)}${selected.unit}，较上季${selected.change.replace(/[▲▼]\s*/, '')}。"><strong>${selected.name}</strong><b>${formatNumber(selected.value, selected.decimals)}<small>${selected.unit}</small></b><span>较上季 <em class="${selected.change.startsWith('▼') ? 'green' : 'cyan'}">${selected.change}</em></span></button></div><div class="category-trend"><span>最近4个季度趋势</span>${sparkline(selected.trend, tone, true)}</div>`;
+    const options = pool.metrics.map(item => `<option value="${item.id}" ${item.id === selectedTopIds[key] ? 'selected' : ''}>${item.name}</option>`).join('');
+    const changeTone = selected.change.startsWith('▼') ? 'green' : 'cyan';
+    const yoyTone = selected.yoy.startsWith('▼') ? 'green' : 'cyan';
+    $(`[data-top-card="${key}"]`).innerHTML = `<div class="category-card-left"><span class="category-pool-label">${pool.label}</span><span class="category-select-stack"><select data-top-select="${key}" aria-label="${pool.label}指标选择">${options}</select></span><button class="category-value" data-detail="${selected.name}" data-detail-text="${pool.label}当前展示指标。当前值${formatNumber(selected.value, selected.decimals)}${selected.unit}，较上季${selected.change.replace(/[▲▼]\s*/, '')}，同比${selected.yoy.replace(/[▲▼]\s*/, '')}。"><strong>${selected.name}</strong><b>${formatNumber(selected.value, selected.decimals)}<small>${selected.unit}</small></b></button><span class="category-comparisons"><span class="category-compare">较上季 <em class="${changeTone}">${selected.change}</em></span><span class="category-compare">同比 <em class="${yoyTone}">${selected.yoy}</em></span></span></div><div class="category-trend"><span class="category-trend-title">最近4个季度趋势</span>${sparkline(selected.trend, tone, true)}</div>`;
     bindDetails();
   }
   function renderTopCards() { Object.keys(topMetricPools).forEach(renderTopCard); }
 
   function renderBusinessRisks() {
     const selected = selectedBusinessIds.map(id => businessRiskMetrics.find(item => item.id === id)).filter(Boolean);
-    $('#businessRiskGrid').innerHTML = selected.map(item => `<button class="business-risk-item tone-${item.status === '黄灯' ? 'yellow' : 'green'}" data-detail="${item.name}" data-detail-text="${item.detail} 当前值${formatNumber(item.value, 1)}${item.unit}，当前状态${item.status}，较上期${item.change.replace(/[▲▼]\s*/, '')}。"><span class="business-risk-name">${item.name}</span><span class="business-risk-ring"><svg viewBox="0 0 120 120"><circle class="ring-track" cx="60" cy="60" r="54"/><circle class="ring-fill" cx="60" cy="60" r="54" pathLength="100" stroke-dasharray="${Math.min(100, item.value)} 100"/></svg><b>${formatNumber(item.value, 1)}<small>${item.unit}</small></b></span><span class="business-risk-change">较上期 <strong>${item.change}</strong></span></button>`).join('');
+    $('#businessRiskGrid').innerHTML = selected.map(item => `<button class="business-risk-item tone-${item.status === '黄灯' ? 'yellow' : 'green'}" data-detail="${item.name}" data-detail-text="${item.detail} 当前值${formatNumber(item.value, 1)}${item.unit}，较上期${item.change.replace(/[▲▼]\s*/, '')}。"><span class="business-risk-name">${item.name}</span><span class="business-risk-ring"><svg viewBox="0 0 120 120"><circle class="ring-track" cx="60" cy="60" r="54"/><circle class="ring-fill" cx="60" cy="60" r="54" pathLength="100" stroke-dasharray="${Math.min(100, item.value)} 100"/></svg><b>${formatNumber(item.value, 1)}<small>${item.unit}</small></b></span><span class="business-risk-change">较上期 <strong>${item.change}</strong></span></button>`).join('');
     bindDetails();
   }
   function statusOf(metric) {
@@ -163,7 +169,9 @@
     $('#riskTabs').innerHTML = Object.keys(riskMetrics).map(category => `<button role="tab" aria-selected="${category === activeRiskCategory}" class="${category === activeRiskCategory ? 'active' : ''}" data-risk-tab="${category}">${category}<b>${riskMetrics[category].length}</b></button>`).join('');
   }
   function renderRiskMetrics() {
-    const items = riskMetrics[activeRiskCategory] || riskMetrics['信用风险'];
+    const allItems = riskMetrics[activeRiskCategory] || riskMetrics['信用风险'];
+    if (riskWindowStart >= allItems.length) riskWindowStart = 0;
+    const items = allItems.slice(riskWindowStart, riskWindowStart + riskPageSize);
     const isOtherRisk = activeRiskCategory === '其他风险';
     const headingHint = $('.risk-monitor-panel .heading-tools small');
     const bandLegend = $('.risk-band-legend');
@@ -174,7 +182,7 @@
     $('#riskMetricList').innerHTML = items.map(metric => {
       if (isOtherRisk) return `<button class="risk-metric-row risk-other-row" data-detail="${metric.name}" data-detail-text="当前值${metricValue(metric)}；下方展示最近4个季度变化趋势。"><span class="risk-metric-name"><strong>${metric.name}</strong><small>其他风险监测指标</small></span><span class="risk-other-value"><small>当前值</small><b>${metricValue(metric)}</b></span><span class="risk-trend"><small>最近4个季度趋势</small>${sparkline(metric.trend, 'cyan', true)}</span></button>`;
       if (metric.countOnly) return `<button class="risk-metric-row risk-count-row" data-detail="${metric.name}" data-detail-text="本期${metric.name}${metricValue(metric)}。该事件类指标仅展示数量，不设置三色阈值区间。"><span class="risk-metric-name"><strong>${metric.name}</strong><small>事件类指标 · 本期汇总</small></span><span class="risk-count-value"><small>本期数量</small><b>${metricValue(metric)}</b><em>数量展示</em></span></button>`;
-      const status = statusOf(metric); const statusLabel = status === 'red' ? '红灯预警' : status === 'yellow' ? '黄灯预警' : '正常';
+      const status = statusOf(metric);
       const pointer = metric.low
         ? (status === 'red' ? 10.8 : status === 'yellow' ? 32.5 : 71.7)
         : (status === 'red' ? 89.2 : status === 'yellow' ? 67.5 : 28.3);
@@ -184,19 +192,25 @@
       const boundaries = metric.low
         ? `<span class="risk-boundaries"><i style="left:21.7%">${metricValue(metric, metric.warning)}</i><i style="left:43.3%">${metricValue(metric, metric.attention)}</i></span>`
         : `<span class="risk-boundaries"><i style="left:56.7%">${metricValue(metric, metric.attention)}</i><i style="left:78.3%">${metricValue(metric, metric.warning)}</i></span>`;
-      return `<button class="risk-metric-row tone-${status}" data-detail="${metric.name}" data-detail-text="当前值${metricValue(metric)}；关注阈值${metricValue(metric, metric.attention)}；预警阈值${metricValue(metric, metric.warning)}。"><span class="risk-metric-name"><strong>${metric.name}</strong><em>${statusLabel}</em></span><span class="risk-segment-wrap"><span class="risk-band"><span class="risk-current" style="left:${pointer}%"><b>${metricValue(metric)}</b><i></i></span>${segments}${boundaries}</span></span><span class="risk-trend"><small>最近4个季度趋势</small>${sparkline(metric.trend, status === 'red' ? 'red' : status === 'yellow' ? 'yellow' : 'cyan', true)}</span></button>`;
+      return `<button class="risk-metric-row tone-${status}" data-detail="${metric.name}" data-detail-text="当前值${metricValue(metric)}；关注阈值${metricValue(metric, metric.attention)}；预警阈值${metricValue(metric, metric.warning)}。"><span class="risk-metric-name"><strong>${metric.name}</strong></span><span class="risk-segment-wrap"><span class="risk-band"><span class="risk-current" style="left:${pointer}%"><b>${metricValue(metric)}</b><i></i></span>${segments}${boundaries}</span></span><span class="risk-trend"><small>最近4个季度趋势</small>${sparkline(metric.trend, status === 'red' ? 'red' : status === 'yellow' ? 'yellow' : 'cyan', true)}</span></button>`;
     }).join('');
     bindDetails();
   }
   function renderRiskMonitor() { renderRiskSummary(); renderRiskTabs(); renderRiskMetrics(); }
+  function advanceRiskMetrics() {
+    const items = riskMetrics[activeRiskCategory] || [];
+    if (document.hidden || riskRotationPaused || items.length <= riskPageSize) return;
+    riskWindowStart = riskWindowStart + riskPageSize >= items.length ? 0 : riskWindowStart + riskPageSize;
+    renderRiskMetrics();
+  }
 
   function businessTable() {
-    return `<div class="business-all-list">${businessRiskMetrics.map(item => `<button data-detail="${item.name}" data-detail-text="${item.detail} 当前值${formatNumber(item.value, 1)}${item.unit}。"><span><b>${item.name}</b><small>${item.detail}</small></span><strong>${formatNumber(item.value, 1)}${item.unit}</strong><em class="${item.status === '黄灯' ? 'yellow' : 'green'}">${item.status}</em></button>`).join('')}</div>`;
+    return `<div class="business-all-list">${businessRiskMetrics.map(item => `<button data-detail="${item.name}" data-detail-text="${item.detail} 当前值${formatNumber(item.value, 1)}${item.unit}。"><span><b>${item.name}</b><small>${item.detail}</small></span><strong>${formatNumber(item.value, 1)}${item.unit}</strong></button>`).join('')}</div>`;
   }
   function openBusinessPicker() {
     businessDraft = [...selectedBusinessIds];
-    const options = businessRiskMetrics.map(item => `<label class="business-picker-option"><input type="checkbox" data-business-option="${item.id}" ${businessDraft.includes(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>当前值 ${formatNumber(item.value, 1)}${item.unit} · ${item.status}</small></span></label>`).join('');
-    openDialog('主要业务风险 · 选择首页指标', `<p class="business-picker-note">请从5项主要业务风险指标中选择2项，首页始终只展示2项。</p><div class="business-picker-options">${options}</div><div class="business-picker-actions"><span>已选择 <b>${businessDraft.length}</b>/2 项</span><button class="btn primary" data-action="save-business">保存并刷新</button></div>`);
+    const options = businessRiskMetrics.map(item => `<label class="business-picker-option"><input type="checkbox" data-business-option="${item.id}" ${businessDraft.includes(item.id) ? 'checked' : ''}><span><b>${item.name}</b><small>当前值 ${formatNumber(item.value, 1)}${item.unit}</small></span></label>`).join('');
+    openDialog('资产质量监测 · 选择首页指标', `<p class="business-picker-note">请从5项资产质量指标中选择2项，首页始终只展示2项。</p><div class="business-picker-options">${options}</div><div class="business-picker-actions"><span>已选择 <b>${businessDraft.length}</b>/2 项</span><button class="btn primary" data-action="save-business">保存并刷新</button></div>`);
   }
 
   function openDialog(title, content) {
@@ -225,10 +239,10 @@
   document.addEventListener('click', (event) => {
     const button = event.target.closest('button'); if (!button) return;
     if (button.dataset.action === 'close') closeDialog();
-    if (button.dataset.action === 'scope') openDialog('范围与口径', `当前页面展示${institution}自身经营、主要业务风险、风险指标监测、战略目标、舆情及重大风险事项，不包含其他机构数据。`);
+    if (button.dataset.action === 'scope') openDialog('范围与口径', `当前页面展示${institution}自身经营、资产质量、风险指标监测、战略目标、舆情及重大风险事项，不包含其他机构数据。`);
     if (button.dataset.action === 'fullscreen') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(() => openDialog('全屏展示', '当前浏览器未开放全屏权限，可使用浏览器全屏功能查看。')); }
     if (button.dataset.action === 'workbench') window.parent.location.assign('/workbench');
-    if (button.hasAttribute('data-business-all')) { openDialog('主要业务风险 · 全部5项', businessTable()); bindDetails(); }
+    if (button.hasAttribute('data-business-all')) { openDialog('资产质量监测 · 全部5项', businessTable()); bindDetails(); }
     if (button.hasAttribute('data-business-config')) openBusinessPicker();
     if (button.dataset.action === 'save-business') {
       if (businessDraft.length !== 2) return;
@@ -238,6 +252,7 @@
     }
     if (button.dataset.riskTab) {
       activeRiskCategory = button.dataset.riskTab;
+      riskWindowStart = 0;
       sessionStorage.setItem('institution-risk-tab', activeRiskCategory);
       renderRiskSummary(); renderRiskTabs(); renderRiskMetrics();
     }
@@ -273,9 +288,14 @@
   });
   document.addEventListener('keydown', event => { if (event.key === 'Escape') closeDialog(); });
   $('#period').addEventListener('change', updatePeriod);
+  $('#riskMetricList').addEventListener('mouseenter', () => { riskRotationPaused = true; });
+  $('#riskMetricList').addEventListener('mouseleave', () => { riskRotationPaused = false; });
+  $('#riskMetricList').addEventListener('focusin', () => { riskRotationPaused = true; });
+  $('#riskMetricList').addEventListener('focusout', () => { riskRotationPaused = false; });
 
   window.addEventListener('resize', fitScreen);
   fitScreen(); renderTopCards(); renderBusinessRisks(); renderRiskMonitor(); renderNews(); renderEvents(); bindDetails(); updatePeriod(); updateClock();
   setInterval(updateClock, 1000);
+  setInterval(advanceRiskMetrics, 5000);
   setInterval(() => { if (!feedState.news.paused) stepFeed('news', 1); if (!feedState.events.paused) stepFeed('events', 1); }, 3500);
 })();

@@ -302,3 +302,111 @@
 .institution-screen .compact-field { font-size:11px; line-height:1.25; }
 .institution-screen .compact-field.time { letter-spacing:-.35px; }
 .institution-screen .feed-controls button { font-size:14px; }
+
+/* Requested order, spacing and top-card information hierarchy. */
+.institution-screen .strategy-panel { grid-column:1; margin-top:6px; }
+.institution-screen .risk-monitor-panel { margin-top:6px; }
+.institution-screen .business-risk-panel { grid-column:3; margin-top:6px; }
+.institution-screen .category-metric-card {
+  grid-template-columns:minmax(0,1.3fr) minmax(150px,.7fr);
+  padding:12px 18px 10px;
+}
+
+.institution-screen .category-card-left {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(158px,176px);
+  grid-template-rows:auto minmax(0,1fr);
+  column-gap:12px;
+  row-gap:0;
+  align-items:stretch;
+  height:100%;
+  padding-right:0;
+}
+.institution-screen .category-pool-label {
+  grid-column:1;
+  grid-row:1;
+  color:#82a7c4;
+  font-size:14px;
+  align-self:center;
+  white-space:nowrap;
+}
+.institution-screen .category-select-stack {
+  grid-column:2;
+  grid-row:1;
+  display:flex;
+  min-width:0;
+  flex-direction:column;
+}
+.institution-screen .category-card-left select { width:100%; max-width:none; }
+.institution-screen .category-comparisons {
+  grid-column:2;
+  grid-row:2;
+  align-self:center;
+  display:grid;
+  width:calc(100% + 12px);
+  margin-left:-12px;
+  gap:4px;
+  transform:translateY(6px);
+}
+.institution-screen .category-compare {
+  display:flex;
+  align-items:center;
+  gap:4px;
+  color:#799ab6;
+  font-size:14px;
+  font-weight:500;
+  line-height:1.2;
+  white-space:nowrap;
+}
+.institution-screen .category-compare em { margin-left:auto; font-size:15px; font-style:normal; font-weight:600; }
+.institution-screen .category-value { grid-column:1; grid-row:2; align-self:center; padding-top:0; }
+.institution-screen .category-trend {
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  align-items:stretch;
+  justify-content:stretch;
+  min-height:0;
+  height:100%;
+  padding:1px 4px 0 15px;
+  text-align:center;
+}
+.institution-screen .category-trend-title { align-self:start; text-align:center; line-height:1.15; }
+.institution-screen .category-trend .institution-spark { width:100%; height:100%; min-height:0; margin:0; }
+.institution-screen .category-trend>.spark-quarters { align-self:end; width:100%; margin-top:0; }
+.institution-screen .business-all-list>button { grid-template-columns:minmax(0,1fr) 110px; }
+.institution-screen .risk-metric-list {
+  grid-template-rows:repeat(var(--risk-count),minmax(0,1fr));
+  overflow:hidden;
+  padding-right:0;
+  scrollbar-width:none;
+}
+.institution-screen .risk-metric-list[data-count="1"] { grid-template-rows:minmax(150px,220px); align-content:start; }
+.institution-screen .risk-metric-row { min-height:0; animation:risk-row-refresh .38s ease-out both; }
+
+@keyframes risk-row-refresh {
+  from { opacity:.2; transform:translateY(5px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@media (max-width:1550px), (max-height:900px) {
+  .institution-screen .strategy-panel,
+  .institution-screen .risk-monitor-panel,
+  .institution-screen .business-risk-panel { margin-top:5px; }
+  .institution-screen .category-metric-card {
+    grid-template-columns:minmax(0,1.3fr) minmax(146px,.7fr);
+    padding:8px 16px;
+  }
+  .institution-screen .category-card-left {
+    grid-template-columns:minmax(0,1fr) minmax(148px,158px);
+    column-gap:8px;
+  }
+  .institution-screen .category-pool-label { font-size:13px; }
+  .institution-screen .category-comparisons { gap:3px; transform:translateY(7px); }
+  .institution-screen .category-compare { font-size:13px; line-height:1.2; }
+  .institution-screen .category-compare em { font-size:14px; }
+  .institution-screen .category-value>strong { line-height:1.2; }
+  .institution-screen .category-value>b { margin-top:2px; font-size:32px; line-height:1; }
+  .institution-screen .category-trend { padding:1px 4px 0 11px; }
+  .institution-screen .risk-metric-list { padding:4px 0; }
+  .institution-screen .risk-metric-list[data-count="1"] { grid-template-rows:minmax(130px,180px); }
+}
