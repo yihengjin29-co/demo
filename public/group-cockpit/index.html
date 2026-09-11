@@ -344,7 +344,7 @@ button,select{font-family:inherit}button:focus-visible,select:focus-visible{outl
 const $=(q,root=document)=>root.querySelector(q), $$=(q,root=document)=>[...root.querySelectorAll(q)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ORGS={group:{name:'并表监测层',type:'独立计算口径 · 示例'},amc:{name:'国际AMC',type:'不良资产经营 · 手工填报'},ht:{name:'国泰海通',type:'证券业务 · 接口接入'},cpic:{name:'太保',type:'保险业务 · 接口接入（演示）'}};
-const CATS=[['credit','信用'],['concentration','集中度'],['liquidity','流动性'],['market','市场'],['operational','操作'],['compliance','合规'],['reputation','声誉'],['it','信息科技'],['strategic','战略'],['adequacy','资本充足'],['efficiency','经营效率']];
+const CATS=[['credit','信用'],['concentration','集中度'],['liquidity','流动性'],['market','市场'],['operational','操作'],['compliance','合规'],['reputation','声誉'],['it','信息科技'],['strategic','战略'],['other','其他'],['adequacy','资本充足'],['efficiency','经营效率']];
 const catName=id=>CATS.find(c=>c[0]===id)?.[1]||id;
 const STATUS={red:'红灯',yellow:'黄灯',green:'正常',no_data:'缺数',overdue:'数据超期',none:'未配置'};
 const color=s=>s==='no_data'||s==='overdue'||s==='none'?'gray':s;
@@ -614,13 +614,14 @@ function orgSummaryHTML(org){
  const totals=['capital','risk'].map(type=>{const xs=rows.filter(r=>r.monitoring===type),sum=key=>xs.reduce((n,r)=>n+r[key],0);return `<div><span>${type==='capital'?'资本':'风险'}指标</span><strong>${sum('total')}<small>项</small></strong><span>本月曾预警 <b>${sum('monthly')}</b> 项</span><span class="yellow">黄 ${sum('yellow')}</span><span class="red">红 ${sum('red')}</span><span class="green">正常 ${sum('green')}</span></div>`}).join('');
  return `<section class="org-summary" aria-label="本月资本与风险指标概览"><h3 class="section-label">本月资本与风险指标概览</h3><div class="org-summary-totals">${totals}</div><div class="table-scroll"><table class="data-table org-summary-table"><thead><tr><th scope="col">监测类型</th><th scope="col">指标类型</th><th scope="col">指标总数</th><th scope="col">本月曾预警</th><th scope="col" class="yellow">当前黄灯</th><th scope="col" class="red">当前红灯</th><th scope="col" class="green">当前正常</th><th scope="col">缺数 / 超期</th></tr></thead><tbody>${rows.map(r=>`<tr data-org-summary-row="${r.monitoring}:${r.category}"><td>${r.monitoring==='capital'?'资本':'风险'}</td><td>${r.name}${r.total?'':'<small class="muted"> · 未配置</small>'}</td><td>${counter(r,'all')}</td><td>${counter(r,'monthly','cyan')}</td><td>${counter(r,'yellow','yellow')}</td><td>${counter(r,'red','red')}</td><td>${counter(r,'green','green')}</td><td>${counter(r,'quality','muted')}</td></tr>`).join('')}</tbody></table></div><p class="summary-footnote">按指标去重。本月曾预警包含已恢复指标；灯色为当前状态，缺数、超期不计为正常。点击数字筛选下方明细。合规、信息科技归入其他风险；经营指标保留在下方清单。</p></section>`;
 }
+function matchesHeatCategory(i,category){return category==='other'?!['credit','concentration','liquidity','adequacy','efficiency'].includes(i.cat):i.cat===category}
 function orgItems(type,args){
  const query=(args.query||'').toLowerCase(),warned=new Set(warningList().map(w=>w.ind.id));
  return indicators.filter(i=>{
   const c=classifyWarningIndicator(i),status=evaluate(i);
-  return i.org===args.org&&(type!=='cell'||i.cat===args.cat)&&(type!=='cell'||args.showAll||['red','yellow'].includes(status))
+  return i.org===args.org&&(type!=='cell'||matchesHeatCategory(i,args.cat))&&(type!=='cell'||args.showAll||['red','yellow'].includes(status))
    &&(!args.monitoring||args.monitoring==='all'||c.monitoring===args.monitoring)
-   &&(!args.category||args.category==='all'||(type==='cell'?i.cat===args.category:c.indicatorType===args.category))
+   &&(!args.category||args.category==='all'||(type==='cell'?matchesHeatCategory(i,args.category):c.indicatorType===args.category))
    &&(!args.status||args.status==='all'||(args.status==='quality'?['no_data','overdue','none'].includes(status):status===args.status))
    &&(!args.periodWarnings||warned.has(i.id))&&i.name.toLowerCase().includes(query);
  }).sort((a,b)=>{

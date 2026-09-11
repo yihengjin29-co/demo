@@ -6,7 +6,7 @@ import {
   eventMonitor,
   institutionPenetration,
 } from './groupDashboardMockData';
-import type { InstitutionPenetrationItem, InstitutionPenetrationMetric } from './groupDashboardMockData';
+import type { InstitutionPenetrationItem } from './groupDashboardMockData';
 
 type Navigate = (path: string) => void;
 type RiskBoardEntry = { query: string; title: string };
@@ -31,22 +31,17 @@ type KeyIndicator = {
 };
 
 const riskCategories = [
-  { id: 'credit', label: '信用' },
-  { id: 'concentration', label: '集中度' },
-  { id: 'liquidity', label: '流动性' },
-  { id: 'market', label: '市场' },
-  { id: 'operational', label: '操作' },
-  { id: 'compliance', label: '合规' },
-  { id: 'reputation', label: '声誉' },
-  { id: 'it', label: '信息科技' },
-  { id: 'strategic', label: '战略' },
+  { id: 'credit', label: '信用风险' },
+  { id: 'concentration', label: '集中度风险' },
+  { id: 'liquidity', label: '流动性风险' },
+  { id: 'other', label: '其他风险' },
 ] as const;
 
 const heatmapRows: { id: string; name: string; routeId: string; type: string; cells: Record<string, HeatCell> }[] = [
-  { id: 'amc', name: '国际AMC', routeId: 'inst-amc', type: '不良资产经营', cells: { credit: { red: 1 }, concentration: { red: 1, yellow: 1 }, liquidity: { yellow: 1 }, operational: { status: 'green' }, compliance: { yellow: 1 }, reputation: { status: 'green' }, it: { status: 'no-data' }, strategic: { status: 'none' }, market: { status: 'none' } } },
-  { id: 'ht', name: '国泰海通', routeId: 'inst-guotai', type: '证券业务', cells: { credit: { status: 'green' }, concentration: { yellow: 1 }, liquidity: { status: 'green' }, market: { red: 1, yellow: 1 }, operational: { status: 'green' }, compliance: { status: 'green' }, reputation: { status: 'green' }, it: { status: 'green' }, strategic: { status: 'green' } } },
-  { id: 'spdb', name: '浦发银行', routeId: 'inst-spdb', type: '银行业务', cells: { credit: { yellow: 1 }, concentration: { yellow: 1 }, liquidity: { yellow: 1 }, market: { status: 'green' }, operational: { status: 'green' }, compliance: { status: 'green' }, reputation: { status: 'green' }, it: { status: 'green' }, strategic: { status: 'green' } } },
-  { id: 'srcb', name: '沪农商银行', routeId: 'inst-srcb', type: '银行业务', cells: { credit: { status: 'green' }, concentration: { yellow: 1 }, liquidity: { status: 'green' }, market: { red: 1 }, operational: { status: 'green' }, compliance: { yellow: 1 }, reputation: { status: 'green' }, it: { status: 'green' }, strategic: { status: 'green' } } },
+  { id: 'amc', name: '国际AMC', routeId: 'inst-amc', type: '不良资产经营', cells: { credit: { red: 1 }, concentration: { red: 1, yellow: 1 }, liquidity: { yellow: 1 }, other: { yellow: 1 } } },
+  { id: 'ht', name: '国泰海通', routeId: 'inst-guotai', type: '证券业务', cells: { credit: { status: 'green' }, concentration: { yellow: 1 }, liquidity: { status: 'green' }, other: { red: 1, yellow: 1 } } },
+  { id: 'spdb', name: '浦发银行', routeId: 'inst-spdb', type: '银行业务', cells: { credit: { yellow: 1 }, concentration: { yellow: 1 }, liquidity: { yellow: 1 }, other: { status: 'green' } } },
+  { id: 'srcb', name: '沪农商银行', routeId: 'inst-srcb', type: '银行业务', cells: { credit: { status: 'green' }, concentration: { yellow: 1 }, liquidity: { status: 'green' }, other: { red: 1, yellow: 1 } } },
 ];
 
 const keyIndicatorCatalog: KeyIndicator[] = [
@@ -144,9 +139,9 @@ function BusinessStrip() {
 
 function HeatSignal({ cell }: { cell: HeatCell }) {
   const status = cell.red ? 'red' : cell.yellow ? 'yellow' : cell.status || 'none';
-  if (cell.red || cell.yellow) return <span className={`gd-heat-flags ${status}`}>{cell.red ? <i className="red" aria-label={`${cell.red} 项红灯`} /> : null}{cell.yellow ? <i className="yellow" aria-label={`${cell.yellow} 项黄灯`} /> : null}</span>;
-  const labels: Record<RiskStatus, string> = { red: '红灯', yellow: '黄灯', green: '正常', 'no-data': '缺数', overdue: '超期', none: '未配置' };
-  return <span className={`gd-heat-state ${status}`}><i />{labels[status]}</span>;
+  const labels: Record<RiskStatus, string> = { red: '红灯预警', yellow: '黄灯预警', green: '正常', 'no-data': '缺数', overdue: '超期', none: '未配置' };
+  // The grid uses one consolidated light only; red takes priority over yellow.
+  return <span className={`gd-heat-state ${status}`} aria-label={labels[status]} title={labels[status]}><i /></span>;
 }
 
 function RiskBoardOverlay({ entry, onClose }: { entry: RiskBoardEntry; onClose: () => void }) {
@@ -171,60 +166,48 @@ function RiskHeatmapPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) {
     <div className="gd-heatmap-grid" style={{ '--risk-columns': riskCategories.length } as CSSProperties}>
       <div className="gd-heat-axis corner">机构 / 风险类型</div>{riskCategories.map(risk => <div className="gd-heat-axis" key={risk.id}>{risk.label}</div>)}
       {heatmapRows.map(org => <div className="gd-heatmap-row" key={org.id}>
-        <button className="gd-heat-org" onClick={() => openRiskBoard(`entry=org&org=${org.id}`, `${org.name} · 资本与风险监测`)}><b>{org.name}</b><small>{org.type} ↗</small></button>
+        <button className="gd-heat-org" onClick={() => openRiskBoard(`entry=org&org=${org.id}`, `${org.name} · 资本与风险监测`)}><b>{org.name}</b></button>
         {riskCategories.map(risk => { const cell = org.cells[risk.id] || { status: 'none' as const }; return <button className="gd-heat-cell" key={risk.id} aria-label={`${org.name} ${risk.label}风险`} onClick={() => openRiskBoard(`entry=cell&org=${org.id}&cat=${risk.id}`, `${org.name} · ${risk.label}风险`)}><HeatSignal cell={cell} /></button>; })}
       </div>)}
     </div>
-    <div className="gd-heatmap-foot"><span>旗帜颜色表示当前预警状态；点击后弹出风险看板原下钻页面</span><button onClick={() => openRiskBoard('entry=quality', '数据状态核对')}>数据状态 ↗</button></div>
+    <div className="gd-heatmap-foot"><span>亮灯表示当前综合风险状态（红黄并存时按红灯展示）；点击后弹出风险看板原下钻页面</span><button onClick={() => openRiskBoard('entry=quality', '数据状态核对')}>数据状态 ↗</button></div>
   </Panel>;
 }
 
 function KeyIndicatorPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) {
-  const defaultIds = ['g-sector', 'g-liq', 'g-credit', 'g-cap'];
+  const defaultIds = ['g-sector', 'g-liq', 'g-credit'];
   const selectedIds = (() => {
     try {
       const saved = JSON.parse(localStorage.getItem('siig-risk-cockpit-selected-v5') || 'null');
-      const valid = Array.isArray(saved) ? saved.filter(id => keyIndicatorCatalog.some(item => item.id === id)).slice(0, 4) : [];
-      return valid.length === 4 ? valid as string[] : defaultIds;
+      const valid = Array.isArray(saved) ? saved.filter(id => keyIndicatorCatalog.some(item => item.id === id)) as string[] : [];
+      return [...new Set([...valid, ...defaultIds])].slice(0, 3);
     } catch { return defaultIds; }
   })();
   const selected = selectedIds.map(id => keyIndicatorCatalog.find(item => item.id === id)).filter((item): item is KeyIndicator => Boolean(item));
   return <Panel title="关键指标情况" className="gd-capital-panel" actions={<button className="gd-panel-entry" onClick={() => openRiskBoard('', '风险看板')}>已选 {selected.length} 项 · 进入看板 ↗</button>}>
     <div className="gd-capital-layout"><div className="gd-capital-grid">{selected.map((item, index) => <button className={`gd-capital-card ${item.status === '黄灯' ? 'yellow' : item.status === '红灯' ? 'red' : 'green'}`} key={item.id} onClick={() => openRiskBoard(`entry=indicator&id=${item.id}`, `${item.name} · 指标详情`)}>
-      <header><span>{['◈', '◇', '▥', '✧'][index]}</span><b>{item.name}</b></header><strong>{item.value}<em>{item.unit}</em></strong><small className={item.status === '正常' ? 'up' : 'warn'}><span>{item.scope} · {item.type}</span>{item.change}</small><div className="gd-capital-trend"><em>近12个月趋势</em><LineChart values={item.trend} color={item.status === '黄灯' ? '#fac63e' : item.status === '红灯' ? '#ff5368' : '#42d9ff'} width={180} height={100} /><div className="gd-months"><span>9月</span><span>本月</span></div></div><i className="gd-card-status">{item.status === '正常' ? '○ 正常' : item.status === '黄灯' ? '△ 黄灯' : '● 红灯'}</i>
+      <header><span>{['◈', '◇', '▥'][index]}</span><b>{item.name}</b></header><strong>{item.value}<em>{item.unit}</em></strong><small className={item.status === '正常' ? 'up' : 'warn'}><span>{item.scope} · {item.type}</span>{item.change}</small><div className="gd-capital-trend"><em>近12个月趋势</em><LineChart values={item.trend} color={item.status === '黄灯' ? '#fac63e' : item.status === '红灯' ? '#ff5368' : '#42d9ff'} width={180} height={100} /><div className="gd-months"><span>9月</span><span>本月</span></div></div><i className="gd-card-status">{item.status === '正常' ? '○ 正常' : item.status === '黄灯' ? '△ 黄灯' : '● 红灯'}</i>
     </button>)}</div><button className="gd-capital-custom" onClick={() => openRiskBoard('entry=configure', '关键指标自定义')}><b>＋</b><span>自定义</span><small>进入看板设置</small></button></div>
   </Panel>;
 }
 
-function metricsForInstitution(item: InstitutionPenetrationItem): InstitutionPenetrationMetric[] {
-  try {
-    const stored = JSON.parse(localStorage.getItem(`siig-risk-cockpit-institution-${item.id}-v1-details`) || 'null');
-    if (Array.isArray(stored) && stored.length === 2 && stored.every(metric => metric && typeof metric.id === 'string' && typeof metric.name === 'string')) return stored;
-  } catch { /* fall back to the shared risk-board defaults */ }
-  return item.metrics;
-}
-
-function InstitutionPenetrationPanel({ openRiskBoard }: { openRiskBoard: OpenRiskBoard }) {
+function InstitutionPenetrationPanel() {
   const [selectedId, setSelectedId] = useState<InstitutionPenetrationItem['id']>('spdb');
   const selected = institutionPenetration.find(item => item.id === selectedId) || institutionPenetration[0];
   const connectorPoints = [
-    { id: 'spdb', d: 'M500 200 C440 165 390 115 315 78' },
-    { id: 'cpic', d: 'M500 200 C560 165 610 115 685 78' },
-    { id: 'ht', d: 'M500 200 C440 235 390 285 315 322' },
-    { id: 'amc', d: 'M500 200 C560 235 610 285 685 322' },
+    { id: 'spdb', d: 'M450 145 C408 125 370 92 315 78', anchor: [450, 145], end: [315, 78] },
+    { id: 'srcb', d: 'M550 145 C592 125 630 92 685 78', anchor: [550, 145], end: [685, 78] },
+    { id: 'ht', d: 'M450 255 C408 275 370 308 315 322', anchor: [450, 255], end: [315, 322] },
+    { id: 'amc', d: 'M550 255 C592 275 630 308 685 322', anchor: [550, 255], end: [685, 322] },
   ];
-  const configure = () => openRiskBoard(`entry=configure&context=institution&org=${selected.id}&limit=2`, `${selected.name} · 自定义指标`);
-  return <Panel title="机构穿透监测" className="gd-equity-panel" actions={<div className="gd-penetration-actions"><span>Mock · 截至 2026-08-31</span><button onClick={configure}>＋ 自定义指标</button></div>}>
+  return <Panel title="机构穿透监测" className="gd-equity-panel" actions={<div className="gd-penetration-actions"><span>重点持股机构市场表现 · 截至 2026-08-31</span></div>}>
     <div className="gd-penetration-stage" aria-label="上海国际集团与四家金融机构穿透关系">
-      <svg className="gd-penetration-links" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true"><defs><filter id="gdLinkGlow"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>{connectorPoints.map(link => <path key={link.id} d={link.d} className={selectedId === link.id ? 'active' : ''} />)}</svg>
+      <svg className="gd-penetration-links" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true"><defs><filter id="gdLinkGlow"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>{connectorPoints.map(link => <g key={link.id} className={selectedId === link.id ? 'active' : ''}><path d={link.d} /><circle cx={link.anchor[0]} cy={link.anchor[1]} r="5" /><circle className="end" cx={link.end[0]} cy={link.end[1]} r="3.5" /></g>)}</svg>
       {institutionPenetration.map((item, index) => {
         const active = selectedId === item.id;
         return <button key={item.id} className={`gd-institution-card position-${index + 1} ${active ? 'active' : 'muted'}`} aria-pressed={active} onClick={() => setSelectedId(item.id)}>
           <header><span className="gd-institution-logo">{item.shortName.slice(0, 1)}</span><strong>{item.name}</strong><i>›</i></header>
           <dl className="gd-market-facts"><div><dt>持股比例</dt><dd>{item.equityRatio}</dd></div><div><dt>股价</dt><dd>{item.stockPrice}</dd></div><div><dt>市值</dt><dd>{item.marketValue}</dd></div></dl>
-          <div className="gd-institution-metrics">{metricsForInstitution(item).slice(0, 2).map(metric => <article key={metric.id} className={metric.tone}>
-            <span>{metric.name}</span><strong>{metric.value}<em>{metric.unit}</em></strong><small>{metric.change}</small>
-          </article>)}</div>
         </button>;
       })}
       <div className="gd-group-node"><strong>上海国际集团</strong></div>
@@ -259,7 +242,7 @@ export default function GroupDashboard({ navigate }: { navigate: Navigate }) {
   return <div className="group-dashboard-host"><div className="group-dashboard-screen">
     <DashboardHeader navigate={navigate} />
     <BusinessStrip />
-    <main className="gd-main-grid"><div className="gd-top-monitoring"><RiskHeatmapPanel openRiskBoard={openRiskBoard} /><KeyIndicatorPanel openRiskBoard={openRiskBoard} /></div><InstitutionPenetrationPanel openRiskBoard={openRiskBoard} /><EventPanel /></main>
+    <main className="gd-main-grid"><div className="gd-top-monitoring"><RiskHeatmapPanel openRiskBoard={openRiskBoard} /><KeyIndicatorPanel openRiskBoard={openRiskBoard} /></div><InstitutionPenetrationPanel /><EventPanel /></main>
     <footer className="gd-footer"><span><i />数据链路正常 · 观察期 2026年8月</span><span>{pageHint}</span></footer>
   </div>{riskBoardEntry && <RiskBoardOverlay entry={riskBoardEntry} onClose={() => setRiskBoardEntry(null)} />}</div>;
 }

@@ -389,9 +389,9 @@ function App() {
   return <div className="app"><Header path={path} role={role} setRole={changeRole} onReset={() => { reset(); toast('演示数据已恢复'); }} onLogout={logout} /><Sidebar path={path} role={role} navigate={navigate} /><main className="content">{render()}</main>{notice && <Modal title="操作提示" onClose={() => setNotice(null)} footer={<Button variant="secondary" onClick={() => setNotice(null)}>关闭</Button>}><div className="modal-note">{notice}</div></Modal>}{path !== '/ai-assistant' && <SmartAssistant role={role} path={path} />}</div>;
 }
 
-function InstitutionCockpit({ navigate }: { navigate: (path: string) => void }) {
+function InstitutionCockpit({ navigate: _navigate }: { navigate: (path: string) => void }) {
   const source = `/institution-cockpit/index.html?name=${encodeURIComponent(currentInstitution)}`;
-  return <div className="institution-cockpit-host"><iframe title={`${currentInstitution}金融机构驾驶舱`} src={source} /><button className="institution-cockpit-back" onClick={() => navigate('/workbench')}>‹ 返回工作台</button></div>;
+  return <div className="institution-cockpit-host"><iframe title={`${currentInstitution}金融机构驾驶舱`} src={source} /></div>;
 }
 
 function AiApplicationPage({ role, path }: { role: Role; path: string }) {

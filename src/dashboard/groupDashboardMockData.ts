@@ -11,12 +11,12 @@ export const businessOverview = [
 export const concentrationRisk = [
   { name: '客户A', group: 'XX集团', single: 45, consolidated: 118, institution: '浦发银行', warning: true },
   { name: '客户B', group: '项目集团B', single: 38, consolidated: 92, institution: '国泰海通', warning: false },
-  { name: '客户C', group: '项目集团C', single: 30, consolidated: 74, institution: '太保', warning: false },
+  { name: '客户C', group: '项目集团C', single: 30, consolidated: 74, institution: '沪农商银行', warning: false },
   { name: '客户D', group: '项目集团D', single: 25, consolidated: 61, institution: '国际AMC', warning: false },
   { name: '客户E', group: '项目集团E', single: 21, consolidated: 48, institution: '浦发银行', warning: false },
 ];
 
-export type RiskScope = '集团' | '国际AMC' | '国泰海通' | '浦发银行' | '太保';
+export type RiskScope = '集团' | '国际AMC' | '国泰海通' | '浦发银行' | '沪农商银行';
 export type RiskKind = 'financial' | 'nonFinancial';
 
 type RiskSlice = {
@@ -53,7 +53,7 @@ export const riskWarningByScope: Record<RiskScope, Record<RiskKind, RiskSlice>> 
     financial: risk(financialAxes, [2, 1, 2, 2, 1], [4, 2, 3, 4, 3], 1, -1, [5, 5, 6, 7, 7, 8], [13, 14, 15, 17, 17, 16]),
     nonFinancial: risk(nonFinancialAxes, [1, 2, 1, 2, 0, 1], [3, 3, 2, 3, 2, 2], 0, 1, [4, 4, 5, 5, 6, 7], [9, 10, 11, 12, 12, 15]),
   },
-  太保: {
+  沪农商银行: {
     financial: risk(financialAxes, [1, 1, 1, 1, 2], [2, 2, 3, 2, 4], -1, -1, [7, 7, 7, 6, 6, 6], [15, 15, 14, 14, 14, 13]),
     nonFinancial: risk(nonFinancialAxes, [1, 1, 2, 1, 1, 0], [2, 2, 3, 2, 2, 1], 0, -1, [5, 6, 6, 6, 6, 6], [12, 13, 13, 12, 12, 12]),
   },
@@ -70,7 +70,7 @@ export const capitalMetrics = [
 
 export const institutionEquity = [
   { name: '浦发银行', relation: '参股', ratio: '12.3%', type: '银行', totalAssets: '90,620亿', netAssets: '7,315亿', revenue: '1,736亿', profit: '452亿', children: ['浦发金融租赁', '浦银基金', '浦发海外'], remaining: 12 },
-  { name: '太保', relation: '参股', ratio: '18.7%', type: '保险', totalAssets: '28,940亿', netAssets: '2,684亿', revenue: '3,668亿', profit: '272亿', children: ['太保寿险', '太保产险', '太保资管'], remaining: 8 },
+  { name: '沪农商银行', relation: '参股', ratio: '8.45%', type: '银行', totalAssets: '14,780亿', netAssets: '1,250亿', revenue: '286亿', profit: '116亿', children: ['沪农商村镇银行', '长三角业务中心', '金融市场业务中心'], remaining: 8 },
   { name: '国泰海通', relation: '控股', ratio: '32.5%', type: '证券', totalAssets: '9,238亿', netAssets: '1,742亿', revenue: '428亿', profit: '96亿', children: ['海通资管', '海通期货', '海通国际'], remaining: 18 },
   { name: '国际AMC', relation: '控股', ratio: '36.5%', type: '资产管理', totalAssets: '1,268亿', netAssets: '286亿', revenue: '76亿', profit: '18亿', children: ['AMC资产管理', '特殊机会投资', '境外SPV'], remaining: 15 },
 ];
@@ -85,7 +85,7 @@ export type InstitutionPenetrationMetric = {
 };
 
 export type InstitutionPenetrationItem = {
-  id: 'spdb' | 'cpic' | 'ht' | 'amc';
+  id: 'spdb' | 'srcb' | 'ht' | 'amc';
   name: string;
   shortName: string;
   equityRatio: string;
@@ -104,10 +104,10 @@ export const institutionPenetration: InstitutionPenetrationItem[] = [
     ],
   },
   {
-    id: 'cpic', name: '太保', shortName: '太保', equityRatio: '18.7%', stockPrice: '¥28.60', marketValue: '¥2,745亿',
+    id: 'srcb', name: '沪农商银行', shortName: '沪农商银行', equityRatio: '8.45%', stockPrice: '¥6.88', marketValue: '¥663亿',
     metrics: [
-      { id: 'c-solvency', name: '综合偿付能力充足率', value: '238.70', unit: '%', change: '▲ 3.10pct', tone: 'up' },
-      { id: 'c-roe', name: '净资产收益率', value: '12.60', unit: '%', change: '▲ 0.60pct', tone: 'up' },
+      { id: 's-cap', name: '资本充足率', value: '14.18', unit: '%', change: '▲ 0.16pct', tone: 'up' },
+      { id: 's-npl', name: '不良贷款率', value: '0.97', unit: '%', change: '▼ 0.03pct', tone: 'down' },
     ],
   },
   {
@@ -174,7 +174,7 @@ function institutionImpactData(name: string, operation: [number, number, number,
 
 export const institutionImpacts = [
   institutionImpactData('浦发银行', [4950, 1950, 550, 78], [430, 78, 5, 8, 2]),
-  institutionImpactData('太保', [2432, 944, 269, 28], [213, 28.4, 3, 4, 1]),
+  institutionImpactData('沪农商银行', [2432, 944, 269, 28], [213, 28.4, 3, 4, 1]),
   institutionImpactData('国泰海通', [4000, 1800, 390, 62], [310, 72, 4, 7, 2]),
   institutionImpactData('国际AMC', [1268, 286, 76, 18], [215, 68, 2, 5, 1]),
 ];
