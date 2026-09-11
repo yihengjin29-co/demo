@@ -249,9 +249,7 @@ button, select { font-family: inherit; }
 /* The supplied group/holding-company cockpit is a complete standalone screen.
    Keep it isolated so its original layout, styles and interactions render 1:1. */
 .app:has(.reference-cockpit-host) .app-header,
-.app:has(.reference-cockpit-host) .sidebar,
-.app:has(.reference-cockpit-host) .smart-assistant-launcher,
-.app:has(.reference-cockpit-host) .smart-assistant-panel {
+.app:has(.reference-cockpit-host) .sidebar {
   display: none;
 }
 
