@@ -14,7 +14,7 @@ export type WorkbenchData = {
   concentrationSummary: { type: string; red: number; yellow: number; green: number }[];
 };
 
-const displayInstitutions = ['国际AMC', '浦发银行', '太保集团', '上农商', '国泰海通'];
+const displayInstitutions = ['国际申信', '浦发银行', '太保集团', '上农商', '国泰海通'];
 const aliases: Record<string, string[]> = { 太保集团: ['太保集团', '中国太平洋保险'], 上农商: ['上农商', '上海农商银行'] };
 const matchesInstitution = (value: string, institution: string) => (aliases[institution] || [institution]).some(name => value.split(/[、,，/]/).includes(name));
 

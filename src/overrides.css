@@ -1975,3 +1975,162 @@ body {
 @media (prefers-reduced-motion:reduce) {
   .mgmt-focus-track { animation-play-state:paused; }
 }
+
+/* Unified three-level workbench: one strict 3-column × 2-row matrix. */
+.app:has(.workbench-matrix-shell) .content { padding:76px 14px 14px; overflow:hidden; }
+.management-workbench.workbench-matrix-shell {
+  display:grid;
+  width:100%;
+  height:100%;
+  max-height:none;
+  grid-template-columns:minmax(0,3fr) minmax(0,4fr) minmax(0,3fr);
+  grid-template-rows:repeat(2,minmax(0,1fr));
+  grid-template-areas:"tasks messages quick" "calendar schedule sentiment";
+  gap:12px;
+  overflow:hidden;
+}
+.workbench-matrix-card {
+  box-sizing:border-box;
+  display:flex;
+  min-width:0;
+  min-height:0;
+  width:100%;
+  height:100%;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid #d9e7f5;
+  border-radius:8px;
+  background:#fff;
+  box-shadow:0 3px 14px rgba(30,85,145,.06);
+}
+.matrix-tasks { grid-area:tasks; }
+.matrix-calendar { grid-area:calendar; }
+.matrix-messages { grid-area:messages; }
+.matrix-schedule { grid-area:schedule; }
+.matrix-quick { grid-area:quick; }
+.matrix-sentiment { grid-area:sentiment; }
+.matrix-card-heading {
+  position:relative;
+  box-sizing:border-box;
+  display:flex;
+  min-height:54px;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 16px;
+  border-bottom:1px solid #e4edf7;
+  color:#0b4fae;
+}
+.matrix-card-heading > div:first-child { display:flex; min-width:0; align-items:center; gap:9px; }
+.matrix-card-heading svg { width:21px; height:21px; flex:0 0 21px; color:#0b6fe8; }
+.matrix-card-heading h2 { margin:0; color:#0a4db2; font-size:20px; font-weight:720; line-height:1; white-space:nowrap; }
+.matrix-card-heading small,.matrix-card-heading span { min-width:0; overflow:hidden; color:#6b82a4; font-size:13px; line-height:1.3; text-overflow:ellipsis; white-space:nowrap; }
+.matrix-card-heading > button,.matrix-card-heading > div:not(:first-child) button { border:0; color:#0864d8; background:transparent; font-size:13px; white-space:nowrap; }
+
+.matrix-task-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; padding:10px 14px; }
+.matrix-task-tabs button { min-height:46px; border:1px solid #d9e7f5; border-radius:7px; color:#244e89; background:#f7faff; font-size:15px; font-weight:650; }
+.matrix-task-tabs button b { display:inline-grid; min-width:28px; height:25px; margin:0 3px 0 8px; place-items:center; border-radius:14px; color:#fff; background:#0b72ed; font-size:15px; }
+.matrix-task-tabs button.active { border-color:#a8cef8; color:#075fcf; background:#edf6ff; box-shadow:inset 0 0 0 1px rgba(22,113,226,.06); }
+.matrix-task-tabs button.overdue b,.matrix-task-tabs button:nth-child(2) b { background:#ea3d59; }
+.matrix-task-table { display:flex; min-height:0; flex:1; flex-direction:column; margin:0 14px 12px; overflow:hidden; }
+.matrix-table-head,.matrix-task-row { display:grid; grid-template-columns:minmax(0,2fr) minmax(108px,.82fr); align-items:center; }
+.matrix-table-head { min-height:35px; color:#335b91; background:#eef5fb; font-size:13px; font-weight:650; }
+.matrix-table-head span { padding:0 7px; }
+.matrix-task-row { min-height:0; flex:1; padding:0; border:0; border-bottom:1px solid #e8eef6; color:#294976; text-align:left; background:#fff; font-size:14px; }
+.matrix-task-row:last-child { border-bottom:0; }
+.matrix-task-row:hover { background:#f7faff; }
+.matrix-task-row > * { min-width:0; padding:0 7px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.matrix-task-row strong { color:#23487c; font-weight:600; }
+.matrix-task-row time { color:#42638e; font-style:normal; }
+.matrix-task-row time.urgent { color:#df2948; font-weight:650; }
+.matrix-task-row em { justify-self:center; color:#3c72b9; font-size:24px; font-style:normal; }
+
+.matrix-calendar-actions { display:flex!important; flex:0 0 auto; align-items:center; gap:6px!important; }
+.matrix-calendar-actions b { min-width:88px; color:#1055b1; font-size:14px; text-align:center; }
+.matrix-calendar-actions button { width:26px; height:28px; padding:0; border:1px solid transparent!important; border-radius:5px; font-size:20px!important; }
+.matrix-calendar-actions .today { width:auto; margin-left:5px; padding:0 11px!important; border-color:#cfe1f4!important; font-size:13px!important; background:#f4f9ff!important; }
+.matrix-calendar-grid { display:flex; min-height:0; flex:1; flex-direction:column; padding:6px 15px 2px; }
+.matrix-weekdays,.matrix-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); }
+.matrix-weekdays { height:29px; align-items:center; color:#58719a; border-bottom:1px solid #edf2f8; font-size:13px; text-align:center; }
+.matrix-days { min-height:0; flex:1; grid-template-rows:repeat(6,minmax(0,1fr)); align-items:stretch; }
+.matrix-days > span,.matrix-days button { position:relative; display:grid; min-width:0; min-height:0; place-items:center; padding:0; border:0; color:#263f68; background:transparent; font-size:14px; }
+.matrix-days button:hover span { color:#075fd1; }
+.matrix-days button.selected span { display:grid; width:34px; height:34px; place-items:center; border-radius:50%; color:#fff; background:#0c70e8; box-shadow:0 3px 9px rgba(12,112,232,.22); }
+.matrix-days button i { position:absolute; left:50%; bottom:3px; width:6px; height:6px; margin-left:-3px; border-radius:50%; }
+.matrix-days button.selected i { border:1px solid rgba(255,255,255,.8); bottom:1px; }
+.matrix-calendar-legend { display:flex; min-height:34px; align-items:center; justify-content:center; gap:24px; border-top:1px solid #edf2f8; color:#607696; font-size:12px; }
+.matrix-calendar-legend span { display:flex; align-items:center; gap:6px; }
+.matrix-calendar-legend i,.matrix-days i { background:#1682ec; }
+.matrix-calendar-legend i { width:8px; height:8px; border-radius:50%; }
+.matrix-calendar-legend i.yellow,.matrix-days i.yellow { background:#f2a20a; }
+.matrix-calendar-legend i.red,.matrix-days i.red { background:#e93152; }
+
+.matrix-message-list { display:flex; min-height:0; flex:1; flex-direction:column; padding:0 16px 10px; }
+.matrix-message-list button { display:grid; min-height:0; flex:1; grid-template-columns:10px minmax(0,1.4fr) minmax(150px,.9fr) 70px; align-items:center; gap:8px; padding:0 6px; border:0; border-bottom:1px solid #e8eef6; color:#2d4e78; text-align:left; background:#fff; }
+.matrix-message-list button:last-child { border-bottom:0; }
+.matrix-message-list button:hover { background:#f7faff; }
+.matrix-message-list button > i { width:7px; height:7px; border-radius:50%; background:#8da9cf; }
+.matrix-message-list strong { min-width:0; overflow:hidden; color:#244776; font-size:14px; font-weight:600; text-overflow:ellipsis; white-space:nowrap; }
+.matrix-message-list span { min-width:0; overflow:hidden; color:#6c82a0; font-size:13px; text-overflow:ellipsis; white-space:nowrap; }
+.matrix-message-list span em { color:#bdcadd; font-style:normal; }
+.matrix-message-list time { color:#6e85a7; font-size:13px; font-style:normal; text-align:right; white-space:nowrap; }
+
+.matrix-schedule-actions { display:flex!important; flex:0 0 auto; align-items:center; gap:0!important; border:1px solid #d7e5f4; border-radius:6px; overflow:visible!important; }
+.matrix-schedule-actions button { height:31px; padding:0 12px!important; border-right:1px solid #d7e5f4!important; border-radius:0; color:#315b91!important; font-size:13px!important; }
+.matrix-schedule-actions button:last-of-type { border-right:0!important; }
+.matrix-schedule-actions button.active { color:#fff!important; background:#0b6fe5!important; }
+.matrix-schedule-actions input { position:absolute; right:15px; top:48px; z-index:4; height:31px; padding:0 8px; border:1px solid #bcd4ee; border-radius:5px; color:#31527f; background:#fff; }
+.matrix-schedule-table { display:flex; min-height:0; flex:1; flex-direction:column; margin:10px 16px 14px; overflow:hidden; }
+.matrix-schedule-head,.matrix-schedule-row { display:grid; grid-template-columns:70px minmax(0,1.45fr) minmax(85px,.75fr) minmax(82px,.72fr) 28px; align-items:center; }
+.matrix-schedule-head { min-height:34px; color:#335b91; background:#eef5fb; font-size:13px; font-weight:650; }
+.matrix-schedule-head span { padding:0 8px; }
+.matrix-schedule-row { min-height:0; flex:1; padding:0; border:0; border-bottom:1px solid #e8eef6; color:#35567f; text-align:left; background:#fff; font-size:14px; }
+.matrix-schedule-row:hover { background:#f7faff; }
+.matrix-schedule-row > * { min-width:0; padding:0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.matrix-schedule-row time { display:flex; align-items:center; gap:7px; color:#335f9a; font-style:normal; }
+.matrix-schedule-row time i { width:7px; height:7px; flex:0 0 7px; border-radius:50%; background:#1679e9; }
+.matrix-schedule-row strong { color:#294a78; font-weight:600; }
+.matrix-schedule-row em { width:max-content; max-width:calc(100% - 12px); border-radius:5px; color:#1769c7; background:#eaf4ff; font-size:12px; font-style:normal; }
+.matrix-schedule-row b { color:#4775ad; font-size:23px; font-weight:400; text-align:center; }
+.matrix-empty { display:grid; flex:1; place-items:center; color:#8294ad; font-size:14px; }
+
+.matrix-quick-grid { display:grid; min-height:0; flex:1; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:repeat(4,minmax(0,1fr)); gap:10px; padding:12px 16px 16px; }
+.matrix-quick-grid button { display:flex; min-width:0; min-height:0; align-items:center; gap:13px; padding:8px 14px; border:1px solid #e2ebf5; border-radius:7px; color:#20477e; background:#f5f9fd; text-align:left; }
+.matrix-quick-grid button:hover { border-color:#b9d6f5; color:#075fd1; background:#eef6ff; }
+.matrix-quick-grid span { display:grid; width:38px; height:38px; flex:0 0 38px; place-items:center; border-radius:50%; color:#0b6fe5; background:#e5f2ff; }
+.matrix-quick-grid svg { width:22px; height:22px; }
+.matrix-quick-grid b { min-width:0; overflow:hidden; font-size:15px; font-weight:650; text-overflow:ellipsis; white-space:nowrap; }
+
+.matrix-sentiment-list { display:flex; min-height:0; flex:1; flex-direction:column; padding:0 16px 10px; }
+.matrix-sentiment-list button { display:grid; min-height:0; flex:1; grid-template-columns:42px minmax(0,1fr) 64px; align-items:center; gap:10px; padding:0 5px; border:0; border-bottom:1px solid #e8eef6; color:#2c4e79; text-align:left; background:#fff; }
+.matrix-sentiment-list button:last-child { border-bottom:0; }
+.matrix-sentiment-list button:hover { background:#f7faff; }
+.matrix-sentiment-list > button > span { display:grid; width:35px; height:30px; place-items:center; border-radius:6px; font-size:13px; font-weight:650; }
+.matrix-sentiment-list .level-高 { color:#c43c4e; background:#fcecef; }
+.matrix-sentiment-list .level-中 { color:#a76b0a; background:#fff3df; }
+.matrix-sentiment-list .level-低 { color:#2169b8; background:#eaf4ff; }
+.matrix-sentiment-list div { min-width:0; }
+.matrix-sentiment-list strong,.matrix-sentiment-list small { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.matrix-sentiment-list strong { color:#274a79; font-size:14px; font-weight:600; }
+.matrix-sentiment-list small { margin-top:5px; color:#7286a2; font-size:12px; }
+.matrix-sentiment-list time { color:#6d84a5; font-size:13px; font-style:normal; text-align:right; white-space:nowrap; }
+
+@media (max-height:780px) and (min-width:1101px) {
+  .app:has(.workbench-matrix-shell) .content { padding-top:72px; padding-bottom:9px; }
+  .management-workbench.workbench-matrix-shell { gap:9px; }
+  .matrix-card-heading { min-height:45px; padding:0 12px; }
+  .matrix-card-heading h2 { font-size:18px; }
+  .matrix-task-tabs { padding:7px 11px; }
+  .matrix-task-tabs button { min-height:38px; }
+  .matrix-task-table { margin:0 11px 8px; }
+  .matrix-calendar-grid { padding-top:2px; }
+  .matrix-calendar-legend { min-height:28px; }
+  .matrix-quick-grid { gap:7px; padding:8px 12px 10px; }
+  .matrix-quick-grid span { width:32px; height:32px; flex-basis:32px; }
+  .matrix-message-list,.matrix-sentiment-list { padding-bottom:6px; }
+  .matrix-schedule-table { margin:7px 12px 9px; }
+}
+@media (max-width:1100px) {
+  .app:has(.workbench-matrix-shell) .content { height:auto; min-height:100vh; overflow:auto; }
+  .management-workbench.workbench-matrix-shell { height:auto; grid-template-columns:1fr; grid-template-rows:repeat(6,minmax(340px,auto)); grid-template-areas:"tasks" "calendar" "messages" "schedule" "quick" "sentiment"; overflow:visible; }
+}

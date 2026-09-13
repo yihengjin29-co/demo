@@ -623,6 +623,15 @@
   .gd-heatmap-grid { grid-template-rows:minmax(20px,.6fr) repeat(4,minmax(29px,1fr)); gap:3px; }
 }
 
+/* Group cockpit: four KPI cards span the overview row; the nine-risk heatmap is the visual focus. */
+@media(min-width:1200px) {
+  .gd-business { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .gd-top-monitoring { grid-template-columns:minmax(0,5fr) minmax(0,14fr) minmax(0,5fr); }
+  .gd-heatmap-grid { grid-template-columns:110px repeat(var(--risk-columns),minmax(0,1fr)); }
+  .gd-heat-axis { padding:0 3px; font-size:12px; letter-spacing:0; }
+  .gd-heat-org b { font-size:14px; }
+}
+
 /* One aligned control row for dashboard switching, fullscreen and workbench navigation. */
 @media(min-width:1200px) {
   .gd-header { grid-template-columns:300px minmax(420px,1fr) 620px; }

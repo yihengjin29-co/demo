@@ -70,7 +70,7 @@ const institutionConfig: Record<InstitutionType, { label: string; frequency: str
     peer: ['风险覆盖率', '资本杠杆率', '流动性覆盖率', '净稳定资金率'],
   },
   amc: {
-    label: 'AMC', frequency: '月度', listed: false,
+    label: '申信', frequency: '月度', listed: false,
     riskMetrics: ['单一客户投融资集中度', '单一集团客户投融资集中度', '金融不良资产投资占比', '30日流动性备付余量', '融入资金余额比例'],
     businessMetrics: ['营业收入', '净利润', '净利润增速', '净资产收益率（ROE）', '资产利润率（ROA）'],
     peer: ['单一客户投融资集中度', '金融不良资产投资占比', '30日流动性备付余量', '资产利润率（ROA）'],
@@ -84,18 +84,18 @@ const institutionConfig: Record<InstitutionType, { label: string; frequency: str
 };
 
 const demoWarnings: WarningRow[] = [
-  { id: 'warn-1', institution: '国际AMC', riskType: '集中度风险', name: '单一集团客户投融资集中度', value: '18.70%', status: '红灯', level: '一级预警', threshold: '≥ 18.00%', yoy: '↑ 2.4%', mom: '↑ 0.8%', trend: [12.2, 13.4, 14.1, 15.8, 17.2, 18.7] },
+  { id: 'warn-1', institution: '国际申信', riskType: '集中度风险', name: '单一集团客户投融资集中度', value: '18.70%', status: '红灯', level: '一级预警', threshold: '≥ 18.00%', yoy: '↑ 2.4%', mom: '↑ 0.8%', trend: [12.2, 13.4, 14.1, 15.8, 17.2, 18.7] },
   { id: 'warn-2', institution: '国泰海通', riskType: '流动性风险', name: '流动性覆盖率', value: '112.40%', status: '红灯', level: '一级预警', threshold: '< 120.00%', yoy: '↓ 9.6%', mom: '↓ 3.1%', trend: [135, 131, 129, 124, 118, 112] },
   { id: 'warn-3', institution: '浦发银行', riskType: '信用风险', name: '资产拨备率', value: '2.31%', status: '黄灯', level: '二级预警', threshold: '< 2.40%', yoy: '↓ 0.2%', mom: '↓ 0.1%', trend: [2.62, 2.55, 2.49, 2.43, 2.37, 2.31] },
   { id: 'warn-4', institution: '上农商', riskType: '流动性风险', name: '流动性比例', value: '28.60%', status: '黄灯', level: '二级预警', threshold: '< 30.00%', yoy: '↓ 1.4%', mom: '↓ 0.5%', trend: [33, 32, 31.8, 30.4, 29.6, 28.6] },
   { id: 'warn-5', institution: '太保', riskType: '资本充足', name: '资产负债率', value: '86.10%', status: '未触发', level: '—', threshold: '≤ 90.00%', yoy: '↑ 0.3%', mom: '↓ 0.2%', trend: [85.1, 85.6, 85.8, 86.4, 86.3, 86.1] },
-  { id: 'warn-6', institution: '国际AMC', riskType: '流动性风险', name: '30日流动性备付余量', value: '12.80亿元', status: '黄灯', level: '二级预警', threshold: '< 15.00亿元', yoy: '↓ 8.1%', mom: '↓ 2.7%', trend: [20.1, 19.2, 17.8, 16.4, 14.7, 12.8] },
+  { id: 'warn-6', institution: '国际申信', riskType: '流动性风险', name: '30日流动性备付余量', value: '12.80亿元', status: '黄灯', level: '二级预警', threshold: '< 15.00亿元', yoy: '↓ 8.1%', mom: '↓ 2.7%', trend: [20.1, 19.2, 17.8, 16.4, 14.7, 12.8] },
   { id: 'warn-7', institution: '国泰海通', riskType: '资本充足', name: '风险覆盖率', value: '238.60%', status: '未触发', level: '—', threshold: '≥ 200.00%', yoy: '↑ 5.4%', mom: '↑ 1.1%', trend: [218, 221, 224, 229, 236, 239] },
   { id: 'warn-8', institution: '浦发银行', riskType: '经营效率', name: '净资产收益率（ROE）', value: '9.42%', status: '未触发', level: '—', threshold: '≥ 8.00%', yoy: '↑ 0.6%', mom: '↑ 0.2%', trend: [8.4, 8.6, 8.8, 9.1, 9.2, 9.42] },
 ];
 
 const demoNews: NewsItem[] = [
-  { id: 'news-1', institution: '国际AMC', title: '重点项目债务重组进展受到市场关注', time: '06-30 12:48', impact: '严重', tag: '信用风险', exposure: '2.30亿元', ratio: '1.82%', rank: '集团内第2', content: '外部媒体持续关注重点项目债务重组安排。当前内部敞口已纳入专项监测，未发现风险进一步扩散。' },
+  { id: 'news-1', institution: '国际申信', title: '重点项目债务重组进展受到市场关注', time: '06-30 12:48', impact: '严重', tag: '信用风险', exposure: '2.30亿元', ratio: '1.82%', rank: '集团内第2', content: '外部媒体持续关注重点项目债务重组安排。当前内部敞口已纳入专项监测，未发现风险进一步扩散。' },
   { id: 'news-2', institution: '国泰海通', title: '证券行业短期流动性指标波动', time: '06-30 11:35', impact: '较重', tag: '流动性风险', exposure: '1.26亿元', ratio: '0.74%', rank: '集团内第4', content: '市场资金面阶段性波动，相关机构已提高高流动性资产储备并加强日间监测。' },
   { id: 'news-3', institution: '浦发银行', title: '区域重点行业资产质量变化引发关注', time: '06-30 10:20', impact: '较重', tag: '信用风险', exposure: '3.85亿元', ratio: '0.63%', rank: '集团内第1', content: '区域重点行业资产质量出现分化，机构已完成客户分层排查并上调重点名单监测频率。' },
   { id: 'news-4', institution: '上农商', title: '普惠业务资产质量保持总体稳定', time: '06-30 09:05', impact: '一般', tag: '经营动态', exposure: '0.42亿元', ratio: '0.18%', rank: '集团内第8', content: '监测期内普惠业务风险指标保持稳定，相关舆情未对机构经营形成重大影响。' },
@@ -299,7 +299,7 @@ export default function DashboardCockpit({ state, role, institutionId, navigate,
       <iframe
         className="reference-cockpit-frame"
         src={`/institution-cockpit/index.html?name=${encodeURIComponent(institution.shortName)}`}
-        title={`${institution.shortName}金融机构驾驶舱`}
+        title={`${institution.shortName}金融组织驾驶舱`}
         loading="eager"
         allowFullScreen
       />
@@ -307,13 +307,13 @@ export default function DashboardCockpit({ state, role, institutionId, navigate,
   }
   return <div className={`dashboard-cockpit v14-cockpit ${viewMode === 'management' ? 'is-management' : ''} ${institution ? 'is-institution' : 'is-group'}`}>
     <div className="v14-grid-bg" /><div className="v14-scanline" />
-    <header className="v14-topbar"><div className="v14-title-lockup">{institution && <button className="v14-back" onClick={() => navigate('/dashboard')}>‹ 返回风险专题看板</button>}<span>{institution ? `${config.label.toUpperCase()} INSTITUTION COCKPIT` : role === '集团' ? 'GROUP CONSOLIDATED RISK CENTER' : 'FINANCIAL HOLDING CONTROL CENTER'}</span><h1>{institution ? `${institution.shortName}驾驶舱` : '风险专题看板'}</h1><small>{institution ? `${config.label}业态 · ${config.frequency}监测口径 · 当前机构数据权限` : '集团金融风险全景监测与穿透管理'}</small></div><div className="v14-top-actions"><ViewSwitcher value={viewMode} onChange={setViewMode} /><div className="v14-update"><small>最近数据更新时间</small><b>2024-06-30 13:22:45</b></div><button className="v14-ai-shortcut" onClick={() => document.querySelector<HTMLButtonElement>('.smart-assistant-launcher')?.click()}><i>AI</i><span>问数</span></button></div></header>
+    <header className="v14-topbar"><div className="v14-title-lockup">{institution && <button className="v14-back" onClick={() => navigate('/dashboard')}>‹ 返回风险专题看板</button>}<span>{institution ? `${config.label.toUpperCase()} ORGANIZATION COCKPIT` : role === '集团' ? 'GROUP CONSOLIDATED RISK CENTER' : 'FINANCIAL HOLDING CONTROL CENTER'}</span><h1>{institution ? `${institution.shortName}金融组织驾驶舱` : '风险专题看板'}</h1><small>{institution ? `${config.label}业态 · ${config.frequency}监测口径 · 当前组织数据权限` : '集团金融风险全景监测与穿透管理'}</small></div><div className="v14-top-actions"><ViewSwitcher value={viewMode} onChange={setViewMode} /><div className="v14-update"><small>最近数据更新时间</small><b>2024-06-30 13:22:45</b></div><button className="v14-ai-shortcut" onClick={() => document.querySelector<HTMLButtonElement>('.smart-assistant-launcher')?.click()}><i>AI</i><span>问数</span></button></div></header>
     <TopFilterBar value={filters} institutions={state.institutions.map(item => item.name)} locked={!!institution} onChange={setFilters} onReset={() => setFilters(defaultFilters())} />
     <nav className="v14-section-nav"><span>当前口径：{filters.period} · {filters.institution} · {filters.indicatorType} · {filters.riskType}</span><div><button onClick={() => scrollTo('overview')}>01 总体概览</button><button onClick={() => scrollTo('risk-view')}>02 风险全景视图</button><button onClick={() => scrollTo('operations')}>03 经营情况</button></div><em><i />{modeLabel} · 数据链路正常</em></nav>
     <main className="v14-main">
       {loading && <LoadingLayer />}
       <section id="overview" className="v14-section"><div className="v14-section-title"><span>01</span><div><h2>总体概览</h2><p>{institution ? `${institution.shortName}核心监测状态` : '并表范围核心管控指标'}</p></div><em>点击指标卡可下钻</em></div><div className={`v14-metrics ${institution ? 'five' : ''}`}>{metricItems.map(([label, value, unit, change, tone, icon, target]) => <MetricCard key={String(label)} label={String(label)} value={value as number} unit={String(unit)} change={String(change)} tone={tone as Tone} icon={String(icon)} onClick={() => scrollTo(String(target))} />)}</div></section>
-      <section id="risk-view" className="v14-section"><div className="v14-section-title"><span>02</span><div><h2>风险全景视图</h2><p>{institution ? '聚焦本机构风险、资本、舆情、预警与事件' : '从全局态势到机构、指标和事项明细的三级穿透'}</p></div><em>{modeLabel}</em></div>
+      <section id="risk-view" className="v14-section"><div className="v14-section-title"><span>02</span><div><h2>风险全景视图</h2><p>{institution ? '聚焦本组织风险、资本、舆情、预警与事件' : '从全局态势到机构、指标和事项明细的三级穿透'}</p></div><em>{modeLabel}</em></div>
         <div className={`v14-risk-primary ${institution ? 'institution' : ''}`}>
           <SectionPanel title="风险雷达" code="RISK RADAR" description="本期 / 上期标准化示例值"><RadarChart onSelect={item => setDrawer({ type: 'risk', item })} /></SectionPanel>
           {!institution && <SectionPanel title="并表金融机构风险地图" code="INSTITUTION RISK MAP" description="抽象金融生态网络 · 悬停查看风险概貌" className="v14-map-panel"><RiskMap institutions={visibleInstitutions} warnings={warnings} events={events} navigate={navigate} /></SectionPanel>}

@@ -2,9 +2,9 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const params = new URLSearchParams(location.search);
-  const institution = params.get('name') || '国际AMC';
+  const institution = params.get('name') || '国际申信';
   $('#institutionName').textContent = institution;
-  document.title = `金融机构驾驶舱 · ${institution}`;
+  document.title = `金融组织驾驶舱 · ${institution}`;
 
   const monthData = {
     '2026-08': { yellow: 3, red: 1, events: 2, asof: '2026-08-31' },
@@ -214,7 +214,7 @@
   }
 
   function openDialog(title, content) {
-    $('#modalRoot').innerHTML = `<div class="dialog-backdrop"><section class="dialog institution-dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"><div class="dialog-header"><h2 id="dialogTitle">${title}</h2><button class="bare" data-action="close" aria-label="关闭弹窗">×</button></div><div class="dialog-crumb"><span>金融机构驾驶舱 / ${institution}</span></div><div class="dialog-content"><p class="dialog-summary">${content}</p><div class="institution-detail-grid"><div><span>当前机构</span><b>${institution}</b></div><div><span>观察月份</span><b>${$('#period').selectedOptions[0].textContent}</b></div><div><span>数据状态</span><b class="green">已更新</b></div></div><p class="case-note">本页面数据为交互演示样例，正式环境将由本机构报送数据、风险数据服务及舆情融合平台提供。</p></div></section></div>`;
+    $('#modalRoot').innerHTML = `<div class="dialog-backdrop"><section class="dialog institution-dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"><div class="dialog-header"><h2 id="dialogTitle">${title}</h2><button class="bare" data-action="close" aria-label="关闭弹窗">×</button></div><div class="dialog-crumb"><span>金融组织驾驶舱 / ${institution}</span></div><div class="dialog-content"><p class="dialog-summary">${content}</p><div class="institution-detail-grid"><div><span>当前组织</span><b>${institution}</b></div><div><span>观察月份</span><b>${$('#period').selectedOptions[0].textContent}</b></div><div><span>数据状态</span><b class="green">已更新</b></div></div><p class="case-note">本页面数据为交互演示样例，正式环境将由本组织报送数据、风险数据服务及舆情融合平台提供。</p></div></section></div>`;
     $('[data-action="close"]', $('#modalRoot')).focus();
   }
   function closeDialog() { $('#modalRoot').innerHTML = ''; }
@@ -239,7 +239,7 @@
   document.addEventListener('click', (event) => {
     const button = event.target.closest('button'); if (!button) return;
     if (button.dataset.action === 'close') closeDialog();
-    if (button.dataset.action === 'scope') openDialog('范围与口径', `当前页面展示${institution}自身经营、资产质量、风险指标监测、战略目标、舆情及重大风险事项，不包含其他机构数据。`);
+    if (button.dataset.action === 'scope') openDialog('范围与口径', `当前页面展示${institution}自身经营、资产质量、风险指标监测、战略目标、舆情及重大风险事项，不包含其他组织数据。`);
     if (button.dataset.action === 'fullscreen') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(() => openDialog('全屏展示', '当前浏览器未开放全屏权限，可使用浏览器全屏功能查看。')); }
     if (button.dataset.action === 'workbench') window.parent.location.assign('/workbench');
     if (button.hasAttribute('data-business-all')) { openDialog('资产质量监测 · 全部5项', businessTable()); bindDetails(); }

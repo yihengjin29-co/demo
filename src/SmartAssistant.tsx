@@ -16,9 +16,9 @@ type Point = { x: number; y: number };
 const MAX_INPUT_LENGTH = 2000;
 const VIEWPORT_GAP = 20;
 const WELCOME_MESSAGE = '您好，我是并表AI助手。可按当前权限和驾驶舱筛选口径，查询预警、重大风险事件、机构指标与经营趋势。';
-const GROUP_WORKBENCH_QUESTIONS = ['本月哪些机构新增红灯预警？', '国际AMC目前有多少项黄灯指标？', '浦发银行流动性覆盖率是多少？'];
+const GROUP_WORKBENCH_QUESTIONS = ['本月哪些机构新增红灯预警？', '国际申信目前有多少项黄灯指标？', '浦发银行流动性覆盖率是多少？'];
 const INSTITUTION_WORKBENCH_QUESTIONS = ['本机构当前有哪些红灯预警？', '本月还有哪些数据未报送？', '当前处置中的预警有多少项？'];
-const DEFAULT_QUESTIONS = ['本月集团有多少红灯预警？', '国际AMC有哪些集中度风险指标预警？', '国泰海通流动性覆盖率近6期趋势如何？'];
+const DEFAULT_QUESTIONS = ['本月集团有多少红灯预警？', '国际申信有哪些集中度风险指标预警？', '国泰海通流动性覆盖率近6期趋势如何？'];
 
 const createMessage = (role: AssistantRole, content: string, extra?: Pick<AssistantMessage, 'stats' | 'chart'>): AssistantMessage => ({
   id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -31,11 +31,11 @@ const createMessage = (role: AssistantRole, content: string, extra?: Pick<Assist
 const answerFor = (question: string, institutionWorkbench = false): AssistantMessage => {
   let activeInstitution = '全部机构';
   try { activeInstitution = JSON.parse(sessionStorage.getItem('dashboard-v14-active-context') || '{}').institution || '全部机构'; } catch { /* use group scope */ }
-  if (/哪些机构.*红灯|新增红灯/.test(question)) return createMessage('assistant', '本月新增红灯预警涉及浦发银行、国际AMC、上农商和国泰海通，主要分布在流动性、信用、资本和市场风险领域。', {
+  if (/哪些机构.*红灯|新增红灯/.test(question)) return createMessage('assistant', '本月新增红灯预警涉及浦发银行、国际申信、上农商和国泰海通，主要分布在流动性、信用、资本和市场风险领域。', {
     stats: [{ label: '涉及机构', value: '4家', tone: 'blue' }, { label: '新增红灯', value: '6项', tone: 'red' }, { label: '较上月', value: '+2项', tone: 'red' }],
     chart: [3, 4, 4, 5, 4, 6],
   });
-  if (/国际AMC.*黄灯/.test(question)) return createMessage('assistant', '国际AMC当前有15项黄灯指标，重点关注资产拨备率、单一集团客户投融资集中度和现金流覆盖率。', {
+  if (/国际申信.*黄灯/.test(question)) return createMessage('assistant', '国际申信当前有15项黄灯指标，重点关注资产拨备率、单一集团客户投融资集中度和现金流覆盖率。', {
     stats: [{ label: '黄灯指标', value: '15项', tone: 'yellow' }, { label: '较上月', value: '-3项', tone: 'green' }],
   });
   if (/浦发银行.*流动性覆盖率/.test(question)) return createMessage('assistant', '浦发银行本期流动性覆盖率为132.6%，较上月提升2.4个百分点，当前高于演示预警阈值。', {
@@ -52,7 +52,7 @@ const answerFor = (question: string, institutionWorkbench = false): AssistantMes
     stats: [{ label: '处置中', value: '6项', tone: 'yellow' }, { label: '较上月', value: '-25%', tone: 'green' }],
     chart: [10, 9, 9, 8, 7, 6],
   });
-  if (/国际AMC|集中度/.test(question)) return createMessage('assistant', '国际AMC当前有1项红灯、1项黄灯预警。红灯集中在单一集团客户投融资集中度，30日流动性备付余量为黄灯，建议优先跟踪客户集中度变化。', {
+  if (/国际申信|集中度/.test(question)) return createMessage('assistant', '国际申信当前有1项红灯、1项黄灯预警。红灯集中在单一集团客户投融资集中度，30日流动性备付余量为黄灯，建议优先跟踪客户集中度变化。', {
     stats: [{ label: '红灯预警', value: '1项', tone: 'red' }, { label: '黄灯预警', value: '1项', tone: 'yellow' }, { label: '集中度', value: '18.70%', tone: 'red' }],
     chart: [12.2, 13.4, 14.1, 15.8, 17.2, 18.7],
   });
@@ -60,17 +60,17 @@ const answerFor = (question: string, institutionWorkbench = false): AssistantMes
     stats: [{ label: '本期值', value: '112.40%', tone: 'red' }, { label: '环比', value: '↓3.1%', tone: 'red' }, { label: '阈值', value: '120.00%', tone: 'yellow' }],
     chart: [135, 131, 129, 124, 118, 112.4],
   });
-  if (/净利润|同比下降/.test(question)) return createMessage('assistant', '当前筛选口径下，净利润同比变化最弱的机构为国际AMC。该结论基于DEMO经营数据，建议结合机构经营明细进一步核实。', {
-    stats: [{ label: '国际AMC', value: '-3.2%', tone: 'red' }, { label: '集团中位', value: '+2.6%', tone: 'blue' }],
+  if (/净利润|同比下降/.test(question)) return createMessage('assistant', '当前筛选口径下，净利润同比变化最弱的机构为国际申信。该结论基于DEMO经营数据，建议结合机构经营明细进一步核实。', {
+    stats: [{ label: '国际申信', value: '-3.2%', tone: 'red' }, { label: '集团中位', value: '+2.6%', tone: 'blue' }],
     chart: [6.8, 5.2, 4.1, 2.4, -1.1, -3.2],
   });
-  if (/重大风险事件|新增/.test(question)) return createMessage('assistant', '本月新增重大风险事件1起，来自国际AMC，当前处于执行跟踪阶段；浦发银行的信息科技系统故障事件已完成终报并归档。', {
+  if (/重大风险事件|新增/.test(question)) return createMessage('assistant', '本月新增重大风险事件1起，来自国际申信，当前处于执行跟踪阶段；浦发银行的信息科技系统故障事件已完成终报并归档。', {
     stats: [{ label: '本月新增', value: '1起', tone: 'red' }, { label: '处置中', value: '1起', tone: 'yellow' }, { label: '已办结', value: '1起', tone: 'green' }],
   });
   if (activeInstitution !== '全部机构') return createMessage('assistant', `当前查询范围已限定为${activeInstitution}。本期重点关注指标、预警及重大风险事项均按该机构权限口径返回；如需集团对比，请先返回风险专题看板。`, {
     stats: [{ label: '查询范围', value: activeInstitution, tone: 'blue' }, { label: '数据期次', value: '2024年6月', tone: 'green' }],
   });
-  return createMessage('assistant', '当前集团共有2项红灯预警、3项黄灯预警，红灯主要集中于国际AMC的集中度风险和国泰海通的流动性风险。较上期红灯增加2项。', {
+  return createMessage('assistant', '当前集团共有2项红灯预警、3项黄灯预警，红灯主要集中于国际申信的集中度风险和国泰海通的流动性风险。较上期红灯增加2项。', {
     stats: [{ label: '红灯预警', value: '2项', tone: 'red' }, { label: '黄灯预警', value: '3项', tone: 'yellow' }, { label: '较上期', value: '+2项', tone: 'red' }],
     chart: [3, 3, 4, 4, 5, 7],
   });

@@ -1,7 +1,7 @@
 import type { ConcentrationBusinessDetail, ConcentrationRecord, DemoState, Indicator, MajorEvent, Role, WarningDisposal, WarningRule, WorkflowNodeRecord } from '../types';
 
 export const roleLabels: Role[] = ['集团', '金控公司', '各金融机构'];
-export const currentInstitution = '国际AMC';
+export const currentInstitution = '国际申信';
 
 const legacyRoleMap: Record<string, Role> = {
   集团: '集团',

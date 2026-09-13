@@ -12,11 +12,11 @@ export const concentrationRisk = [
   { name: '客户A', group: 'XX集团', single: 45, consolidated: 118, institution: '浦发银行', warning: true },
   { name: '客户B', group: '项目集团B', single: 38, consolidated: 92, institution: '国泰海通', warning: false },
   { name: '客户C', group: '项目集团C', single: 30, consolidated: 74, institution: '沪农商银行', warning: false },
-  { name: '客户D', group: '项目集团D', single: 25, consolidated: 61, institution: '国际AMC', warning: false },
+  { name: '客户D', group: '项目集团D', single: 25, consolidated: 61, institution: '国际申信', warning: false },
   { name: '客户E', group: '项目集团E', single: 21, consolidated: 48, institution: '浦发银行', warning: false },
 ];
 
-export type RiskScope = '集团' | '国际AMC' | '国泰海通' | '浦发银行' | '沪农商银行';
+export type RiskScope = '集团' | '国际申信' | '国泰海通' | '浦发银行' | '沪农商银行';
 export type RiskKind = 'financial' | 'nonFinancial';
 
 type RiskSlice = {
@@ -41,7 +41,7 @@ export const riskWarningByScope: Record<RiskScope, Record<RiskKind, RiskSlice>> 
     financial: risk(financialAxes, [3, 2, 2, 4, 3], [5, 4, 4, 6, 5], 1, -2, [8, 9, 10, 11, 13, 14], [17, 19, 21, 23, 25, 24]),
     nonFinancial: risk(nonFinancialAxes, [2, 3, 1, 2, 1, 1], [4, 5, 3, 4, 2, 3], 0, 1, [6, 7, 7, 8, 8, 10], [13, 14, 15, 16, 17, 21]),
   },
-  国际AMC: {
+  国际申信: {
     financial: risk(financialAxes, [1, 1, 0, 2, 1], [2, 2, 1, 3, 2], 1, 0, [2, 3, 3, 4, 4, 5], [6, 7, 8, 9, 10, 10]),
     nonFinancial: risk(nonFinancialAxes, [1, 1, 0, 0, 1, 0], [2, 2, 1, 2, 1, 1], 0, -1, [2, 2, 3, 3, 3, 3], [7, 8, 8, 9, 9, 9]),
   },
@@ -72,7 +72,7 @@ export const institutionEquity = [
   { name: '浦发银行', relation: '参股', ratio: '12.3%', type: '银行', totalAssets: '90,620亿', netAssets: '7,315亿', revenue: '1,736亿', profit: '452亿', children: ['浦发金融租赁', '浦银基金', '浦发海外'], remaining: 12 },
   { name: '沪农商银行', relation: '参股', ratio: '8.45%', type: '银行', totalAssets: '14,780亿', netAssets: '1,250亿', revenue: '286亿', profit: '116亿', children: ['沪农商村镇银行', '长三角业务中心', '金融市场业务中心'], remaining: 8 },
   { name: '国泰海通', relation: '控股', ratio: '32.5%', type: '证券', totalAssets: '9,238亿', netAssets: '1,742亿', revenue: '428亿', profit: '96亿', children: ['海通资管', '海通期货', '海通国际'], remaining: 18 },
-  { name: '国际AMC', relation: '控股', ratio: '36.5%', type: '资产管理', totalAssets: '1,268亿', netAssets: '286亿', revenue: '76亿', profit: '18亿', children: ['AMC资产管理', '特殊机会投资', '境外SPV'], remaining: 15 },
+  { name: '国际申信', relation: '控股', ratio: '36.5%', type: '金融组织', totalAssets: '1,268亿', netAssets: '286亿', revenue: '76亿', profit: '18亿', children: ['申信资产管理', '特殊机会投资', '境外SPV'], remaining: 15 },
 ];
 
 export type InstitutionPenetrationMetric = {
@@ -118,7 +118,7 @@ export const institutionPenetration: InstitutionPenetrationItem[] = [
     ],
   },
   {
-    id: 'amc', name: '国际AMC', shortName: '国际AMC', equityRatio: '36.5%', stockPrice: '非上市', marketValue: '—',
+    id: 'amc', name: '国际申信', shortName: '国际申信', equityRatio: '36.5%', stockPrice: '非上市', marketValue: '—',
     metrics: [
       { id: 'a-credit', name: '项目逾期率', value: '8.40', unit: '%', change: '▲ 0.40pct', tone: 'warn' },
       { id: 'a-liq', name: '现金短债比', value: '1.08', unit: '倍', change: '▲ 0.05倍', tone: 'up' },
@@ -176,7 +176,7 @@ export const institutionImpacts = [
   institutionImpactData('浦发银行', [4950, 1950, 550, 78], [430, 78, 5, 8, 2]),
   institutionImpactData('沪农商银行', [2432, 944, 269, 28], [213, 28.4, 3, 4, 1]),
   institutionImpactData('国泰海通', [4000, 1800, 390, 62], [310, 72, 4, 7, 2]),
-  institutionImpactData('国际AMC', [1268, 286, 76, 18], [215, 68, 2, 5, 1]),
+  institutionImpactData('国际申信', [1268, 286, 76, 18], [215, 68, 2, 5, 1]),
 ];
 
 export const investmentSummary = {

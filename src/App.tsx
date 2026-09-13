@@ -26,7 +26,7 @@ import GroupDashboard from './dashboard/GroupDashboard';
 
 export default App;
 
-const institutions = ['上海农商银行', '国际AMC', '浦发银行', '国泰海通', '中国太平洋保险'];
+const institutions = ['上海农商银行', '国际申信', '浦发银行', '国泰海通', '中国太平洋保险'];
 const institutionCoverage = institutions.join('、');
 const riskTypes = ['信用风险', '市场风险', '流动性风险', '集中度风险', '资本类', '会计类'];
 const specialTypes = ['风险类型A', '风险类型B', '风险类型C', '风险类型D'];
@@ -47,6 +47,8 @@ function WorkspaceGlyph({ name }: { name: string }) {
   if (name === 'check') return <svg viewBox="0 0 24 24" {...common}><circle cx="12" cy="12" r="9" /><path d="m8 12 2.5 2.5L16.5 9" /></svg>;
   if (name === 'task') return <svg viewBox="0 0 24 24" {...common}><path d="M7 4h10v17H7zM9 4V2h6v2M10 9h4m-4 4h4m-4 4h3" /></svg>;
   if (name === 'chart') return <svg viewBox="0 0 24 24" {...common}><path d="M4 20V5m0 15h16M7 16l4-5 3 2 5-7" /></svg>;
+  if (name === 'calendar') return <svg viewBox="0 0 24 24" {...common}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4m10-4v4M3 10h18M8 14h.01m4 0h.01m4 0h.01M8 18h.01m4 0h.01" /></svg>;
+  if (name === 'message') return <svg viewBox="0 0 24 24" {...common}><path d="M4 5h16v12H8l-4 4V5Z" /><path d="M8 9h8m-8 4h6" /></svg>;
   return <svg viewBox="0 0 24 24" {...common}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
 }
 
@@ -182,7 +184,7 @@ function LoginPage({ initialRole, onLogin }: { initialRole: Role | null; onLogin
   </main>;
 }
 
-function Header({ path, role, setRole, onReset, onLogout }: { path: string; role: Role; setRole: (role: Role) => void; onReset: () => void; onLogout: () => void }) { const managementWorkbench = path === '/workbench' && role !== '各金融机构'; const institutionWorkbench = path === '/workbench' && role === '各金融机构'; return <header className="app-header"><div className="brand"><span className="brand-mark">▥</span><span className="brand-copy"><b>{managementWorkbench ? '金控并表管理工作台' : institutionWorkbench ? `金融机构工作台（${currentInstitution}）` : '集团并表管理系统'}</b></span></div><div className="header-date">▣ 2024-06-30　13:22:45　 星期日</div><div className="header-right"><span className="bell">♧<i>12</i></span><span>?</span><span className="divider" /><span>{role === '各金融机构' ? currentInstitution : '集团并表范围'}⌄</span><label className="role-switch"><span>当前演示角色</span><select value={role} onChange={e => setRole(e.target.value as Role)}>{roleLabels.map(x => <option key={x}>{x}</option>)}</select></label><button className="reset-demo" onClick={onReset}>恢复演示数据</button><span className="avatar">张</span><span>张三</span><Button variant="text" onClick={onLogout}>退出登录</Button></div></header>; }
+function Header({ path, role, setRole, onReset, onLogout }: { path: string; role: Role; setRole: (role: Role) => void; onReset: () => void; onLogout: () => void }) { const managementWorkbench = path === '/workbench' && role !== '各金融机构'; const institutionWorkbench = path === '/workbench' && role === '各金融机构'; return <header className="app-header"><div className="brand"><span className="brand-mark">▥</span><span className="brand-copy"><b>{managementWorkbench ? '金控并表管理工作台' : institutionWorkbench ? `金融组织工作台（${currentInstitution}）` : '集团并表管理系统'}</b></span></div><div className="header-date">▣ 2024-06-30　13:22:45　 星期日</div><div className="header-right"><span className="bell">♧<i>12</i></span><span>?</span><span className="divider" /><span>{role === '各金融机构' ? currentInstitution : '集团并表范围'}⌄</span><label className="role-switch"><span>当前演示角色</span><select value={role} onChange={e => setRole(e.target.value as Role)}>{roleLabels.map(x => <option key={x}>{x}</option>)}</select></label><button className="reset-demo" onClick={onReset}>恢复演示数据</button><span className="avatar">张</span><span>张三</span><Button variant="text" onClick={onLogout}>退出登录</Button></div></header>; }
 
 type MenuItem = { label: string; path?: string; icon?: string; roles?: Role[]; queryOnlyFor?: Role[]; children?: MenuItem[] };
 const menus: MenuItem[] = [
@@ -336,7 +338,7 @@ function App() {
     if (path === '/cockpit') return role === '各金融机构' ? <InstitutionCockpit navigate={navigate} /> : <GroupDashboard navigate={navigate} />;
     if (path === '/group-dashboard') return <GroupDashboard navigate={navigate} />;
     if (path === '/dashboard' || path.startsWith('/dashboard/institution/')) return <DashboardCockpit state={state} role={role} institutionId={path.split('/')[3]} navigate={navigate} update={update} toast={toast} />;
-    if (path === '/workbench') return role === '各金融机构' ? <InstitutionWorkbench state={state} role={role} navigate={navigate} /> : <ManagementWorkbench state={state} role={role} navigate={navigate} />;
+    if (path === '/workbench') return <WorkbenchMatrixHome state={state} role={role} navigate={navigate} toast={toast} />;
     if (path === '/institutions') return <InstitutionList state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path.startsWith('/institutions/')) return <InstitutionDetail state={state} role={role} navigate={navigate} update={update} toast={toast} />;
     if (path === '/limits/schemes') return <EmptyModulePage title="风险限额方案管理" />;
@@ -391,7 +393,7 @@ function App() {
 
 function InstitutionCockpit({ navigate: _navigate }: { navigate: (path: string) => void }) {
   const source = `/institution-cockpit/index.html?name=${encodeURIComponent(currentInstitution)}`;
-  return <div className="institution-cockpit-host"><iframe title={`${currentInstitution}金融机构驾驶舱`} src={source} /></div>;
+  return <div className="institution-cockpit-host"><iframe title={`${currentInstitution}金融组织驾驶舱`} src={source} /></div>;
 }
 
 function AiApplicationPage({ role, path }: { role: Role; path: string }) {
@@ -425,7 +427,7 @@ function FocusedDataTicker({ items, showInstitution, navigate }: { items: Focuse
       <div className="mgmt-focus-viewport" aria-label="重点关注数据，鼠标悬停暂停滚动"><div className="mgmt-focus-track">{repeated.map((item, index) => <button key={`${item.institution || 'self'}-${item.indicator}-${index}`} onClick={() => navigate(item.path)}>{showInstitution && <strong>{item.institution}</strong>}{showInstitution && <i /> }<span>{item.indicator}</span><i /><em>{item.value}</em></button>)}</div></div>
       <button className="mgmt-focus-config" onClick={() => setConfigOpen(true)}>⚙ 自定义配置</button>
     </section>
-    {configOpen && <Modal title="自定义重点关注数据" onClose={() => setConfigOpen(false)} footer={<><Button variant="secondary" onClick={() => setConfigOpen(false)}>取消</Button><Button onClick={() => setConfigOpen(false)}>保存配置</Button></>}><div className="ticker-config-grid">{showInstitution && <Field label="机构"><Select value={institution} onChange={setInstitution} options={['浦发银行', '国际AMC', '上农商', '国泰海通']} /></Field>}<Field label="指标"><Select value={indicator} onChange={setIndicator} options={[...new Set(items.map(item => item.indicator))]} /></Field></div><div className="modal-note">当前为 DEMO 配置，保存后将“{showInstitution ? `${institution} · ` : ''}{indicator}”加入重点关注。</div></Modal>}
+    {configOpen && <Modal title="自定义重点关注数据" onClose={() => setConfigOpen(false)} footer={<><Button variant="secondary" onClick={() => setConfigOpen(false)}>取消</Button><Button onClick={() => setConfigOpen(false)}>保存配置</Button></>}><div className="ticker-config-grid">{showInstitution && <Field label="机构"><Select value={institution} onChange={setInstitution} options={['浦发银行', '国际申信', '上农商', '国泰海通']} /></Field>}<Field label="指标"><Select value={indicator} onChange={setIndicator} options={[...new Set(items.map(item => item.indicator))]} /></Field></div><div className="modal-note">当前为 DEMO 配置，保存后将“{showInstitution ? `${institution} · ` : ''}{indicator}”加入重点关注。</div></Modal>}
   </>;
 }
 
@@ -460,14 +462,161 @@ function SentimentMonitor({ items, showInstitution }: { items: SentimentItem[]; 
 const managementSentiments: SentimentItem[] = [
   { institution: '浦发银行', sentiment: 'positive', importanceLevel: null, title: '绿色金融项目投放获得市场积极评价', publishTime: '2024-06-30 10:26', summary: '公开信息显示，相关绿色金融项目投放保持稳健，市场评价积极。', riskType: '声誉风险', exposure: '8.6亿元', exposureRatio: '1.8%', rank: '第4位' },
   { institution: '国泰海通', sentiment: 'neutral', importanceLevel: null, title: '证券行业两融余额出现阶段性波动', publishTime: '2024-06-30 09:18', summary: '行业两融余额近期有所波动，对公司整体经营影响仍需持续观察。', riskType: '市场风险', exposure: '5.1亿元', exposureRatio: '1.1%', rank: '第6位' },
-  { institution: '国际AMC', sentiment: 'negative', importanceLevel: 1, title: '重点项目偿付安排受到市场高度关注', publishTime: '2024-06-29 18:42', summary: '重点项目偿付安排受到市场高度关注，需及时评估回收计划与潜在损失。', riskType: '信用风险', exposure: '21.6亿元', exposureRatio: '5.3%', rank: '第1位' },
+  { institution: '国际申信', sentiment: 'negative', importanceLevel: 1, title: '重点项目偿付安排受到市场高度关注', publishTime: '2024-06-29 18:42', summary: '重点项目偿付安排受到市场高度关注，需及时评估回收计划与潜在损失。', riskType: '信用风险', exposure: '21.6亿元', exposureRatio: '5.3%', rank: '第1位' },
   { institution: '上农商', sentiment: 'negative', importanceLevel: 4, title: '区域中小银行资产质量受到市场关注', publishTime: '2024-06-29 15:06', summary: '部分区域中小企业经营承压，建议关注相关授信客户还款能力变化。', riskType: '信用风险', exposure: '9.8亿元', exposureRatio: '2.6%', rank: '第3位' },
   { institution: '浦发银行', sentiment: 'neutral', importanceLevel: null, title: '核心系统升级相关信息正式发布', publishTime: '2024-06-28 22:15', summary: '核心系统按计划完成升级，相关运行情况保持平稳。', riskType: '信息科技风险', exposure: '—', exposureRatio: '—', rank: '—' },
-  { institution: '国际AMC', sentiment: 'positive', importanceLevel: null, title: '存量资产处置取得阶段性进展', publishTime: '2024-06-28 16:34', summary: '存量资产处置取得阶段性进展，回款安排符合当前计划。', riskType: '市场风险', exposure: '12.4亿元', exposureRatio: '3.2%', rank: '第2位' },
+  { institution: '国际申信', sentiment: 'positive', importanceLevel: null, title: '存量资产处置取得阶段性进展', publishTime: '2024-06-28 16:34', summary: '存量资产处置取得阶段性进展，回款安排符合当前计划。', riskType: '市场风险', exposure: '12.4亿元', exposureRatio: '3.2%', rank: '第2位' },
   { institution: '国泰海通', sentiment: 'negative', importanceLevel: 2, title: '核心交易对手信用风险敞口有所上升', publishTime: '2024-06-28 10:20', summary: '核心交易对手信用风险敞口有所上升，建议加强限额监测。', riskType: '信用风险', exposure: '16.2亿元', exposureRatio: '4.1%', rank: '第2位' },
   { institution: '浦发银行', sentiment: 'negative', importanceLevel: 3, title: '重点行业客户经营指标出现波动', publishTime: '2024-06-27 14:05', summary: '重点行业客户经营指标出现波动，暂未形成实质性损失。', riskType: '信用风险', exposure: '7.5亿元', exposureRatio: '1.9%', rank: '第5位' },
   { institution: '上农商', sentiment: 'negative', importanceLevel: 5, title: '个别网点服务投诉引发局部讨论', publishTime: '2024-06-27 09:40', summary: '个别网点服务投诉引发局部讨论，影响范围较小。', riskType: '声誉风险', exposure: '—', exposureRatio: '—', rank: '—' },
 ];
+
+type MatrixTask = { name: string; institution: string; deadline: string; path: string };
+type MatrixMessage = { title: string; institution: string; category: string; time: string; path: string };
+type MatrixSchedule = { time: string; title: string; institution: string; category: string; path: string };
+type MatrixSentiment = { level: '高' | '中' | '低'; title: string; institution: string; time: string };
+
+function WorkbenchMatrixHome({ state, role, navigate, toast }: { state: DemoState; role: Role; navigate: (path: string) => void; toast: (message: string) => void }) {
+  const variant = role === '集团' ? 'group' : role === '金控公司' ? 'holding' : 'institution';
+  const [taskTab, setTaskTab] = useState<'pending' | 'overdue'>('pending');
+  const [calendarMonth, setCalendarMonth] = useState({ year: 2026, month: 8 });
+  const [selectedDay, setSelectedDay] = useState(12);
+  const [scheduleMode, setScheduleMode] = useState<'today' | 'week' | 'custom'>('today');
+  const [scheduleActivated, setScheduleActivated] = useState(false);
+  const warningPath = state.warningDisposals[0] ? `/warning/disposal/${state.warningDisposals[0].id}/overview` : '/warning/disposal';
+  const eventPath = state.majorEvents[0] ? `/major-events/${state.majorEvents[0].id}/overview` : '/major-events';
+  const pendingCounts = { group: 28, holding: 24, institution: 11 } as const;
+  const overdueCounts = { group: 5, holding: 4, institution: 2 } as const;
+  const groupPending: MatrixTask[] = [
+    { name: '限额指标运行情况报告审阅', institution: '国泰海通', deadline: '今日 17:00', path: '/reports' },
+    { name: '重大风险事件报告核实', institution: '国际申信', deadline: '2026-09-15', path: eventPath },
+    { name: '预警处置方案审阅', institution: '上农商', deadline: '2026-09-15', path: warningPath },
+    { name: '处置进展跟踪', institution: '国际申信', deadline: '2026-09-16', path: eventPath },
+    { name: '限额高减值化申请审批', institution: '浦发银行', deadline: '2026-09-18', path: '/indicators/query' },
+  ];
+  const holdingPending: MatrixTask[] = [
+    { name: '并表数据质量问题协调', institution: '浦发银行', deadline: '今日 16:30', path: '/reports' },
+    { name: '重大风险事件处置进度核实', institution: '国际申信', deadline: '2026-09-15', path: eventPath },
+    { name: '预警提示函下发确认', institution: '上农商', deadline: '2026-09-15', path: '/warning/disposal' },
+    { name: '月度风险报告编制', institution: '国泰海通', deadline: '2026-09-16', path: '/periodic-reports' },
+    { name: '集中度风险数据复核', institution: '浦发银行', deadline: '2026-09-18', path: '/concentration-monitoring' },
+  ];
+  const institutionPending: MatrixTask[] = [
+    { name: '重大风险事件初报补充', institution: currentInstitution, deadline: '今日 17:00', path: eventPath },
+    { name: '资产负债率预警原因反馈', institution: currentInstitution, deadline: '2026-09-15', path: warningPath },
+    { name: '8月风险数据报送确认', institution: currentInstitution, deadline: '2026-09-15', path: '/reports' },
+    { name: '重点项目处置进展更新', institution: currentInstitution, deadline: '2026-09-16', path: eventPath },
+    { name: '月度风险报告提交', institution: currentInstitution, deadline: '2026-09-18', path: '/periodic-reports' },
+  ];
+  const pendingTasks = variant === 'group' ? groupPending : variant === 'holding' ? holdingPending : institutionPending;
+  const overdueTasks: MatrixTask[] = (variant === 'institution' ? [
+    { name: '上期预警整改材料补正', institution: currentInstitution, deadline: '逾期 2天', path: warningPath },
+    { name: '历史数据差异说明提交', institution: currentInstitution, deadline: '逾期 1天', path: '/reports' },
+  ] : [
+    { name: '半年风险偏好重检材料补正', institution: '国际申信', deadline: '逾期 3天', path: '/warning/risk-preference' },
+    { name: '重大事件终报审核', institution: '浦发银行', deadline: '逾期 2天', path: '/major-events' },
+    { name: '报送差异情况说明审阅', institution: '国泰海通', deadline: '逾期 1天', path: '/reports' },
+    { name: '集中度指标口径复核', institution: '上农商', deadline: '逾期 1天', path: '/concentration-monitoring' },
+    { name: '整改措施执行情况确认', institution: '国际申信', deadline: '逾期 1天', path: '/warning/disposal' },
+  ]).slice(0, overdueCounts[variant]);
+  const visibleTasks = taskTab === 'pending' ? pendingTasks : overdueTasks;
+
+  const allMessages: MatrixMessage[] = [
+    { title: '资产负债率指标由黄灯转为红灯', institution: '国际申信', category: '资产负债率', time: '2小时前', path: warningPath },
+    { title: '集中度指标触发预警', institution: '浦发银行', category: '集中度风险', time: '5小时前', path: '/concentration-monitoring' },
+    { title: '8月风险报告已完成审核', institution: '国泰海通', category: '报告管理', time: '6小时前', path: '/periodic-reports' },
+    { title: '预警处置方案已提交', institution: '沪农商银行', category: '风险整改', time: '1天前', path: '/warning/disposal' },
+    { title: '重大风险事件进入持续跟踪阶段', institution: '国际申信', category: '重大事件', time: '1天前', path: eventPath },
+    { title: '9月数据报送窗口已开放', institution: '系统通知', category: '数据报送', time: '2天前', path: '/reports' },
+  ];
+  const messages = variant === 'institution' ? allMessages.filter(item => item.institution === currentInstitution || item.institution === '系统通知') : allMessages;
+
+  const scheduleByDay: Record<number, MatrixSchedule[]> = {
+    9: [{ time: '10:00', title: '集中度指标口径沟通会', institution: '浦发银行', category: '风险会议', path: '/concentration-monitoring' }],
+    12: [
+      { time: '09:30', title: '重点案件开庭', institution: '国际申信', category: '司法事项', path: eventPath },
+      { time: '14:00', title: '8月风险报告提交截止', institution: '浦发银行', category: '报告报送', path: '/reports' },
+      { time: '16:00', title: '合同到期提醒', institution: '国泰海通', category: '合同事项', path: '/major-events' },
+      { time: '17:00', title: '预警整改反馈截止', institution: '沪农商银行', category: '时效提醒', path: '/warning/disposal' },
+    ],
+    15: [{ time: '15:00', title: '重大风险事件专题核实', institution: '国际申信', category: '风险核查', path: eventPath }],
+    17: [{ time: '14:30', title: '月度数据质量复盘', institution: '国泰海通', category: '数据管理', path: '/reports' }],
+    18: [{ time: '09:00', title: '逾期整改事项督办', institution: '浦发银行', category: '重要事项', path: '/warning/disposal' }],
+    25: [{ time: '16:00', title: '季度报告材料提交截止', institution: '沪农商银行', category: '临近截止', path: '/periodic-reports' }],
+  };
+  const roleSchedules = (items: MatrixSchedule[]) => variant === 'institution' ? items.filter(item => item.institution === currentInstitution) : items;
+  const scheduleRows = !scheduleActivated ? [] : scheduleMode === 'week'
+    ? Array.from({ length: 7 }, (_, index) => selectedDay + index).flatMap(day => roleSchedules(scheduleByDay[day] || []).map(item => ({ ...item, title: `${calendarMonth.month + 1}月${day}日 · ${item.title}` })))
+    : roleSchedules(scheduleByDay[selectedDay] || []);
+  const selectedDate = new Date(calendarMonth.year, calendarMonth.month, selectedDay);
+  const selectedDateLabel = `${calendarMonth.year}年${calendarMonth.month + 1}月${selectedDay}日 ${selectedDate.toLocaleDateString('zh-CN', { weekday: 'long' })}`;
+  const daysInMonth = new Date(calendarMonth.year, calendarMonth.month + 1, 0).getDate();
+  const leadingDays = new Date(calendarMonth.year, calendarMonth.month, 1).getDay();
+  const calendarCells = Array.from({ length: 42 }, (_, index) => {
+    const day = index - leadingDays + 1;
+    return day >= 1 && day <= daysInMonth ? day : null;
+  });
+  const shiftMonth = (amount: number) => setCalendarMonth(current => { const date = new Date(current.year, current.month + amount, 1); setSelectedDay(1); setScheduleActivated(false); return { year: date.getFullYear(), month: date.getMonth() }; });
+  const chooseDate = (day: number) => { setSelectedDay(day); setScheduleMode(calendarMonth.year === 2026 && calendarMonth.month === 8 && day === 12 ? 'today' : 'custom'); setScheduleActivated(true); };
+  const chooseCustomDate = (value: string) => { const [year, month, day] = value.split('-').map(Number); if (!year || !month || !day) return; setCalendarMonth({ year, month: month - 1 }); setSelectedDay(day); setScheduleMode('custom'); setScheduleActivated(true); };
+
+  const quickActions: [string, string, string][] = [
+    ['风险预警', '/warning/disposal', 'warning'], ['指标管理', role === '各金融机构' ? '/indicators/query' : '/indicators/maintenance', 'chart'],
+    ['重大风险事件', '/major-events', 'report'], ['数据报送', '/reports', 'capital'],
+    ['报告中心', '/periodic-reports', 'task'], ['舆情监测', '/dashboard', 'building'],
+    ['全景视图', '/dashboard', 'chart'], ['更多功能', '/ai-assistant', 'clock'],
+  ];
+  const sentiments: MatrixSentiment[] = (variant === 'institution' ? [
+    { level: '高', title: `${currentInstitution}相关媒体报道涉及资产处置事项`, institution: currentInstitution, time: '2小时前' },
+    { level: '中', title: '重点项目偿付安排讨论热度上升', institution: currentInstitution, time: '5小时前' },
+    { level: '中', title: '特殊资产行业政策讨论持续', institution: currentInstitution, time: '1天前' },
+    { level: '低', title: '存量资产处置取得阶段性进展', institution: currentInstitution, time: '2天前' },
+  ] : [
+    { level: '高', title: '国际申信相关媒体报道涉及资产处置事项', institution: '国际申信', time: '2小时前' },
+    { level: '中', title: '浦发银行相关业务讨论热度上升', institution: '浦发银行', time: '5小时前' },
+    { level: '中', title: '国泰海通相关行业政策讨论', institution: '国泰海通', time: '1天前' },
+    { level: '低', title: '沪农商银行正面舆情', institution: '沪农商银行', time: '2天前' },
+  ]);
+
+  return <Page title="金控并表管理工作台" breadcrumb={['工作台']} hidePageTitle>
+    <div className={`management-workbench workbench-matrix-shell matrix-${variant}`}>
+      <section className="workbench-matrix-card matrix-tasks">
+        <div className="matrix-card-heading"><div><WorkspaceGlyph name="task" /><h2>任务事项</h2></div><small>聚焦待办及逾期任务</small></div>
+        <div className="matrix-task-tabs" role="tablist" aria-label="任务分类">
+          <button className={taskTab === 'pending' ? 'active' : ''} onClick={() => setTaskTab('pending')}>待办任务 <b>{pendingCounts[variant]}</b>项</button>
+          <button className={taskTab === 'overdue' ? 'active overdue' : ''} onClick={() => setTaskTab('overdue')}>逾期任务 <b>{overdueCounts[variant]}</b>项</button>
+        </div>
+        <div className="matrix-task-table"><div className="matrix-table-head"><span>任务名称</span><span>所属机构</span></div>{visibleTasks.map(item => <button className="matrix-task-row" key={`${taskTab}-${item.name}`} onClick={() => navigate(item.path)}><strong title={item.name}>{item.name}</strong><span>{item.institution}</span></button>)}</div>
+      </section>
+
+      <section className="workbench-matrix-card matrix-calendar">
+        <div className="matrix-card-heading"><div><WorkspaceGlyph name="calendar" /><h2>日历</h2></div><div className="matrix-calendar-actions"><button onClick={() => shiftMonth(-1)} aria-label="上个月">‹</button><b>{calendarMonth.year}年{calendarMonth.month + 1}月</b><button onClick={() => shiftMonth(1)} aria-label="下个月">›</button><button className="today" onClick={() => { setCalendarMonth({ year: 2026, month: 8 }); setSelectedDay(12); setScheduleMode('today'); setScheduleActivated(true); }}>今天</button></div></div>
+        <div className="matrix-calendar-grid"><div className="matrix-weekdays">{['日','一','二','三','四','五','六'].map(day => <span key={day}>{day}</span>)}</div><div className="matrix-days">{calendarCells.map((day, index) => day ? <button key={day} className={scheduleActivated && day === selectedDay ? 'selected' : ''} onClick={() => chooseDate(day)}><span>{day}</span>{calendarMonth.year === 2026 && calendarMonth.month === 8 && scheduleByDay[day] && <i className={day === 18 ? 'red' : day === 12 || day === 25 ? 'yellow' : 'blue'} />}</button> : <span key={`blank-${index}`} />)}</div></div>
+        <div className="matrix-calendar-legend"><span><i className="blue" />一般事项</span><span><i className="yellow" />临近截止</span><span><i className="red" />重要或逾期</span></div>
+      </section>
+
+      <section className="workbench-matrix-card matrix-messages">
+        <div className="matrix-card-heading"><div><WorkspaceGlyph name="message" /><h2>消息提醒</h2><span>今日新增 {messages.length} 条</span></div><button onClick={() => toast('已进入消息中心，可查看完整历史消息。')}>查看更多 ›</button></div>
+        <div className="matrix-message-list">{messages.map(item => <button key={item.title} onClick={() => navigate(item.path)}><i /><strong title={item.title}>{item.title}</strong><span>{item.institution}<em>｜</em>{item.category}</span><time>{item.time}</time></button>)}</div>
+      </section>
+
+      <section className="workbench-matrix-card matrix-schedule">
+        <div className="matrix-card-heading"><div><WorkspaceGlyph name="clock" /><h2>日程安排</h2>{scheduleActivated && <span>{selectedDateLabel}</span>}</div><div className="matrix-schedule-actions"><button className={scheduleActivated && scheduleMode === 'today' ? 'active' : ''} onClick={() => { setScheduleMode('today'); setScheduleActivated(true); }}>今日</button><button className={scheduleActivated && scheduleMode === 'week' ? 'active' : ''} onClick={() => { setScheduleMode('week'); setScheduleActivated(true); }}>本周</button><button className={scheduleActivated && scheduleMode === 'custom' ? 'active' : ''} onClick={() => { setScheduleMode('custom'); setScheduleActivated(true); }}>自定义日期</button>{scheduleActivated && scheduleMode === 'custom' && <input type="date" value={`${calendarMonth.year}-${String(calendarMonth.month + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`} onChange={event => chooseCustomDate(event.target.value)} />}</div></div>
+        <div className="matrix-schedule-table"><div className="matrix-schedule-head"><span>时间</span><span>事项内容</span><span>所属机构</span><span>事项类型</span><span>操作</span></div>{scheduleRows.map((item, index) => <button className="matrix-schedule-row" key={`${item.time}-${item.title}-${index}`} onClick={() => navigate(item.path)}><time><i />{item.time}</time><strong title={item.title}>{item.title}</strong><span>{item.institution}</span><em>{item.category}</em><b>›</b></button>)}{scheduleActivated && !scheduleRows.length && <div className="matrix-empty">当前日期暂无日程安排</div>}</div>
+      </section>
+
+      <section className="workbench-matrix-card matrix-quick">
+        <div className="matrix-card-heading"><div><WorkspaceGlyph name="building" /><h2>快捷入口</h2></div><button onClick={() => toast('快捷入口自定义设置已打开。')}>⚙ 自定义</button></div>
+        <div className="matrix-quick-grid">{quickActions.map(([name, path, icon]) => <button key={name} onClick={() => navigate(path)}><span><WorkspaceGlyph name={icon} /></span><b>{name}</b></button>)}</div>
+      </section>
+
+      <section className="workbench-matrix-card matrix-sentiment">
+        <div className="matrix-card-heading"><div><WorkspaceGlyph name="warning" /><h2>动态舆情</h2><span>近7日 12条</span></div><button onClick={() => navigate('/dashboard')}>查看更多 ›</button></div>
+        <div className="matrix-sentiment-list">{sentiments.map(item => <button key={item.title} onClick={() => navigate('/dashboard')}><span className={`level-${item.level}`}>{item.level}</span><div><strong title={item.title}>{item.title}</strong><small>{item.institution} · 外部舆情动态</small></div><time>{item.time}</time></button>)}</div>
+      </section>
+    </div>
+  </Page>;
+}
 
 function ManagementWorkbench({ state, role, navigate }: { state: DemoState; role: Role; navigate: (path: string) => void }) {
   const [riskPage, setRiskPage] = useState(0);
@@ -483,8 +632,8 @@ function ManagementWorkbench({ state, role, navigate }: { state: DemoState; role
   const archivedEventPath = state.majorEvents[1] ? `/major-events/${state.majorEvents[1].id}/overview` : '/major-events';
   const tasks: ManagementTask[] = [
     { name: '限额指标运行情况报告审阅', status: '待审阅', institution: '国泰海通', path: '/reports' },
-    { name: '重大风险事件报告核实', status: '待核实', institution: '国际AMC', path: eventPath },
-    { name: '处置进展跟踪', status: '处置中', institution: '国际AMC', path: eventPath },
+    { name: '重大风险事件报告核实', status: '待核实', institution: '国际申信', path: eventPath },
+    { name: '处置进展跟踪', status: '处置中', institution: '国际申信', path: eventPath },
     { name: '预警处置方案审阅', status: '待审阅', institution: '上农商', path: warningPath('红灯') },
     { name: '限额指标重检申请审阅', status: '待审阅', institution: '浦发银行', path: '/indicators/query' },
   ];
@@ -495,14 +644,14 @@ function ManagementWorkbench({ state, role, navigate }: { state: DemoState; role
       { institution: '上农商', risk: '资本风险', indicator: '资本充足率', path: warningPath('红灯') },
     ],
     [
-      { institution: '国际AMC', risk: '信用风险', indicator: '异常类资产占比', path: warningPath('红灯') },
+      { institution: '国际申信', risk: '信用风险', indicator: '异常类资产占比', path: warningPath('红灯') },
       { institution: '上农商', risk: '集中度风险', indicator: '单一客户投融资集中度', path: warningPath('红灯') },
       { institution: '国泰海通', risk: '操作风险', indicator: '重大操作风险事件数量', path: warningPath('红灯') },
     ],
   ];
   const yellowGroups: ManagementRiskItem[][] = [
     [
-      { institution: '国际AMC', risk: '信用风险', indicator: '资产拨备率', path: warningPath('黄灯') },
+      { institution: '国际申信', risk: '信用风险', indicator: '资产拨备率', path: warningPath('黄灯') },
       { institution: '上农商', risk: '集中度风险', indicator: '单一集团客户投融资集中度', path: warningPath('黄灯') },
       { institution: '国泰海通', risk: '操作风险', indicator: '重大操作风险事件数量', path: warningPath('黄灯') },
     ],
@@ -515,11 +664,11 @@ function ManagementWorkbench({ state, role, navigate }: { state: DemoState; role
   const eventGroups: ManagementRiskItem[][] = [
     [
       { name: '某项目重大合规风险', institution: '国泰海通', risk: '合规风险', path: eventPath },
-      { name: '信息系统异常事件', institution: '国际AMC', risk: '信息科技风险', path: archivedEventPath },
+      { name: '信息系统异常事件', institution: '国际申信', risk: '信息科技风险', path: archivedEventPath },
       { name: '重大诉讼事项', institution: '浦发银行', risk: '合规风险', path: eventPath },
     ],
     [
-      { name: '重点项目信用风险暴露', institution: '国际AMC', risk: '信用风险', path: eventPath },
+      { name: '重点项目信用风险暴露', institution: '国际申信', risk: '信用风险', path: eventPath },
       { name: '核心系统故障事件', institution: '浦发银行', risk: '信息科技风险', path: archivedEventPath },
       { name: '客户投诉舆情事件', institution: '上农商', risk: '声誉风险', path: '/major-events' },
     ],
@@ -531,7 +680,7 @@ function ManagementWorkbench({ state, role, navigate }: { state: DemoState; role
   </div>;
   const portrait = [
     { name: '浦发银行', red: 6, yellow: 12, total: 42 },
-    { name: '国际AMC', red: 8, yellow: 15, total: 48 },
+    { name: '国际申信', red: 8, yellow: 15, total: 48 },
     { name: '上农商', red: 5, yellow: 10, total: 38 },
     { name: '国泰海通', red: 12, yellow: 18, total: 65 },
   ];
@@ -545,15 +694,15 @@ function ManagementWorkbench({ state, role, navigate }: { state: DemoState; role
   ];
   const focusedItems: FocusedDataItem[] = [
     { institution: '浦发银行', indicator: '流动性覆盖率', value: '132.6%', path: '/indicators/query/ind-1' },
-    { institution: '国际AMC', indicator: '资产负债率', value: '68.4%', path: '/indicators/query/ind-2' },
+    { institution: '国际申信', indicator: '资产负债率', value: '68.4%', path: '/indicators/query/ind-2' },
     { institution: '国泰海通', indicator: '资本杠杆率', value: '18.2%', path: '/indicators/query/ind-3' },
     { institution: '上农商', indicator: '单一客户贷款集中度', value: '6.8%', path: '/indicators/query/ind-1' },
     { institution: '浦发银行', indicator: '资本充足率', value: '14.8%', path: '/indicators/query/ind-1' },
-    { institution: '国际AMC', indicator: '异常类资产占比', value: '9.6%', path: '/indicators/query/ind-2' },
+    { institution: '国际申信', indicator: '异常类资产占比', value: '9.6%', path: '/indicators/query/ind-2' },
   ];
   const submissions: SubmissionItem[] = [
     { institution: '浦发银行', content: '2024年5月并表数据报送', status: '确认上报数据', tone: 'blue', path: '/reports' },
-    { institution: '国际AMC', content: '2024年5月并表数据报送', status: '转报', tone: 'orange', path: '/reports' },
+    { institution: '国际申信', content: '2024年5月并表数据报送', status: '转报', tone: 'orange', path: '/reports' },
     { institution: '国泰海通', content: '2024年5月并表数据报送', status: '发送报送通知', tone: 'slate', path: '/reports' },
     { institution: '上农商', content: '2024年5月并表数据报送', status: '报送完成通知', tone: 'green', path: '/reports' },
   ];
@@ -631,7 +780,7 @@ const institutionWorkbenchProfiles: Record<string, {
     yellowIndicators: [['信用风险', '拨备覆盖率'], ['流动性风险', '流动性比例'], ['集中度风险', '单一集团客户授信集中度'], ['信用风险', '关注类贷款占比'], ['操作风险', '重大操作风险事件数量'], ['声誉风险', '重大声誉风险事件数量']],
     events: [['信息系统异常事件', '信息科技风险'], ['某项目重大风险事件', '信用风险'], ['重大诉讼事项', '合规风险'], ['核心系统故障事件', '信息科技风险'], ['重点客户风险暴露事件', '信用风险'], ['客户投诉舆情事件', '声誉风险']],
   },
-  国际AMC: {
+  国际申信: {
     taskMetrics: [11, 2, 24, 37], riskCounts: [6, 15, 3], warningNotifications: '12', warningReplies: '83.3', warningDisposals: '6', warningResolved: '8',
     redIndicators: [['信用风险', '异常类资产占比'], ['资本风险', '资本充足率'], ['集中度风险', '单一客户投融资集中度'], ['流动性风险', '流动性比例'], ['信用风险', '不良资产率'], ['集中度风险', '前十大客户集中度']],
     yellowIndicators: [['信用风险', '资产拨备率'], ['集中度风险', '单一集团客户投融资集中度'], ['操作风险', '重大操作风险事件数量'], ['流动性风险', '现金流覆盖率'], ['市场风险', '资产负债率'], ['声誉风险', '重大声誉风险事件数量']],
@@ -719,7 +868,7 @@ function InstitutionWorkbench({ state, role, navigate }: { state: DemoState; rol
   ];
   const riskTrends = ['↑ 2条', '↓ 3条', '↑ 1条'];
 
-  return <Page title={`金融机构工作台（${currentInstitution}）`} breadcrumb={['工作台']} hidePageTitle>
+  return <Page title={`金融组织工作台（${currentInstitution}）`} breadcrumb={['工作台']} hidePageTitle>
     <div className="management-workbench institution-management-workbench" data-role={role} data-institution={currentInstitution}>
       <FocusedDataTicker items={focusedItems} showInstitution={false} navigate={navigate} />
       <div className="mgmt-top-grid">
@@ -795,8 +944,8 @@ function RoleWorkbench({ state, role, navigate, toast }: { state: DemoState; rol
   const periodicRate = Math.round(state.periodicReports.filter(item => item.status === '已提交').length / periodicTotal * 100);
   const redCapitalInstitutions = new Set(latest.filter(item => /资本/.test(`${item.indicatorType}${item.indicatorName}`) && item.currentLightStatus === '红灯').map(item => item.institution)).size;
   const institutionCount = state.institutions.filter(item => item.status === '已纳入').length;
-  const workbenchTitle = variant === 'group' ? '集团并表管理工作台' : variant === 'holding' ? '金控/国资并表管理工作台' : '金融机构并表报送工作台';
-  const workbenchDescription = variant === 'group' ? '面向集团统筹监督，集中掌握并表运行、重点风险、审阅事项与管理协同。' : variant === 'holding' ? '面向组织实施与过程管理，统筹任务下发、数据校核、预警处置及报告编制。' : '面向金融机构报送执行，集中办理任务、数据报送、问题补正、预警反馈与整改跟踪。';
+  const workbenchTitle = variant === 'group' ? '集团并表管理工作台' : variant === 'holding' ? '金控/国资并表管理工作台' : '金融组织并表报送工作台';
+  const workbenchDescription = variant === 'group' ? '面向集团统筹监督，集中掌握并表运行、重点风险、审阅事项与管理协同。' : variant === 'holding' ? '面向组织实施与过程管理，统筹任务下发、数据校核、预警处置及报告编制。' : '面向金融组织报送执行，集中办理任务、数据报送、问题补正、预警反馈与整改跟踪。';
   const metrics: WorkspaceMetric[] = variant === 'group' ? [
     { label: '纳入并表机构数', value: institutionCount, unit: '家', trend: '较上期 0', note: '并表范围保持稳定', path: '/institutions', tone: 'indigo', icon: 'building' },
     { label: '风险预警数量', value: state.warningDisposals.length, unit: '条', trend: `红灯 ${state.warningDisposals.filter(item => item.level === '红灯').length}`, note: '需持续跟踪', path: '/warning/disposal', tone: 'red', icon: 'warning' },
@@ -841,7 +990,7 @@ function RoleWorkbench({ state, role, navigate, toast }: { state: DemoState; rol
 
   return <Page title="工作台" breadcrumb={['工作台']} hidePageTitle>
     <div className={`workspace-shell workspace-${variant}`}>
-      <div className="workspace-hero"><div><span className="workspace-role-chip">{variant === 'group' ? '集团本部 / 统筹监督' : variant === 'holding' ? '金控公司 / 国资公司' : '金融机构 / 报送反馈'}</span><h1>{workbenchTitle}</h1><p>{workbenchDescription}</p></div><div className="workspace-hero-actions"><Button variant="secondary" onClick={() => navigate('/cockpit')}>{variant === 'institution' ? '进入金融机构驾驶舱' : '集团及国资公司驾驶舱'}</Button><Button variant="secondary" onClick={() => navigate('/concentration-monitoring')}>集中度风险监测</Button>{variant === 'group' && <Button onClick={() => navigate('/dashboard')}>进入风险看板</Button>}</div></div>
+      <div className="workspace-hero"><div><span className="workspace-role-chip">{variant === 'group' ? '集团本部 / 统筹监督' : variant === 'holding' ? '金控公司 / 国资公司' : '金融组织 / 报送反馈'}</span><h1>{workbenchTitle}</h1><p>{workbenchDescription}</p></div><div className="workspace-hero-actions"><Button variant="secondary" onClick={() => navigate('/cockpit')}>{variant === 'institution' ? '进入金融组织驾驶舱' : '集团及国资公司驾驶舱'}</Button><Button variant="secondary" onClick={() => navigate('/concentration-monitoring')}>集中度风险监测</Button>{variant === 'group' && <Button onClick={() => navigate('/dashboard')}>进入风险看板</Button>}</div></div>
       <WorkspaceMetrics items={metrics} navigate={navigate} />
       {messageCenter}
 

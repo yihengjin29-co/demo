@@ -13,7 +13,7 @@ export const formatSize = (size: number) => size > 1024 * 1024 ? `${(size / 1024
 
 const baseIndicators = [
   { id: 'rpi-1', category: '资本充足类', name: '资本充足率', definition: '集团并表口径资本充足率', unit: '%', institution: '全集团', frequency: '月度', warning: '≥10.50%', tolerance: '≥8.00%', effectiveDate: '2024-01-01' },
-  { id: 'rpi-2', category: '流动性风险类', name: '流动性覆盖率', definition: '高质量流动性资产覆盖净现金流出', unit: '%', institution: '国际AMC', frequency: '日度', warning: '≥100.00%', tolerance: '≥90.00%', effectiveDate: '2024-01-01' },
+  { id: 'rpi-2', category: '流动性风险类', name: '流动性覆盖率', definition: '高质量流动性资产覆盖净现金流出', unit: '%', institution: '国际申信', frequency: '日度', warning: '≥100.00%', tolerance: '≥90.00%', effectiveDate: '2024-01-01' },
   { id: 'rpi-3', category: '信用风险类', name: '不良资产率', definition: '不良资产余额占资产总额比例', unit: '%', institution: '浦发银行', frequency: '月度', warning: '≤2.00%', tolerance: '≤5.00%', effectiveDate: '2024-01-01' },
 ] as const;
 
@@ -30,7 +30,7 @@ export const seedState = (): DemoState => ({
     { id: 'wr-3', code: 'RW-2024-003', indicator: '净稳定资金率', riskType: '流动性风险', institution: '全集团', frequency: '月度', ruleType: '阈值预警', yellow: '≥100.00%', red: '<90.00%', effectiveDate: '2024-01-01', status: '暂停预警', nodes: [{ id: 'n1', threshold: '100.00', light: '黄灯' }], segments: [{ name: '区间1', range: '< 100.00%', light: '黄灯' }], pushMethods: ['邮件'], submitter: '李四', logs: [createLog('暂停预警', '完成系统维护窗口暂停')] },
   ],
   warningDisposals: [
-    { id: 'wd-1', level: '红灯', institution: '国际AMC', riskType: '信用风险', indicator: '不良资产率', value: '5.60%', signal: '红灯', rule: '不良资产率≥5.00%', letterNo: 'YJTX2024-007', status: '待提交应对处置方案', triggerDate: '2024-06-25 09:30:00', reason: '', plan: '', assessment: '', review: '', followUp: '', releaseAssessment: '', expectedReleaseDate: '', attachments: [], logs: [createLog('系统推送', '自动生成重大风险提示函')] },
+    { id: 'wd-1', level: '红灯', institution: '国际申信', riskType: '信用风险', indicator: '不良资产率', value: '5.60%', signal: '红灯', rule: '不良资产率≥5.00%', letterNo: 'YJTX2024-007', status: '待提交应对处置方案', triggerDate: '2024-06-25 09:30:00', reason: '', plan: '', assessment: '', review: '', followUp: '', releaseAssessment: '', expectedReleaseDate: '', attachments: [], logs: [createLog('系统推送', '自动生成重大风险提示函')] },
     { id: 'wd-2', level: '黄灯', institution: '浦发银行', riskType: '流动性风险', indicator: '流动性覆盖率', value: '96.40%', signal: '黄灯', rule: '90.00%≤指标值<100.00%', letterNo: 'YJTX2024-006', status: '持续跟踪执行情况', triggerDate: '2024-06-24 10:15:00', reason: '市场资金面阶段性波动，已启动流动性储备。', plan: '调整资产负债结构，提升高质量流动性资产占比。', assessment: '措施可行，持续跟踪。', review: '', followUp: '已完成第一轮储备补充，后续按周报送。', releaseAssessment: '', expectedReleaseDate: '2024-07-15', attachments: [], logs: [createLog('提交方案', '金融机构提交应对处置方案')] },
   ],
   indicators: [
@@ -46,26 +46,27 @@ export const seedState = (): DemoState => ({
   },
   dashboardIndicatorConfig: { 集团: [], 金控公司: [], 各金融机构: [] },
   majorEvents: [
-    { id: 'me-1', code: 'ME-2024-006', name: '某项目重大信用风险暴露', institution: '国际AMC', type: '关注/异常项目事件', occurredAt: '2024-06-18', latestReport: '续报', currentStage: '续报跟踪', status: '处理中', impact: '机构内及集团风险敞口影响', contact: '王五', phone: '13800138000', basic: '重点项目出现逾期迹象，涉及余额约 2.3 亿元。', analysis: '受行业需求下行及现金流回款延迟影响。', measures: '已启动专项清收和资产保全。', trend: '短期风险仍需关注，中期预计逐步缓释。', target: '控制损失、稳妥化解风险。', plan: '制定分阶段清收和增信措施。', responsibleDept: '风险管理部', responsible: '王五', deadline: '2024-08-30', attachments: [], followUps: [{ latestProgress: '已完成首轮客户沟通和增信方案评估。', riskChange: '风险敞口未进一步扩大。', execution: '清收计划按节点推进。', nextStep: '持续监测回款并更新处置方案。', attachments: [], date: '2024-06-28' }], logs: [createLog('核实并组织汇报', '金融机构管理部门完成核实') ] },
+    { id: 'me-1', code: 'ME-2024-006', name: '某项目重大信用风险暴露', institution: '国际申信', type: '关注/异常项目事件', occurredAt: '2024-06-18', latestReport: '续报', currentStage: '续报跟踪', status: '处理中', impact: '机构内及集团风险敞口影响', contact: '王五', phone: '13800138000', basic: '重点项目出现逾期迹象，涉及余额约 2.3 亿元。', analysis: '受行业需求下行及现金流回款延迟影响。', measures: '已启动专项清收和资产保全。', trend: '短期风险仍需关注，中期预计逐步缓释。', target: '控制损失、稳妥化解风险。', plan: '制定分阶段清收和增信措施。', responsibleDept: '风险管理部', responsible: '王五', deadline: '2024-08-30', attachments: [], followUps: [{ latestProgress: '已完成首轮客户沟通和增信方案评估。', riskChange: '风险敞口未进一步扩大。', execution: '清收计划按节点推进。', nextStep: '持续监测回款并更新处置方案。', attachments: [], date: '2024-06-28' }], logs: [createLog('核实并组织汇报', '金融机构管理部门完成核实') ] },
     { id: 'me-2', code: 'ME-2024-004', name: '信息科技系统故障事件', institution: '浦发银行', type: '重大信息科技风险事件', occurredAt: '2024-05-22', latestReport: '终报', currentStage: '终报完成', status: '已归档', impact: '短时影响线上交易服务', contact: '赵六', phone: '13900139000', basic: '核心系统发生短时不可用。', analysis: '基础设施异常导致服务中断。', measures: '完成故障切换与补偿。', trend: '风险已解除。', target: '保障系统稳定运行。', plan: '完成架构优化和应急演练。', responsibleDept: '科技管理部', responsible: '赵六', deadline: '2024-06-15', attachments: [], followUps: [], finalReport: { result: '系统恢复，完成整改。', impact: '无进一步损失。', release: '风险解除。', followUp: '纳入年度科技风险检查。', attachments: [], date: '2024-06-12' }, logs: [createLog('归档', '事件完成终报并归档')] },
   ],
   majorRiskEventDefinitions: seedMajorRiskEventDefinitions(),
   reports: [
-    { id: 'rep-1', code: 'RPT-2024-001', name: '集团并表风险监测月报', institution: '国际AMC', type: '风险监测报表', frequency: '月度', latestReportDate: '2024-06-30', latestSubmitDate: '2024-07-03', status: '已报送', description: '汇总当月集团并表风险监测指标。', submissions: [{ id: 'sub-1', serial: 'SUB-20240703-001', reportDate: '2024-06-30', submitDate: '2024-07-03', submitTime: '14:20:11', submitter: '王五', note: '按期报送', files: [] }, { id: 'sub-2', serial: 'SUB-20240604-001', reportDate: '2024-05-31', submitDate: '2024-06-04', submitTime: '16:08:22', submitter: '王五', note: '按期报送', files: [] }], logs: [createLog('报送', '机构完成最新一期风险监测月报报送')] },
+    { id: 'rep-1', code: 'RPT-2024-001', name: '集团并表风险监测月报', institution: '国际申信', type: '风险监测报表', frequency: '月度', latestReportDate: '2024-06-30', latestSubmitDate: '2024-07-03', status: '已报送', description: '汇总当月集团并表风险监测指标。', submissions: [{ id: 'sub-1', serial: 'SUB-20240703-001', reportDate: '2024-06-30', submitDate: '2024-07-03', submitTime: '14:20:11', submitter: '王五', note: '按期报送', files: [] }, { id: 'sub-2', serial: 'SUB-20240604-001', reportDate: '2024-05-31', submitDate: '2024-06-04', submitTime: '16:08:22', submitter: '王五', note: '按期报送', files: [] }], logs: [createLog('报送', '机构完成最新一期风险监测月报报送')] },
     { id: 'rep-2', code: 'RPT-2024-002', name: '重大风险事项清单', institution: '浦发银行', type: '监管报表', frequency: '季度', latestReportDate: '2024-06-30', latestSubmitDate: '2024-07-05', status: '已报送', description: '重大风险事件及风险处置情况。', submissions: [{ id: 'sub-3', serial: 'SUB-20240705-001', reportDate: '2024-06-30', submitDate: '2024-07-05', submitTime: '09:35:42', submitter: '赵六', note: '季度报送', files: [] }], logs: [createLog('报送', '完成季度监管报表报送')] },
   ],
   periodicReports: [
-    { id: 'pr-1', name: '2024年二季度全面风险管理报告', institution: '国际AMC', type: '全面风险管理报告', reportDate: '2024-06-30', submitDate: '2024-07-08', cycle: '季度', overview: '报告二季度风险管理运行情况、预警处置及重大事项。', attachments: [], visibleInstitutions: ['集团本部', '国际AMC'], visibleDepartments: ['金融机构管理部', '风险管理部'], viewers: ['张三（集团管理层）'], pushMethod: '平台通知', status: '已提交', logs: [createLog('提交', '报告已按可见范围发布')] },
+    { id: 'pr-1', name: '2024年二季度全面风险管理报告', institution: '国际申信', type: '全面风险管理报告', reportDate: '2024-06-30', submitDate: '2024-07-08', cycle: '季度', overview: '报告二季度风险管理运行情况、预警处置及重大事项。', attachments: [], visibleInstitutions: ['集团本部', '国际申信'], visibleDepartments: ['金融机构管理部', '风险管理部'], viewers: ['张三（集团管理层）'], pushMethod: '平台通知', status: '已提交', logs: [createLog('提交', '报告已按可见范围发布')] },
     { id: 'pr-2', name: '2024年6月风险监测快报', institution: '浦发银行', type: '风险监测报告', reportDate: '2024-06-30', submitDate: '2024-07-02', cycle: '月度', overview: '月度风险指标监测快报。', attachments: [], visibleInstitutions: ['集团本部'], visibleDepartments: ['金融机构管理部'], viewers: [], pushMethod: '邮件', status: '已提交', logs: [createLog('提交', '报告已提交')] },
   ],
   specialRisks: [
-    { id: 'sr-1', letterNo: 'ZXFX-2024-001', name: '专项风险提示A', types: ['风险类型A'], institutions: ['国际AMC', '浦发银行', '国泰海通'], institutionNotes: { 国际AMC: '按提示函要求开展专项自查。', 浦发银行: '按提示函要求开展专项自查。', 国泰海通: '按提示函要求开展专项自查。' }, purpose: '针对风险类型A相关风险变化开展专项排查，压实机构风险防控责任。', measures: '完善风险识别、持续监测及内部管理措施。', requirements: '请于反馈期内完成自检并提交风险点、应对措施及后续安排。', attachments: [], createdAt: '2024-06-10', updatedAt: '2024-06-18', status: '已下发', workOrders: [{ id: 'ZXFX-2024-001-01', institution: '国际AMC', issuedAt: '2024-06-10', status: '已答复专项风险提示函', feedback: { contact: '机构联系人A', phone: '13800000001', understanding: '已组织学习并理解专项风险提示函要求。', problems: '已完成相关风险事项自查。', strategy: '持续加强风险监测并完善应对安排。', other: '后续按要求持续反馈。', attachments: [], date: '2024-06-15' } }, { id: 'ZXFX-2024-001-02', institution: '浦发银行', issuedAt: '2024-06-10', status: '已下发专项风险提示函' }, { id: 'ZXFX-2024-001-03', institution: '国泰海通', issuedAt: '2024-06-10', status: '已审阅答复函', feedback: { contact: '机构联系人B', phone: '13800000002', understanding: '已完成专项风险提示函传达。', problems: '已完成相关事项自查。', strategy: '建立持续跟踪机制。', other: '', attachments: [], date: '2024-06-16' }, evaluation: { result: '已审阅', department: '金融机构管理部', summary: '答复内容已审阅，请按要求持续开展跟踪反馈。', date: '2024-06-17', attachments: [] } }], logs: [createLog('提交并下发', '专项风险提示函已下发至3家机构')] },
+    { id: 'sr-1', letterNo: 'ZXFX-2024-001', name: '专项风险提示A', types: ['风险类型A'], institutions: ['国际申信', '浦发银行', '国泰海通'], institutionNotes: { 国际申信: '按提示函要求开展专项自查。', 浦发银行: '按提示函要求开展专项自查。', 国泰海通: '按提示函要求开展专项自查。' }, purpose: '针对风险类型A相关风险变化开展专项排查，压实机构风险防控责任。', measures: '完善风险识别、持续监测及内部管理措施。', requirements: '请于反馈期内完成自检并提交风险点、应对措施及后续安排。', attachments: [], createdAt: '2024-06-10', updatedAt: '2024-06-18', status: '已下发', workOrders: [{ id: 'ZXFX-2024-001-01', institution: '国际申信', issuedAt: '2024-06-10', status: '已答复专项风险提示函', feedback: { contact: '机构联系人A', phone: '13800000001', understanding: '已组织学习并理解专项风险提示函要求。', problems: '已完成相关风险事项自查。', strategy: '持续加强风险监测并完善应对安排。', other: '后续按要求持续反馈。', attachments: [], date: '2024-06-15' } }, { id: 'ZXFX-2024-001-02', institution: '浦发银行', issuedAt: '2024-06-10', status: '已下发专项风险提示函' }, { id: 'ZXFX-2024-001-03', institution: '国泰海通', issuedAt: '2024-06-10', status: '已审阅答复函', feedback: { contact: '机构联系人B', phone: '13800000002', understanding: '已完成专项风险提示函传达。', problems: '已完成相关事项自查。', strategy: '建立持续跟踪机制。', other: '', attachments: [], date: '2024-06-16' }, evaluation: { result: '已审阅', department: '金融机构管理部', summary: '答复内容已审阅，请按要求持续开展跟踪反馈。', date: '2024-06-17', attachments: [] } }], logs: [createLog('提交并下发', '专项风险提示函已下发至3家机构')] },
     { id: 'sr-2', letterNo: 'ZXFX-2024-002', name: '专项风险提示B', types: ['风险类型B'], institutions: ['浦发银行', '上海农商银行'], institutionNotes: { 浦发银行: '', 上海农商银行: '' }, purpose: '针对风险类型B相关风险变化开展专项排查。', measures: '做好风险监测与必要的管理准备。', requirements: '提交自查结果及后续管理安排。', attachments: [], createdAt: '2024-05-22', updatedAt: '2024-06-03', status: '草稿', workOrders: [], logs: [createLog('保存草稿', '专项提示草稿已保存')] },
   ],
 });
 
-const allowedInstitutions = ['上海农商银行', '国际AMC', '浦发银行', '国泰海通', '中国太平洋保险'];
+const allowedInstitutions = ['上海农商银行', '国际申信', '浦发银行', '国泰海通', '中国太平洋保险'];
 const institutionAliases: Record<string, string> = {
+  '国际AMC': '国际申信',
   '上农商': '上海农商银行', '上海农商': '上海农商银行', '集团本部': '上海农商银行',
   '东方证券': '国泰海通', '申能财务': '浦发银行', '中能财险': '中国太平洋保险',
   '中能租赁': '上海农商银行', '保科技': '中国太平洋保险'
@@ -197,7 +198,7 @@ const migrateMajorEventNodeId = (nodeId: string, status: string, hasFollowUps: b
 };
 
 export const normalizeState = (source: DemoState): DemoState => {
-  const state = structuredClone(source);
+  const state = JSON.parse(JSON.stringify(source).split('国际AMC').join('国际申信')) as DemoState;
   const legacyLetterMode = state.warningLetterSetting?.mode === '亮灯直接发函' ? 'auto' : state.warningLetterSetting?.mode === '只亮灯不发函' ? 'none' : 'manual';
   state.institutions = state.institutions?.length ? state.institutions : seedInstitutions();
   state.riskPreferences.forEach(x => {
@@ -316,7 +317,7 @@ export const normalizeState = (source: DemoState): DemoState => {
   state.dashboardIndicatorConfig = {
     集团: state.dashboardIndicatorConfig?.集团?.length ? state.dashboardIndicatorConfig.集团 : dashboardDefaults,
     金控公司: state.dashboardIndicatorConfig?.金控公司?.length ? state.dashboardIndicatorConfig.金控公司 : dashboardDefaults,
-    各金融机构: state.dashboardIndicatorConfig?.各金融机构?.length ? state.dashboardIndicatorConfig.各金融机构 : latestRecords.filter(record => record.institution === '国际AMC').slice(0, 6).map(record => record.id),
+    各金融机构: state.dashboardIndicatorConfig?.各金融机构?.length ? state.dashboardIndicatorConfig.各金融机构 : latestRecords.filter(record => record.institution === '国际申信').slice(0, 6).map(record => record.id),
   };
   state.majorRiskEventDefinitions = state.majorRiskEventDefinitions?.length ? state.majorRiskEventDefinitions : seedMajorRiskEventDefinitions();
   state.majorEvents.forEach(x => {

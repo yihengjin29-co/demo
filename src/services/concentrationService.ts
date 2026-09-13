@@ -3,7 +3,7 @@ import { currentInstitution } from './permissionService';
 
 const DATA_KEY = 'concentration-monitoring-data-v4';
 const CONFIG_KEY = 'concentration-display-config-v3';
-export const concentrationInstitutions = ['国际AMC', '浦发银行', '国泰海通证券'];
+export const concentrationInstitutions = ['国际申信', '浦发银行', '国泰海通证券'];
 export const concentrationTypes: ConcentrationType[] = ['singleCustomer', 'groupCustomer', 'industry', 'region'];
 const defaultConcentrationTypes: ConcentrationType[] = ['groupCustomer', 'industry', 'region'];
 export const concentrationTypeLabels: Record<ConcentrationType, string> = { singleCustomer: '单一客户集中度', groupCustomer: '单一集团客户集中度', industry: '行业集中度', region: '区域集中度' };

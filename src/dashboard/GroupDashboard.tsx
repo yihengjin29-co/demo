@@ -49,14 +49,19 @@ const riskCategories = [
   { id: 'credit', label: '信用风险' },
   { id: 'concentration', label: '集中度风险' },
   { id: 'liquidity', label: '流动性风险' },
-  { id: 'other', label: '其他风险' },
+  { id: 'market', label: '市场风险' },
+  { id: 'operational', label: '操作风险' },
+  { id: 'compliance', label: '合规风险' },
+  { id: 'reputation', label: '声誉风险' },
+  { id: 'it', label: '信息科技风险' },
+  { id: 'strategic', label: '战略风险' },
 ] as const;
 
 const heatmapRows: { id: string; name: string; routeId: string; type: string; cells: Record<string, HeatCell> }[] = [
-  { id: 'amc', name: '国际AMC', routeId: 'inst-amc', type: '不良资产经营', cells: { credit: { red: 1 }, concentration: { red: 1, yellow: 1 }, liquidity: { yellow: 1 }, other: { yellow: 1 } } },
-  { id: 'ht', name: '国泰海通', routeId: 'inst-guotai', type: '证券业务', cells: { credit: { status: 'green' }, concentration: { yellow: 1 }, liquidity: { status: 'green' }, other: { red: 1, yellow: 1 } } },
-  { id: 'spdb', name: '浦发银行', routeId: 'inst-spdb', type: '银行业务', cells: { credit: { yellow: 1 }, concentration: { yellow: 1 }, liquidity: { yellow: 1 }, other: { status: 'green' } } },
-  { id: 'srcb', name: '沪农商银行', routeId: 'inst-srcb', type: '银行业务', cells: { credit: { status: 'green' }, concentration: { yellow: 1 }, liquidity: { status: 'green' }, other: { red: 1, yellow: 1 } } },
+  { id: 'amc', name: '国际申信', routeId: 'inst-amc', type: '金融组织', cells: { credit: { red: 1 }, concentration: { red: 1, yellow: 1 }, liquidity: { yellow: 1 }, market: { red: 1 }, operational: { status: 'green' }, compliance: { status: 'green' }, reputation: { yellow: 1 }, it: { status: 'green' }, strategic: { status: 'green' } } },
+  { id: 'ht', name: '国泰海通', routeId: 'inst-guotai', type: '证券业务', cells: { credit: { status: 'green' }, concentration: { yellow: 1 }, liquidity: { status: 'green' }, market: { status: 'green' }, operational: { status: 'green' }, compliance: { yellow: 1 }, reputation: { status: 'green' }, it: { status: 'green' }, strategic: { yellow: 1 } } },
+  { id: 'spdb', name: '浦发银行', routeId: 'inst-spdb', type: '银行业务', cells: { credit: { yellow: 1 }, concentration: { yellow: 1 }, liquidity: { yellow: 1 }, market: { status: 'green' }, operational: { yellow: 1 }, compliance: { status: 'green' }, reputation: { status: 'green' }, it: { yellow: 1 }, strategic: { red: 1 } } },
+  { id: 'srcb', name: '沪农商银行', routeId: 'inst-srcb', type: '银行业务', cells: { credit: { status: 'green' }, concentration: { yellow: 1 }, liquidity: { status: 'green' }, market: { yellow: 1 }, operational: { status: 'green' }, compliance: { status: 'green' }, reputation: { yellow: 1 }, it: { red: 1 }, strategic: { status: 'green' } } },
 ];
 
 const keyIndicatorCatalog: KeyIndicator[] = [
@@ -151,7 +156,7 @@ function DashboardHeader({ navigate }: { navigate: Navigate }) {
         <span>集团 / 国资公司共用视图</span>
         <select className="gd-dashboard-switcher" value="group" aria-label="切换驾驶舱" onChange={event => { if (event.target.value === 'amc') navigate('/dashboard/institution/inst-amc'); }}>
           <option value="group">集团驾驶舱</option>
-          <option value="amc">国际AMC驾驶舱</option>
+          <option value="amc">国际申信金融组织驾驶舱</option>
         </select>
         <button onClick={toggleFullscreen}>⛶ 全屏</button>
         <button onClick={() => navigate('/workbench')}>返回工作台</button>
@@ -161,7 +166,7 @@ function DashboardHeader({ navigate }: { navigate: Navigate }) {
 }
 
 function BusinessStrip() {
-  return <section className="gd-business"><div className="gd-business-label"><i /><div><h2>经营总览 <small>（集团并表口径）</small></h2></div></div>{businessOverview.map(item => <article key={item.label}><span className="gd-kpi-icon">{item.icon}</span><div><small>{item.label}</small><strong>{item.value}<em>{item.unit}</em></strong></div><dl><div><dt>同比</dt><dd className="rise">▲ {item.yoy}</dd></div><div><dt>环比</dt><dd className="good">▲ {item.mom}</dd></div></dl></article>)}</section>;
+  return <section className="gd-business" aria-label="集团经营指标">{businessOverview.map(item => <article key={item.label}><span className="gd-kpi-icon">{item.icon}</span><div><small>{item.label}</small><strong>{item.value}<em>{item.unit}</em></strong></div><dl><div><dt>同比</dt><dd className="rise">▲ {item.yoy}</dd></div><div><dt>环比</dt><dd className="good">▲ {item.mom}</dd></div></dl></article>)}</section>;
 }
 
 function HeatSignal({ cell }: { cell: HeatCell }) {
@@ -267,7 +272,7 @@ function InstitutionMarketPanel({ navigate }: { navigate: Navigate }) {
             <div className="org-price-trend">
               <small>{priceTrend ? '近12个月股价 · 示例' : '非上市 · 无公开股价走势'}</small>
               {priceTrend ? <LineChart values={priceTrend} color="#52dcff" width={220} height={65} /> : <div className="org-no-price">—</div>}
-              <small>{priceTrend ? '2025.09 — 2026.08' : '点击进入AMC驾驶舱 ↗'}</small>
+              <small>{priceTrend ? '2025.09 — 2026.08' : '点击进入金融组织驾驶舱 ↗'}</small>
             </div>
           </div>
         </button>;
